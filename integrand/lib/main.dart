@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'backend/studentvue_api.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => StudentVueAPI(),
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -65,6 +70,11 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
+      Provider.of<StudentVueAPI>(context, listen: false).initialize(
+        'https://parent-portland.cascadetech.org/portland',
+        'username',
+        'password',
+      );
     });
   }
 
@@ -112,6 +122,9 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            const DisplaySchedule(
+              key: Key('display_schedule'),
+            ),
           ],
         ),
       ),
@@ -120,6 +133,35 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class DisplaySchedule extends StatelessWidget {
+  const DisplaySchedule({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<StudentVueAPI>(
+      builder: (context, studentVueAPI, child) {
+        return FutureBuilder(
+          future: studentVueAPI.schedule(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                // Get text from response
+                //String result = StudentVueAPI.parseSchedule(snapshot.data!);
+                //return Text('Schedule: $result');
+                return const Text('Schedule: ');
+              }
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
+        );
+      },
     );
   }
 }
