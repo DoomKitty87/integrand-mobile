@@ -52,6 +52,26 @@ class GradebookData {
   List<CourseGrading> courses = [];
 }
 
+class GPAData {
+  double unweightedGPA = 0.0;
+  double weightedGPA = 0.0;
+
+  int unweightedRank = 0;
+  int weightedRank = 0;
+
+  int totalStudents = 0;
+}
+
+class BellPeriod {
+  String period = '';
+  String startTime = '';
+  String endTime = '';
+}
+
+class BellSchedule {
+  List<BellPeriod> periods = [];
+}
+
 class StudentVueAPI with ChangeNotifier {
   late String baseUrl;
   late String username;
@@ -59,16 +79,27 @@ class StudentVueAPI with ChangeNotifier {
 
   bool initialized = false;
 
-  late ScheduleData scheduleData;
-  late GradebookData gradebookData;
+  ScheduleData scheduleData = ScheduleData();
+  GradebookData gradebookData = GradebookData();
+
+  GPAData gpaData = GPAData();
+  BellSchedule bellSchedule = BellSchedule();
+
+  String currentCookies = '';
 
   StudentVueAPI();
 
-  void initialize(String baseUrl, String username, String password) {
+  void initialize(String baseUrl, String username, String password) async {
     this.baseUrl = baseUrl;
     this.username = username;
     this.password = password;
     initialized = true;
+
+    // Should call data updates here
+
+    // Updates for data not accessible via SOAP API
+    await initializeClientData();
+
     notifyListeners();
   }
 
@@ -343,6 +374,194 @@ class StudentVueAPI with ChangeNotifier {
       }
 
       data.courses.add(courseGrading);
+    }
+
+    return data;
+  }
+
+  Future<void> initializeClientData() async {
+    // Send GET request to get cookies
+    String url = '$baseUrl/PXP2_Login_Student.aspx?regenerateSessionId=True';
+
+    http.Response response = await http.get(Uri.parse(url));
+
+    List<String> cookiesList = response.headers['set-cookie']!.split(',');
+
+    Map<String, String> cookies = <String, String>{};
+
+    for (String cookie in cookiesList) {
+      List<String> cookieParts = cookie.split('=');
+      if (cookieParts.length == 1) {
+        continue;
+      }
+      cookies.update(cookieParts[0], (value) => cookieParts[1],
+          ifAbsent: () => cookieParts[1]);
+    }
+
+    Map<String, String> loginData = <String, String>{};
+
+    String html = response.body;
+
+    RegExp viewStateRegExp = RegExp(
+        r'<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="(.*?)" />');
+
+    String viewState = viewStateRegExp.firstMatch(html)!.group(1)!;
+
+    RegExp viewStateGeneratorRegExp = RegExp(
+        r'<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="(.*?)" />');
+
+    String viewStateGenerator =
+        viewStateGeneratorRegExp.firstMatch(html)!.group(1)!;
+
+    RegExp eventValidationRegExp = RegExp(
+        r'<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.*?)" />');
+
+    String eventValidation = eventValidationRegExp.firstMatch(html)!.group(1)!;
+
+    loginData['__VIEWSTATE'] = viewState;
+    loginData['__VIEWSTATEGENERATOR'] = viewStateGenerator;
+    loginData['__EVENTVALIDATION'] = eventValidation;
+
+    loginData['ctl00\$MainContent\$username'] = username;
+    loginData['ctl00\$MainContent\$password'] = password;
+    loginData['ctl00\$MainContent\$Submit1'] = 'Login';
+
+    String cookiesString = '';
+
+    cookies.forEach((key, value) {
+      cookiesString += '$key=$value; ';
+    });
+
+    // Send login POST request
+
+    await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Cookie': cookiesString,
+      },
+      body: loginData,
+    );
+
+    currentCookies = cookiesString;
+
+    // Logged in, complete all necessary data requests
+
+    GPAData gpaData = await updateGPA();
+
+    this.gpaData = gpaData;
+
+    BellSchedule bellSchedule = await updateCurrentBellSchedule();
+
+    this.bellSchedule = bellSchedule;
+  }
+
+  String removeWhitespace(String html) {
+    return html
+        .replaceAll('\n', '')
+        .replaceAll(' ', '')
+        .replaceAll('\t', '')
+        .replaceAll('\r', '');
+  }
+
+  Future<GPAData> updateGPA() async {
+    // Send GET request to get GPA
+    String url = '$baseUrl/PXP2_CourseHistory.aspx?AGU=0';
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Cookie': currentCookies,
+      },
+    );
+
+    String html = removeWhitespace(response.body);
+
+    RegExp gpaRegExp = RegExp(r'<spanclass="gpa-score">(.*?)</span>');
+
+    String unweightedGPA = gpaRegExp.firstMatch(html)!.group(1)!;
+    String weightedGPA = gpaRegExp.allMatches(html).elementAt(1).group(1)!;
+
+    RegExp rankRegExp = RegExp(r'Rank:(.*?)outof');
+
+    String unweightedRank = rankRegExp.firstMatch(html)!.group(1)!;
+    String weightedRank = rankRegExp.allMatches(html).elementAt(1).group(1)!;
+
+    RegExp totalStudentsRegExp = RegExp(r'outof(.*?)</span>');
+
+    String totalStudents = totalStudentsRegExp.firstMatch(html)!.group(1)!;
+
+    GPAData data = GPAData();
+
+    data.unweightedGPA = double.parse(unweightedGPA);
+    data.weightedGPA = double.parse(weightedGPA);
+
+    data.unweightedRank = int.parse(unweightedRank);
+    data.weightedRank = int.parse(weightedRank);
+
+    data.totalStudents = int.parse(totalStudents);
+
+    return data;
+  }
+
+  Future<BellSchedule> updateCurrentBellSchedule() async {
+    String url = '$baseUrl/PXP2_ClassSchedule.aspx?AGU=0';
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Cookie': currentCookies,
+      },
+    );
+
+    String html = removeWhitespace(response.body);
+
+    RegExp beginningExp = RegExp(r'startTime">(.*?)</span>');
+
+    RegExp endExp = RegExp(r'endTime">(.*?)</span>');
+
+    List<String> beginnings = beginningExp.allMatches(html).map((e) {
+      return e.group(1)!;
+    }).toList();
+
+    List<String> ends = endExp.allMatches(html).map((e) {
+      return e.group(1)!;
+    }).toList();
+
+    BellSchedule data = BellSchedule();
+
+    for (int i = 0; i < beginnings.length; i++) {
+      BellPeriod period = BellPeriod();
+
+      period.period = 'Period ${i + 1}';
+      period.startTime =
+          beginnings[i].replaceAll(' AM', '').replaceAll(' PM', '');
+      period.endTime = ends[i].replaceAll(' AM', '').replaceAll(' PM', '');
+
+      data.periods.add(period);
+    }
+
+    // Determine lunch period
+
+    for (int i = 0; i < data.periods.length - 1; i++) {
+      BellPeriod period = data.periods[i];
+
+      BellPeriod nextPeriod = data.periods[i + 1];
+
+      int timeDifference = int.parse(nextPeriod.startTime.split(':')[0]) * 60 +
+          int.parse(nextPeriod.startTime.split(':')[1]) -
+          int.parse(period.endTime.split(':')[0]) * 60 -
+          int.parse(period.endTime.split(':')[1]);
+
+      if (timeDifference > 12) {
+        BellPeriod lunch = BellPeriod();
+
+        lunch.period = 'Lunch';
+        lunch.startTime = period.endTime;
+        lunch.endTime = nextPeriod.startTime;
+
+        data.periods.insert(i + 1, lunch);
+      }
     }
 
     return data;
