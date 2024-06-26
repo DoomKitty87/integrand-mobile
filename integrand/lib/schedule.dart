@@ -15,8 +15,8 @@ class _ScheduleState extends State<Schedule> {
   @override
   Widget build(BuildContext context) {
     return const Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: const Column(
+      padding: EdgeInsets.all(20.0),
+      child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

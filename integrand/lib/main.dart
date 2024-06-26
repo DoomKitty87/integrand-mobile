@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
@@ -9,27 +7,44 @@ import 'package:integrand/schedule.dart';
 
 const String appName = "Integrant";
 
-const Color primaryColor = Color.fromRGBO(13, 13, 13, 1); //HSVO(0, 0, 5, 1)
+const Color backgroundColor = Color.fromRGBO(13, 13, 13, 1); //HSVO(0, 0, 5, 1)
 
+
+enum AppPage {
+  Schedule,
+  Gradebook,
+}
 
 void main() {
   runApp(ChangeNotifierProvider(
     create: (context) => StudentVueAPI(),
-    child: const MaterialApp(
+    child: MaterialApp(
       title: appName,
-      // theme: ThemeData.from(
-      //   colorScheme: ColorScheme(), 
-      //   textTheme: TextTheme(),
-      //   ) 
-      home: Main()
-      ),
+      theme: ThemeData(fontFamily: 'Inter'),
+      home: Container( // BACKGROUND --------------------------------
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [backgroundColor, Color.fromRGBO(12, 11, 14, 1)],
+            begin: Alignment(0.5, -1),
+            end: Alignment(0.5, 1),
+          ),
+        ),
+        child: const Main(),
+      ) // --------------------------------------------
+      ), 
     ),
   );
 }
 
-class Main extends StatelessWidget {
+class Main extends StatefulWidget {
   const Main({super.key});
 
+  @override
+  State<Main> createState() => _MainState();
+}
+
+class _MainState extends State<Main> {
+  
   @override
   Widget build(BuildContext context) {
     // Provider.of<StudentVueAPI>(context, listen: false).initialize(
@@ -37,15 +52,8 @@ class Main extends StatelessWidget {
     //   'username',
     //   'password',
     // );
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [primaryColor, Color.fromRGBO(12, 11, 14, 1)],
-          begin: Alignment(0.5, -1),
-          end: Alignment(0.5, 1),
-        ),
-      ),
-      child: const Schedule(),
+    return const SafeArea(
+      child: Schedule(), 
     );
   }
 }
