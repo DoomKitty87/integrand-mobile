@@ -1,10 +1,10 @@
 import 'package:http/http.dart' as http;
 
-Future<String> RunTest() async {
-  String url = 'https://parent-portland.cascadetech.org/portland';
+Future<String> runTest() async {
+  // String url = 'https://parent-portland.cascadetech.org/portland';
 
-  String username = 'username';
-  String password = 'password';
+  // String username = 'username';
+  // String password = 'password';
 
   Map cookies = <String, String>{};
 
@@ -38,17 +38,17 @@ Future<String> RunTest() async {
 
   // Extract student name from response
 
-  String body = response.body;
+  // String body = response.body;
 
-  RegExp studentNameRegExp =
-      RegExp(r'<span class="tbl_label">Student Name</span><br>(.*?)</td>');
+  // RegExp studentNameRegExp =
+  //     RegExp(r'<span class="tbl_label">Student Name</span><br>(.*?)</td>');
 
   //String studentName = studentNameRegExp.firstMatch(body)!.group(1)!;
-  print(response.body);
+  //print(response.body);
   return response.body;
 }
 
-Future<String> RunTest2() async {
+Future<String> runTest2() async {
   // Get login page
 
   http.Response response = await http.get(
@@ -69,7 +69,7 @@ Future<String> RunTest2() async {
         ifAbsent: () => cookieParts[1]);
   }
 
-  Map login_data = <String, String>{};
+  Map loginData = <String, String>{};
 
   String html = response.body;
 
@@ -82,24 +82,24 @@ Future<String> RunTest2() async {
   RegExp eventValidationRegExp = RegExp(
       r'<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="(.*?)" />');
 
-  login_data['__VIEWSTATE'] = viewStateRegExp.firstMatch(html)!.group(1)!;
-  login_data['__VIEWSTATEGENERATOR'] =
+  loginData['__VIEWSTATE'] = viewStateRegExp.firstMatch(html)!.group(1)!;
+  loginData['__VIEWSTATEGENERATOR'] =
       viewStateGeneratorRegExp.firstMatch(html)!.group(1)!;
-  login_data['__EVENTVALIDATION'] =
+  loginData['__EVENTVALIDATION'] =
       eventValidationRegExp.firstMatch(html)!.group(1)!;
 
-  login_data['ctl00\$MainContent\$username'] = 'username';
+  loginData['ctl00\$MainContent\$username'] = 'username';
 
-  login_data['ctl00\$MainContent\$password'] = 'password';
+  loginData['ctl00\$MainContent\$password'] = 'password';
 
-  login_data['ctl00\$MainContent\$Submit1'] = 'Login';
+  loginData['ctl00\$MainContent\$Submit1'] = 'Login';
 
-  String data = '';
+  //String data = '';
 
-  login_data.forEach((key, value) {
+  loginData.forEach((key, value) {
     key = Uri.encodeQueryComponent(key);
     value = Uri.encodeQueryComponent(value);
-    data += '$key=$value&';
+    //data += '$key=$value&';
   });
 
   String cookiesString = '';
@@ -115,7 +115,7 @@ Future<String> RunTest2() async {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Cookie': cookiesString,
     },
-    body: login_data,
+    body: loginData,
   );
 
   response = await http.get(

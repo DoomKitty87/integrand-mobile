@@ -15,7 +15,7 @@ String parseWebServiceResponse(String body) {
 }
 
 StudentData parseStudent(http.Response response) {
-  string body = response.body;
+  String body = response.body;
 
   body = parseWebServiceResponse(body);
 
@@ -43,8 +43,7 @@ ScheduleData parseSchedule(http.Response response) {
 
   XmlDocument document = XmlDocument.parse(body);
 
-  List<XmlElement> elements =
-      document.findAllElements('ClassListing').toList();
+  List<XmlElement> elements = document.findAllElements('ClassListing').toList();
 
   ScheduleData data = ScheduleData();
 
@@ -84,8 +83,7 @@ int getCurrentReportingPeriod(http.Response response) {
 
   XmlDocument document = XmlDocument.parse(body);
 
-  List<XmlElement> elements =
-      document.findAllElements('ReportPeriod').toList();
+  List<XmlElement> elements = document.findAllElements('ReportPeriod').toList();
 
   int currentPeriod = 0;
 
@@ -123,8 +121,7 @@ GradebookData parseGradebook(http.Response response) {
     XmlElement mark = course.findAllElements('Mark').first;
 
     courseGrading.grade = double.parse(mark.attributes
-        .firstWhere(
-            (attribute) => attribute.name.local == 'CalculatedScoreRaw')
+        .firstWhere((attribute) => attribute.name.local == 'CalculatedScoreRaw')
         .value);
 
     List<XmlElement> assignmentTypes =
@@ -151,8 +148,7 @@ GradebookData parseGradebook(http.Response response) {
       courseGrading.assignmentTypes.add(type);
     }
 
-    List<XmlElement> assignments =
-        mark.findAllElements('Assignment').toList();
+    List<XmlElement> assignments = mark.findAllElements('Assignment').toList();
 
     for (XmlElement assignment in assignments) {
       Assignment a = Assignment();

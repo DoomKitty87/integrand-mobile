@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import '../helpers/time_of_day_helpers.dart';
 
 class Course {
@@ -67,9 +69,11 @@ class BellPeriod {
   bool beforePeriod(TimeOfDay now) {
     return toMinutesTimeOfDay(now) < toMinutesTimeOfDay(startTime);
   }
+
   bool withinPeriod(TimeOfDay now) {
     return isBetweenTimeOfDay(startTime, endTime, now);
   }
+
   bool afterPeriod(TimeOfDay now) {
     return toMinutesTimeOfDay(endTime) < toMinutesTimeOfDay(now);
   }
@@ -82,7 +86,7 @@ class BellSchedule {
     for (var period in periods) {
       if (period.withinPeriod(now) == false) {
         continue;
-      } 
+      }
       return period;
     }
     return null;

@@ -5,7 +5,7 @@ import 'dart:async';
 
 import 'helpers/time_of_day_helpers.dart';
 import 'consts.dart';
-
+import 'backend/data_classes.dart';
 
 // Main Widget
 // ============================================================================================
@@ -18,34 +18,31 @@ class Schedule extends StatefulWidget {
 }
 
 class _ScheduleState extends State<Schedule> {
-  
   bool isPassingPeriod = false;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<StudentVueAPI>(
-      builder: (context, value, child) {
-        
-        // TODO: Get backend here
+    return Consumer<StudentVueAPI>(builder: (context, value, child) {
+      // TODO: Get backend here
 
-        return Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              ScheduleTimeIndicators(
-                isPassingPeriod: isPassingPeriod, 
-                periodEnd: periodEnd,
-              ),
-            ],
-          ),
-        );
-      }
-    );
+      return Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            ScheduleTimeIndicators(
+              isPassingPeriod: isPassingPeriod,
+              periodEnd: periodEnd,
+            ),
+          ],
+        ),
+      );
+    });
   }
 }
 
 class ScheduleTimeIndicators extends StatefulWidget {
-  const ScheduleTimeIndicators({super.key, required this.isPassingPeriod, required this.periodEnd});
+  const ScheduleTimeIndicators(
+      {super.key, required this.isPassingPeriod, required this.periodEnd});
 
   final bool isPassingPeriod;
   final TimeOfDay periodEnd;
@@ -61,7 +58,8 @@ class _ScheduleTimeIndicatorsState extends State<ScheduleTimeIndicators> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) => _update());
+    _timer =
+        Timer.periodic(const Duration(milliseconds: 500), (timer) => _update());
   }
 
   void _update() {
@@ -75,7 +73,7 @@ class _ScheduleTimeIndicatorsState extends State<ScheduleTimeIndicators> {
     _timer.cancel;
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -105,7 +103,7 @@ class _ScheduleTimeIndicatorsState extends State<ScheduleTimeIndicators> {
 
 class ClockTimerHybrid extends StatelessWidget {
   const ClockTimerHybrid({super.key, required this.currentDateTime});
-  
+
   final DateTime currentDateTime;
 
   // TODO: Currently outputs only 12-hour time aka 00:00 AM/PM. Either make this based on device settings or a toggle in the app settings.
@@ -113,7 +111,7 @@ class ClockTimerHybrid extends StatelessWidget {
   Widget build(BuildContext context) {
     String output;
     output = TimeOfDay.fromDateTime(currentDateTime).format(context);
-    
+
     return Text(
       output,
       style: const TextStyle(
@@ -144,7 +142,8 @@ class PeriodIndicator extends StatelessWidget {
 }
 
 class MinutesLeftText extends StatelessWidget {
-  const MinutesLeftText({super.key, required this.isPassingPeriod, required this.periodEndTime});
+  const MinutesLeftText(
+      {super.key, required this.isPassingPeriod, required this.periodEndTime});
 
   final bool isPassingPeriod;
   final TimeOfDay periodEndTime;
@@ -152,13 +151,14 @@ class MinutesLeftText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String textString;
-    
+
     if (isPassingPeriod) {
       textString = "minutes left";
-    }
-    else {
-      int minutesLeft = differenceMinutesTimeOfDay(TimeOfDay.now(), periodEndTime);
-      textString = "${minutesLeft} ${minutesLeft == 1 ? "minute left" : "minutes left"}";
+    } else {
+      int minutesLeft =
+          differenceMinutesTimeOfDay(TimeOfDay.now(), periodEndTime);
+      textString =
+          "${minutesLeft} ${minutesLeft == 1 ? "minute left" : "minutes left"}";
     }
 
     return Text(
@@ -180,19 +180,16 @@ class TimeLeftBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Column(
-      children: [
-
-      ],
+      children: [],
     );
   }
 }
-
 
 class PeriodStartTime extends StatelessWidget {
   const PeriodStartTime({super.key, required this.period});
 
   final BellPeriod period;
-  
+
   @override
   Widget build(BuildContext context) {
     return Text(
