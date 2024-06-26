@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:xml/xml.dart';
 import 'package:http/http.dart' as http;
 
 import 'data_classes.dart';
+import '../helpers/datetime_preparse_helpers.dart';
 
 String parseWebServiceResponse(String body) {
   XmlDocument document = XmlDocument.parse(body);
@@ -91,7 +94,8 @@ int getCurrentReportingPeriod(http.Response response) {
     String startDate = element.attributes
         .firstWhere((attribute) => attribute.name.local == 'StartDate')
         .value;
-
+    
+    startDate = parseXXSlashXXSlashXXXXIntoParsableByDateTime(startDate);
     if (DateTime.parse(startDate).isBefore(DateTime.now())) {
       currentPeriod++;
     }
