@@ -110,6 +110,13 @@ class StudentVueWebData {
   String classSchedule = '';
 }
 
+class StudentData {
+  String name = '';
+  int grade = 0;
+  int studentId = 0;
+  String school = '';
+}
+
 class StudentVueAPI with ChangeNotifier {
   late String baseUrl;
   late String username;
@@ -119,6 +126,7 @@ class StudentVueAPI with ChangeNotifier {
 
   ScheduleData scheduleData = ScheduleData();
   GradebookData gradebookData = GradebookData();
+  StudentData studentData = StudentData();
 
   GPAData gpaData = GPAData();
   BellSchedule bellSchedule = BellSchedule();
@@ -137,6 +145,7 @@ class StudentVueAPI with ChangeNotifier {
     initialized = true;
 
     // Should call data updates here
+    await updateStudent();
     await updateGrades();
     await updateSchedule();
 
@@ -144,6 +153,30 @@ class StudentVueAPI with ChangeNotifier {
     await initializeClientData();
 
     notifyListeners();
+  }
+
+  Future<http.Response> student() async {
+    if (!initialized) {
+      throw Exception('StudentVueAPI not initialized');
+    }
+
+    String url = '$baseUrl/Service/PXPCommunication.asmx';
+
+    Uri uri = Uri.parse(url);
+
+    String xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ProcessWebServiceRequest xmlns="http://edupoint.com/webservices/"><userID>$username</userID><password>$password</password><skipLoginLog>1</skipLoginLog><parent>0</parent><webServiceHandleName>PXPWebServices</webServiceHandleName><methodName>StudentInfo</methodName><paramStr>&lt;Parms&gt;&lt;ChildIntID&gt;0&lt;/ChildIntID&gt;&lt;/Parms&gt;</paramStr></ProcessWebServiceRequest></soap:Body></soap:Envelope>';
+
+    http.Response response = await http.post(
+      uri,
+      headers: {
+        'Content-Type': 'text/xml',
+        'SOAPAction':
+            'http://edupoint.com/webservices/ProcessWebServiceRequest',
+      },
+      body: xml,
+    );
+
+    return response;
   }
 
   Future<http.Response> schedule() async {
@@ -238,6 +271,36 @@ class StudentVueAPI with ChangeNotifier {
     scheduleData = parseSchedule(response);
 
     return scheduleData;
+  }
+
+  Future<StudentData> updateStudent() async {
+    http.Response response = await student();
+
+    studentData = parseStudent(response);
+
+    return studentData;
+  }
+
+  static StudentData parseStudent(http.Response response) {
+    string body = response.body;
+
+    body = parseWebServiceResponse(body);
+
+    XmlDocument document = XmlDocument.parse(body);
+
+    XmlElement name = document.findAllElements('FormattedName').first;
+    XmlElement grade = document.findAllElements('Grade').first;
+    XmlElement studentId = document.findAllElements('PermID').first;
+    XmlElement school = document.findAllElements('CurrentSchool').first;
+
+    StudentData data = StudentData();
+
+    data.name = name.innerText;
+    data.grade = int.parse(grade.innerText);
+    data.studentId = int.parse(studentId.innerText);
+    data.school = school.innerText;
+
+    return data;
   }
 
   static String parseWebServiceResponse(String body) {
