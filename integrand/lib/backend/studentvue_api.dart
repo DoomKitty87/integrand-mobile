@@ -95,6 +95,21 @@ class BellSchedule {
   }
 }
 
+class CourseEntry {
+  String courseTitle = '';
+  int grade = 0;
+  bool isWeighted = false;
+}
+
+class CourseHistory {
+  List<CourseEntry> courses = [];
+}
+
+class StudentVueWebData {
+  String courseHistory = '';
+  String classSchedule = '';
+}
+
 class StudentVueAPI with ChangeNotifier {
   late String baseUrl;
   late String username;
@@ -107,8 +122,11 @@ class StudentVueAPI with ChangeNotifier {
 
   GPAData gpaData = GPAData();
   BellSchedule bellSchedule = BellSchedule();
+  CourseHistory courseHistory = CourseHistory();
 
   String currentCookies = '';
+
+  StudentVueWebData currentWebData = StudentVueWebData();
 
   StudentVueAPI();
 
@@ -119,6 +137,8 @@ class StudentVueAPI with ChangeNotifier {
     initialized = true;
 
     // Should call data updates here
+    await updateGrades();
+    await updateSchedule();
 
     // Updates for data not accessible via SOAP API
     await initializeClientData();
@@ -470,13 +490,43 @@ class StudentVueAPI with ChangeNotifier {
 
     // Logged in, complete all necessary data requests
 
-    GPAData gpaData = await updateGPA();
+    await requestStudentVueWebData();
+
+    GPAData gpaData = updateGPA();
 
     this.gpaData = gpaData;
 
-    BellSchedule bellSchedule = await updateCurrentBellSchedule();
+    BellSchedule bellSchedule = updateCurrentBellSchedule();
 
     this.bellSchedule = bellSchedule;
+
+    CourseHistory courseHistory = updateCourseHistory();
+
+    this.courseHistory = courseHistory;
+  }
+
+  Future<void> requestStudentVueWebData() async {
+    String url = '$baseUrl/PXP2_CourseHistory.aspx?AGU=0';
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Cookie': currentCookies,
+      },
+    );
+
+    currentWebData.courseHistory = removeWhitespace(response.body);
+
+    url = '$baseUrl/PXP2_ClassSchedule.aspx?AGU=0';
+
+    response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Cookie': currentCookies,
+      },
+    );
+
+    currentWebData.classSchedule = removeWhitespace(response.body);
   }
 
   String removeWhitespace(String html) {
@@ -487,18 +537,8 @@ class StudentVueAPI with ChangeNotifier {
         .replaceAll('\r', '');
   }
 
-  Future<GPAData> updateGPA() async {
-    // Send GET request to get GPA
-    String url = '$baseUrl/PXP2_CourseHistory.aspx?AGU=0';
-
-    http.Response response = await http.get(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Cookie': currentCookies,
-      },
-    );
-
-    String html = removeWhitespace(response.body);
+  GPAData updateGPA() {
+    String html = currentWebData.courseHistory;
 
     RegExp gpaRegExp = RegExp(r'<spanclass="gpa-score">(.*?)</span>');
 
@@ -527,17 +567,8 @@ class StudentVueAPI with ChangeNotifier {
     return data;
   }
 
-  Future<BellSchedule> updateCurrentBellSchedule() async {
-    String url = '$baseUrl/PXP2_ClassSchedule.aspx?AGU=0';
-
-    http.Response response = await http.get(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Cookie': currentCookies,
-      },
-    );
-
-    String html = removeWhitespace(response.body);
+  BellSchedule updateCurrentBellSchedule() {
+    String html = currentWebData.classSchedule;
 
     RegExp beginningExp = RegExp(r'startTime">(.*?)</span>');
 
@@ -599,6 +630,66 @@ class StudentVueAPI with ChangeNotifier {
 
         data.periods.insert(i + 1, lunch);
       }
+    }
+
+    return data;
+  }
+
+  int parseGrade(String grade) {
+    if (grade == 'A') {
+      return 4;
+    } else if (grade == 'B') {
+      return 3;
+    } else if (grade == 'C') {
+      return 2;
+    } else if (grade == 'D') {
+      return 1;
+    } else if (grade == 'F') {
+      return 0;
+    } else {
+      return 0;
+    }
+  }
+
+  CourseHistory updateCourseHistory() {
+    String html = currentWebData.courseHistory;
+
+    RegExp courseTitleRegExp = RegExp(r'text: CourseTitle">(.*?)</span>');
+    RegExp courseIdRegExp = RegExp(r'text: CourseID">(.*?)</span>');
+    RegExp gradeRegExp = RegExp(r'text: Mark">(.*?)</span>');
+    RegExp schoolTypeRegExp = RegExp(r'text: CHSType">(.*?)</span>');
+
+    List<String> courseTitles = courseTitleRegExp.allMatches(html).map((e) {
+      return e.group(1)!;
+    }).toList();
+
+    List<String> courseIds = courseIdRegExp.allMatches(html).map((e) {
+      return e.group(1)!;
+    }).toList();
+
+    List<String> grades = gradeRegExp.allMatches(html).map((e) {
+      return e.group(1)!;
+    }).toList();
+
+    List<String> types = schoolTypeRegExp.allMatches(html).map((e) {
+      return e.group(1)!;
+    }).toList();
+
+    CourseHistory data = CourseHistory();
+
+    for (int i = 0; i < courseTitles.length; i++) {
+      if (types[i] != 'HighSchool') {
+        continue;
+      }
+
+      CourseEntry entry = CourseEntry();
+
+      entry.courseTitle = courseTitles[i];
+      entry.grade = parseGrade(grades[i]);
+      entry.isWeighted =
+          courseIds[i].contains('AP') || courseIds[i].contains('IB');
+
+      data.courses.add(entry);
     }
 
     return data;
