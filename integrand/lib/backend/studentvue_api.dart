@@ -64,8 +64,8 @@ class GPAData {
 
 class BellPeriod {
   String period = '';
-  String startTime = '';
-  String endTime = '';
+  TimeOfDay startTime = const TimeOfDay(hour: 0, minute: 0);
+  TimeOfDay endTime = const TimeOfDay(hour: 0, minute: 0);
 }
 
 class BellSchedule {
@@ -534,9 +534,23 @@ class StudentVueAPI with ChangeNotifier {
       BellPeriod period = BellPeriod();
 
       period.period = 'Period ${i + 1}';
-      period.startTime =
+
+      bool isPM = beginnings[i].contains('PM');
+      bool isPMEnd = ends[i].contains('PM');
+
+      String startTime =
           beginnings[i].replaceAll(' AM', '').replaceAll(' PM', '');
-      period.endTime = ends[i].replaceAll(' AM', '').replaceAll(' PM', '');
+      String endTime = ends[i].replaceAll(' AM', '').replaceAll(' PM', '');
+
+      period.startTime = TimeOfDay(
+        hour: int.parse(startTime.split(':')[0]) + (isPM ? 12 : 0),
+        minute: int.parse(startTime.split(':')[1]),
+      );
+
+      period.endTime = TimeOfDay(
+        hour: int.parse(endTime.split(':')[0]) + (isPMEnd ? 12 : 0),
+        minute: int.parse(endTime.split(':')[1]),
+      );
 
       data.periods.add(period);
     }
@@ -548,10 +562,10 @@ class StudentVueAPI with ChangeNotifier {
 
       BellPeriod nextPeriod = data.periods[i + 1];
 
-      int timeDifference = int.parse(nextPeriod.startTime.split(':')[0]) * 60 +
-          int.parse(nextPeriod.startTime.split(':')[1]) -
-          int.parse(period.endTime.split(':')[0]) * 60 -
-          int.parse(period.endTime.split(':')[1]);
+      int timeDifference = nextPeriod.startTime.hour * 60 +
+          nextPeriod.startTime.minute -
+          period.endTime.hour * 60 -
+          period.endTime.minute;
 
       if (timeDifference > 12) {
         BellPeriod lunch = BellPeriod();
