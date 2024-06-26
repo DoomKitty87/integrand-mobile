@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:integrand/backend/studentvue_api.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
+
+import 'helpers/time_of_day_helpers.dart';
 import 'consts.dart';
 
 
@@ -41,21 +43,6 @@ class _ScheduleState extends State<Schedule> {
     );
   }
 }
-
-// ============================================================================================
-
-int toMinutesTimeOfDay(TimeOfDay timeOfDay) {
-  return timeOfDay.hour * 60 + timeOfDay.minute;
-}
-
-int differenceMinutesTimeOfDay(TimeOfDay a, TimeOfDay b) {
-  int aMinutes = toMinutesTimeOfDay(a);
-  int bMinutes = toMinutesTimeOfDay(b);
-  double difference = aMinutes.toDouble() - bMinutes.toDouble();
-  return difference.floor();
-}
-
-// ============================================================================================
 
 class ScheduleTimeIndicators extends StatefulWidget {
   const ScheduleTimeIndicators({super.key, required this.isPassingPeriod, required this.periodEnd});
@@ -185,6 +172,8 @@ class MinutesLeftText extends StatelessWidget {
   }
 }
 
+// TODO: Finish time left bar
+
 class TimeLeftBar extends StatelessWidget {
   const TimeLeftBar({super.key});
 
@@ -200,12 +189,14 @@ class TimeLeftBar extends StatelessWidget {
 
 
 class PeriodStartTime extends StatelessWidget {
-  const PeriodStartTime({super.key});
+  const PeriodStartTime({super.key, required this.period});
 
+  final BellPeriod period;
+  
   @override
   Widget build(BuildContext context) {
-    return const Text(
-
+    return Text(
+      period.startTime.format(context),
       textAlign: TextAlign.center,
     );
   }

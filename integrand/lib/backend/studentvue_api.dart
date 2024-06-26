@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:xml/xml.dart';
+
+import '../helpers/time_of_day_helpers.dart';
 
 class Course {
   String courseTitle = '';
@@ -66,10 +70,29 @@ class BellPeriod {
   String period = '';
   TimeOfDay startTime = const TimeOfDay(hour: 0, minute: 0);
   TimeOfDay endTime = const TimeOfDay(hour: 0, minute: 0);
+  bool beforePeriod(TimeOfDay now) {
+    return toMinutesTimeOfDay(now) < toMinutesTimeOfDay(startTime);
+  }
+  bool withinPeriod(TimeOfDay now) {
+    return isBetweenTimeOfDay(startTime, endTime, now);
+  }
+  bool afterPeriod(TimeOfDay now) {
+    return toMinutesTimeOfDay(endTime) < toMinutesTimeOfDay(now);
+  }
 }
 
 class BellSchedule {
   List<BellPeriod> periods = [];
+
+  BellPeriod? getCurrentPeriod(TimeOfDay now) {
+    for (var period in periods) {
+      if (period.withinPeriod(now) == false) {
+        continue;
+      } 
+      return period;
+    }
+    return null;
+  }
 }
 
 class StudentVueAPI with ChangeNotifier {
