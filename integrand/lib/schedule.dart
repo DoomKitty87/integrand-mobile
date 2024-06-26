@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:integrand/backend/studentvue_api.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
+import 'consts.dart';
+
+
+// Main Widget
+// ============================================================================================
 
 class Schedule extends StatefulWidget {
   const Schedule({super.key});
@@ -14,39 +21,60 @@ class _ScheduleState extends State<Schedule> {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.all(20.0),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
+    return Consumer<StudentVueAPI>(
+      builder: (context, value, child) {
+        
+        // TODO: Get backend here
+
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
             children: [
-              ClockTimerHybrid(),
+              ScheduleTimeIndicators(
+                isPassingPeriod: isPassingPeriod, 
+                periodEnd: periodEnd,
+              ),
             ],
-          )
-        ],
-      ),
+          ),
+        );
+      }
     );
   }
 }
 
-class ClockTimerHybrid extends StatefulWidget {
-  const ClockTimerHybrid({super.key});
+// ============================================================================================
 
-  @override
-  State<ClockTimerHybrid> createState() => _ClockTimerHybridState();
+int toMinutesTimeOfDay(TimeOfDay timeOfDay) {
+  return timeOfDay.hour * 60 + timeOfDay.minute;
 }
 
-class _ClockTimerHybridState extends State<ClockTimerHybrid> {
+int differenceMinutesTimeOfDay(TimeOfDay a, TimeOfDay b) {
+  int aMinutes = toMinutesTimeOfDay(a);
+  int bMinutes = toMinutesTimeOfDay(b);
+  double difference = aMinutes.toDouble() - bMinutes.toDouble();
+  return difference.floor();
+}
 
+// ============================================================================================
+
+class ScheduleTimeIndicators extends StatefulWidget {
+  const ScheduleTimeIndicators({super.key, required this.isPassingPeriod, required this.periodEnd});
+
+  final bool isPassingPeriod;
+  final TimeOfDay periodEnd;
+
+  @override
+  State<ScheduleTimeIndicators> createState() => _ScheduleTimeIndicatorsState();
+}
+
+class _ScheduleTimeIndicatorsState extends State<ScheduleTimeIndicators> {
   late Timer _timer;
   DateTime _dateTime = DateTime.now();
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(milliseconds: 200), (timer) => _update());
+    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) => _update());
   }
 
   void _update() {
@@ -63,12 +91,146 @@ class _ClockTimerHybridState extends State<ClockTimerHybrid> {
   
   @override
   Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ClockTimerHybrid(
+              currentDateTime: _dateTime,
+            ),
+            const PeriodIndicator(indicatorText: "P1"),
+          ],
+        ),
+        Row(
+          children: [
+            MinutesLeftText(
+              isPassingPeriod: widget.isPassingPeriod,
+              periodEndTime: widget.periodEnd,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class ClockTimerHybrid extends StatelessWidget {
+  const ClockTimerHybrid({super.key, required this.currentDateTime});
+  
+  final DateTime currentDateTime;
+
+  // TODO: Currently outputs only 12-hour time aka 00:00 AM/PM. Either make this based on device settings or a toggle in the app settings.
+  @override
+  Widget build(BuildContext context) {
+    String output;
+    output = TimeOfDay.fromDateTime(currentDateTime).format(context);
+    
     return Text(
-      "${_dateTime.minute}:${_dateTime.second}",
+      output,
       style: const TextStyle(
         color: Colors.white,
         fontSize: 48,
+        fontWeight: FontWeight.bold,
       ),
+    );
+  }
+}
+
+class PeriodIndicator extends StatelessWidget {
+  const PeriodIndicator({super.key, required this.indicatorText});
+
+  final String indicatorText;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      indicatorText,
+      textAlign: TextAlign.left,
+      style: const TextStyle(
+        fontSize: 48,
+        fontWeight: FontWeight.normal,
+      ),
+    );
+  }
+}
+
+class MinutesLeftText extends StatelessWidget {
+  const MinutesLeftText({super.key, required this.isPassingPeriod, required this.periodEndTime});
+
+  final bool isPassingPeriod;
+  final TimeOfDay periodEndTime;
+
+  @override
+  Widget build(BuildContext context) {
+    String textString;
+    
+    if (isPassingPeriod) {
+      textString = "minutes left";
+    }
+    else {
+      int minutesLeft = differenceMinutesTimeOfDay(TimeOfDay.now(), periodEndTime);
+      textString = "${minutesLeft} ${minutesLeft == 1 ? "minute left" : "minutes left"}";
+    }
+
+    return Text(
+      textString,
+      textAlign: TextAlign.left,
+      style: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.normal,
+      ),
+    );
+  }
+}
+
+class TimeLeftBar extends StatelessWidget {
+  const TimeLeftBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Column(
+      children: [
+
+      ],
+    );
+  }
+}
+
+
+class PeriodStartTime extends StatelessWidget {
+  const PeriodStartTime({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+
+      textAlign: TextAlign.center,
+    );
+  }
+}
+
+class TimeLeftBarBackground extends StatelessWidget {
+  const TimeLeftBarBackground({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 1,
+          color: textColor,
+        ),
+        Container(
+          height: 1,
+          color: textColor,
+        ),
+        Container(
+          width: 1,
+          color: textColor,
+        ),
+      ],
     );
   }
 }
