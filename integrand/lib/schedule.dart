@@ -397,61 +397,25 @@ class ScheduleDisplay extends StatefulWidget {
 }
 
 class _ScheduleDisplayState extends State<ScheduleDisplay> {
-  final List<TableRow> textChildren = [];
-  final List<TableRow> backgroundChildren = [];
+  final List<Container> textChildren = [];
 
   @override
   Widget build(BuildContext context) {
     return Consumer<StudentVueAPI>(builder: (context, studentVueAPI, child) {
       textChildren.clear();
-      backgroundChildren.clear();
 
       textChildren.clear();
-      backgroundChildren.clear();
 
       // Border element
-      TableRow border = TableRow(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0),
-            child: Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: textColor,
-                    width: 0.1,
-                  ),
-                ),
-              ),
-              child: const SizedBox(
-                height: 0.01,
-              ),
+      Container border = Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: textColor,
+              width: 0.1,
             ),
           ),
-          Container(
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: textColor,
-                  width: 0.1,
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 20.0),
-            child: Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: textColor,
-                    width: 0.1,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+        ),
       );
       textChildren.add(border);
 
@@ -466,10 +430,6 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
         final String name =
             (course == null) ? period.periodName : course.courseTitle;
 
-        final Decoration textDecoration = BoxDecoration(
-          color: isCurrentPeriod ? darkGrey : Colors.transparent,
-        );
-
         const EdgeInsets textPadding = EdgeInsets.only(
           top: 16,
           bottom: 16,
@@ -477,45 +437,51 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
           right: 25.0,
         );
 
-        TableRow nextPeriodText = TableRow(
-          decoration: textDecoration,
-          children: [
-            Padding(
-              padding: textPadding,
-              child: Text(
-                name,
-                style: textStyle,
+        Container nextPeriodText = Container(
+          color: isCurrentPeriod ? darkGrey : Colors.transparent,
+          child: Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: textPadding,
+                  child: Text(
+                    name,
+                    style: textStyle,
+                  ),
+                ),
               ),
-            ),
-            Padding(
-              padding: textPadding,
-              child: Text(
-                removeAMPM(period.startTime.format(context)),
-                style: textStyle,
-                textAlign: TextAlign.right,
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: textPadding,
+                  child: Text(
+                    removeAMPM(period.startTime.format(context)),
+                    style: textStyle,
+                    textAlign: TextAlign.right,
+                  ),
+                ),
               ),
-            ),
-            Padding(
-              padding: textPadding,
-              child: Text(
-                removeAMPM(period.endTime.format(context)),
-                style: textStyle,
-                textAlign: TextAlign.right,
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: textPadding,
+                  child: Text(
+                    removeAMPM(period.endTime.format(context)),
+                    style: textStyle,
+                    textAlign: TextAlign.right,
+                  ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
         textChildren.add(nextPeriodText);
         textChildren.add(border);
       }
 
-      return Table(
+      return Column(
         children: textChildren,
-        columnWidths: const {
-          0: FlexColumnWidth(2),
-          1: FlexColumnWidth(1),
-          2: FlexColumnWidth(1),
-        },
       );
     });
   }
