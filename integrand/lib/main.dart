@@ -60,7 +60,7 @@ class _MainState extends State<Main> {
     // Block app view with loading screen until initialized
 
     return const SafeArea(
-      child: Schedule(), // change this to change page
+      child: Gradebook(), // change this to change page
     );
   }
 }
