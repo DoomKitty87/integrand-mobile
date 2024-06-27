@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:integrand/backend/studentvue_api.dart';
 import 'package:provider/provider.dart';
-import 'package:xml/xml.dart';
-import 'dart:async';
 
-import 'helpers/time_of_day_helpers.dart';
 import 'consts.dart';
-import 'backend/data_classes.dart';
 
 class Gradebook extends StatefulWidget {
   const Gradebook({super.key});

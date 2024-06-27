@@ -454,10 +454,13 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
         );
 
         Container nextPeriodText = Container(
-          color: index == expandedIndex ? Colors.green : (isCurrentPeriod ? darkGrey : Colors.transparent),
+          color: index == expandedIndex
+              ? Colors.green
+              : (isCurrentPeriod ? darkGrey : Colors.transparent),
           child: TextButton(
             onPressed: () => toggleExpanded(index, name),
-            style: TextButton.styleFrom( // TODO: Change onclick visuals
+            style: TextButton.styleFrom(
+              // TODO: Change onclick visuals
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5.0),
               ),
@@ -518,6 +521,23 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
             }
           }
         }
+
+        border = Container(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: textColor,
+                    width: borderWidth,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
         textChildren.add(border);
         i++;
       }
