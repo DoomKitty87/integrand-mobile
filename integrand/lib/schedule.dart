@@ -405,8 +405,8 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
           const EdgeInsets textPadding = EdgeInsets.only(
             top: 14.5,
             bottom: 14.5,
-            left: 20.0,
-            right: 20.0,
+            left: 5.0,
+            right: 5.0,
           );
 
           TableRow nextPeriodText = TableRow(
@@ -444,7 +444,7 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
             Container(
               decoration: backgroundDecoration,
               child: const SizedBox(
-                height: 50,
+                height: 48,
               ),
             )
           ],
@@ -459,13 +459,16 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
               children: backgroundChildren,
             ),
             // Text
-            Table(
-              children: textChildren,
-              columnWidths: const {
-                0: FlexColumnWidth(4),
-                1: FlexColumnWidth(2),
-                2: FlexColumnWidth(2),
-              },
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Table(
+                children: textChildren,
+                columnWidths: const {
+                  0: FlexColumnWidth(4),
+                  1: FlexColumnWidth(2),
+                  2: FlexColumnWidth(2),
+                },
+              ),
             ),
           ]
         );
