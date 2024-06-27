@@ -30,7 +30,7 @@ class _ScheduleState extends State<Schedule> {
 
   void _update() {
     setState(() {
-      _currentTime = testDateTime;
+      _currentTime = DateTime.now();
     });
   }
 
@@ -411,8 +411,6 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
   @override
   Widget build(BuildContext context) {
     return Consumer<StudentVueAPI>(builder: (context, studentVueAPI, child) {
-      textChildren.clear();
-
       textChildren.clear();
 
       // Border element

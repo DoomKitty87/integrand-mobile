@@ -384,7 +384,7 @@ class StudentVueAPI with ChangeNotifier {
         TimeOfDay lunchEnd = nextPeriod.startTime;
 
         // Add 1 minute buffer to help with schedule parsing
-        
+
         if (lunchStart.minute == 59) {
           lunchStart = TimeOfDay(
             hour: lunchStart.hour + 1,

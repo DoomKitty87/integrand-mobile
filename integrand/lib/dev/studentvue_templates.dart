@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'backend/studentvue_api.dart';
+import '../backend/studentvue_api.dart';
 
 class DisplaySchedule extends StatelessWidget {
   const DisplaySchedule({super.key});
