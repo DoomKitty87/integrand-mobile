@@ -66,16 +66,16 @@ class BellPeriod {
   String period = '';
   TimeOfDay startTime = const TimeOfDay(hour: 0, minute: 0);
   TimeOfDay endTime = const TimeOfDay(hour: 0, minute: 0);
-  bool beforePeriod(TimeOfDay now) {
-    return toMinutesTimeOfDay(now) < toMinutesTimeOfDay(startTime);
+  bool willStartAfter(TimeOfDay time) {
+    return toMinutesTimeOfDay(time) < toMinutesTimeOfDay(startTime);
   }
 
-  bool withinPeriod(TimeOfDay now) {
-    return isBetweenTimeOfDay(startTime, endTime, now);
+  bool isHappening(TimeOfDay time) {
+    return isBetweenTimeOfDayInclusive(startTime, endTime, time);
   }
 
-  bool afterPeriod(TimeOfDay now) {
-    return toMinutesTimeOfDay(endTime) < toMinutesTimeOfDay(now);
+  bool endedBefore(TimeOfDay time) {
+    return toMinutesTimeOfDay(endTime) < toMinutesTimeOfDay(time);
   }
 }
 
@@ -84,12 +84,62 @@ class BellSchedule {
 
   BellPeriod? getCurrentPeriod(TimeOfDay now) {
     for (var period in periods) {
-      if (period.withinPeriod(now) == false) {
-        continue;
+      if (period.isHappening(now) == true) {
+        return period;
       }
-      return period;
     }
     return null;
+  }
+
+  BellPeriod? getPreviousPeriod(TimeOfDay now) {
+    if (periods.isEmpty) return null;
+
+    BellPeriod? lastPeriod;
+    for (int i = 0; i < periods.length; i++) {
+      if (periods[i].endedBefore(now)) {
+        lastPeriod = periods[i];
+      }
+    }
+    return lastPeriod;
+  }
+
+  BellPeriod? getNextPeriod(TimeOfDay now) {
+    if (periods.isEmpty) return null;
+
+    for (int i = 0; i < periods.length; i++) {
+      if (periods[i].willStartAfter(now)) {
+        return periods[i];
+      }
+    }
+    return null;
+  }
+
+  (bool, BellPeriod?, BellPeriod?) isPassingPeriod(TimeOfDay now) {
+    if (periods.isEmpty) return (false, null, null);
+    
+    // If within period check
+    for (var period in periods) {
+      if (period.isHappening(now)) {
+        return (false, null, null);
+      }
+    }
+
+    // If after or before school
+    if (isOutsideSchoolHours(now)) {
+      return (false, null, null);
+    }
+
+    return (true, getPreviousPeriod(now), getNextPeriod(now));
+
+  }
+
+  bool isOutsideSchoolHours(TimeOfDay now) {
+    if (periods.isEmpty) return true;
+    
+    if (periods.first.willStartAfter(now) || periods.last.endedBefore(now)) {
+      return true;
+    }
+    return false;
   }
 }
 
