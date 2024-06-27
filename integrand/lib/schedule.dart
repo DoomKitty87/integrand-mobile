@@ -30,7 +30,7 @@ class _ScheduleState extends State<Schedule> {
 
   void _update() {
     setState(() {
-      _currentTime = DateTime.now();
+      _currentTime = testDateTime;
     });
   }
 
@@ -463,7 +463,7 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
         ],
       );
       textChildren.add(border);
-
+      int i = 0;
       for (BellPeriod period in widget.bellSchedule.periods) {
         final bool isCurrentPeriod =
             period.isHappening(TimeOfDay.fromDateTime(widget.currentTime));
@@ -515,7 +515,67 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
           ],
         );
         textChildren.add(nextPeriodText);
+
+        double borderWidth = 0.1;
+
+        if (widget.bellSchedule
+            .isPassingPeriod(TimeOfDay.fromDateTime(widget.currentTime))
+            .$1) {
+          if (i < widget.bellSchedule.periods.length - 1) {
+            // Check if the passing period is between the current period and the next period
+            if (isBetweenTimeOfDayInclusive(
+                widget.bellSchedule.periods[i].endTime,
+                widget.bellSchedule.periods[i + 1].startTime,
+                TimeOfDay.fromDateTime(widget.currentTime))) {
+              borderWidth = 1.5;
+            }
+          }
+        }
+        border = TableRow(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: textColor,
+                      width: borderWidth,
+                    ),
+                  ),
+                ),
+                child: const SizedBox(
+                  height: 0.01,
+                ),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: textColor,
+                    width: borderWidth,
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: textColor,
+                      width: borderWidth,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
         textChildren.add(border);
+        i++;
       }
 
       return Table(
