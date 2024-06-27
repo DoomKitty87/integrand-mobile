@@ -383,15 +383,25 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
       textChildren.clear();
       backgroundChildren.clear();
 
-      // Border element
-      TableRow border = TableRow(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: textColor,
-                  width: 0.1,
+        textChildren.clear();
+        backgroundChildren.clear();
+
+        // Border element
+        TableRow border = TableRow(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 20.0),
+              child: Container(
+                decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: textColor,
+                      width: 0.1,
+                    ),
+                  ),
+                ),
+                child: const SizedBox(
+                  height: 0.01,
                 ),
               ),
             ),
@@ -408,26 +418,25 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                 ),
               ),
             ),
-            child: const SizedBox(
-              height: 0.01,
-            ),
-          ),
-          Container(
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: textColor,
-                  width: 0.1,
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: Container(
+                decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: textColor,
+                      width: 0.1,
+                    ),
+                  ),
+                ),
+                child: const SizedBox(
+                  height: 0.01,
                 ),
               ),
-            ),
-            child: const SizedBox(
-              height: 0.01,
-            ),
           ),
-        ],
-      );
-      textChildren.add(border);
+          ],
+        );
+        textChildren.add(border);
 
       for (BellPeriod period in widget.bellSchedule.periods) {
         final bool isCurrentPeriod =
@@ -437,21 +446,11 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
         final Course? course =
             studentVueAPI.scheduleData.getCourseByPeriod(period.periodName);
 
-        final String name = (course == null) ? "N/A" : course.courseTitle;
-
-        final Decoration textDecoration = BoxDecoration(
-          color: isCurrentPeriod ? darkGrey : Colors.transparent,
-          border: const Border(
-            top: BorderSide(
-              color: textColor,
-              width: 0.0,
-            ),
-            bottom: BorderSide(
-              color: textColor,
-              width: 0.0,
-            ),
-          ),
-        );
+          final String name = (course == null) ? "N/A" : course.courseTitle;
+          
+          final Decoration textDecoration = BoxDecoration(
+            color: isCurrentPeriod ? darkGrey : Colors.transparent,
+          );
 
         const EdgeInsets textPadding = EdgeInsets.only(
           top: 14.5,
