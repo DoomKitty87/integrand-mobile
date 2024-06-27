@@ -214,7 +214,7 @@ class MinutesLeftText extends StatelessWidget {
       minutesLeft = minutesLeft ~/ 60;
 
       textString =
-          "${hours > 0 ? (hours == 1 ? "1 hour and" : "$hours hours") : ""}${hours > 0 && minutesLeft > 0 ? " and" : ""} ${minutesLeft > 0 ? (minutesLeft == 1 ? "1 minute" : "$minutesLeft minutes") : ""} left";
+          "${hours > 0 ? (hours == 1 ? "1 hour and" : "$hours hours") : ""}${hours > 0 && minutesLeft > 0 ? " and " : ""}${minutesLeft > 0 ? (minutesLeft == 1 ? "1 minute" : "$minutesLeft minutes") : ""} left";
     }
 
     return Text(
@@ -265,13 +265,16 @@ class TimeLeftBar extends StatelessWidget {
           ),
         ),
         SizedBox(
-            height: heightPixels,
+            height: heightPixels + 8.0,
             child: Stack(
               clipBehavior: Clip.antiAlias,
               children: [
-                TimeLeftBarBackground(),
-                TimeLeftBarIcon(
-                  currentTime: currentTime,
+                const TimeLeftBarBackground(),
+                Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: TimeLeftBarIcon(
+                    currentTime: currentTime,
+                  ),
                 ),
               ],
             )),
