@@ -63,10 +63,10 @@ class _ScheduleState extends State<Schedule> {
         return Column(
           children: [
             const SizedBox(
-              height: 55.0,
+              height: 35.0,
             ),
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
               child: ScheduleTimeIndicators(
                 bellSchedule: schedule,
                 currentTime: _currentTime,
@@ -74,7 +74,7 @@ class _ScheduleState extends State<Schedule> {
               ),
             ),
             const SizedBox(
-              height: 60,
+              height: 75,
             ),
             ScheduleDisplay(
               bellSchedule: schedule,
@@ -134,7 +134,7 @@ class ScheduleTimeIndicators extends StatelessWidget {
           ],
         ),
         const SizedBox(
-          height: 5,
+          height: 8,
         ),
         Row(
           children: [
@@ -147,7 +147,7 @@ class ScheduleTimeIndicators extends StatelessWidget {
           ],
         ),
         const SizedBox(
-          height: 30,
+          height: 45,
         ),
         TimeLeftBar(
           heightPixels: 20,
@@ -405,10 +405,6 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                 ),
               ),
             ),
-            child: const SizedBox(
-              height: 0.01,
-            ),
-          ),
           Container(
             decoration: const BoxDecoration(
               border: Border(
@@ -418,6 +414,7 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                 ),
               ),
             ),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
             child: Container(
@@ -429,10 +426,7 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                     ),
                   ),
                 ),
-                child: const SizedBox(
-                  height: 0.01,
-                ),
-              ),
+            ),
           ),
           ],
         );
@@ -453,8 +447,8 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
           );
 
         const EdgeInsets textPadding = EdgeInsets.only(
-          top: 14.5,
-          bottom: 14.5,
+          top: 16,
+          bottom: 16,
           left: 25.0,
           right: 25.0,
         );
