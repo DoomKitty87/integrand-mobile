@@ -286,6 +286,7 @@ class TimeLeftBarBackground extends StatelessWidget {
       children: [
         Container(
           width: 1,
+          height: 12,
           color: textColor,
         ),
         Expanded(
@@ -296,6 +297,7 @@ class TimeLeftBarBackground extends StatelessWidget {
         ),
         Container(
           width: 1,
+          height: 12,
           color: textColor,
         ),
       ],
@@ -322,7 +324,7 @@ class TimeLeftBarIcon extends StatelessWidget {
               width: 1,
             ),
           ),
-          constraints: BoxConstraints(minHeight: 5),
+          constraints: const BoxConstraints(minHeight: 5),
         ),
 
         TimeText(
