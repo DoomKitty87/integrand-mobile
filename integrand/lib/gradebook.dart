@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:integrand/backend/studentvue_api.dart';
 import 'package:provider/provider.dart';
+import 'package:xml/xml.dart';
 import 'dart:async';
 
 import 'helpers/time_of_day_helpers.dart';
@@ -171,19 +172,27 @@ class _GradebookDisplayState extends State<GradebookDisplay> {
       children.add(border);
 
       for (var course in value.gradebookData.courses) {
+        RegExp getTitle = RegExp(r" [(](.*?)[)]");
+        String title = course.courseTitle.replaceFirst(
+            getTitle.firstMatch(course.courseTitle)!.group(0).toString(), '');
+
+        double grade = course.grade;
+
+        if (grade > 10) grade /= 25;
+
         children.add(TableRow(
           children: [
             Padding(
               padding: textPadding,
-              child: Text(course.courseTitle, style: bodyStyle),
+              child: Text(title, style: bodyStyle),
             ),
             Padding(
               padding: textPadding,
-              child: Text(parseGradeToLetter(course.grade), style: bodyStyle),
+              child: Text(parseGradeToLetter(grade), style: bodyStyle),
             ),
             Padding(
               padding: textPadding,
-              child: Text(course.grade.toString(),
+              child: Text(grade.toString(),
                   style: bodyStyle, textAlign: TextAlign.right),
             ),
           ],
