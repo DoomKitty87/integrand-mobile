@@ -417,11 +417,16 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
 
       // Border element
       Container border = Container(
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: textColor,
-              width: 0.1,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+          child: Container(
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: textColor,
+                  width: 0.1,
+                ),
+              ),
             ),
           ),
         ),
@@ -440,49 +445,58 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
             (course == null) ? period.periodName : course.courseTitle;
 
         const EdgeInsets textPadding = EdgeInsets.only(
-          top: 16,
-          bottom: 16,
+          top: 14,
+          bottom: 14,
           left: 25.0,
           right: 25.0,
         );
 
         Container nextPeriodText = Container(
           color: isCurrentPeriod ? darkGrey : Colors.transparent,
-          child: Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Padding(
-                  padding: textPadding,
-                  child: Text(
-                    name,
-                    style: textStyle,
+          child: TextButton(
+            onPressed: () {},
+            style: TextButton.styleFrom( // TODO: Change onclick visuals
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
+              ),
+              padding: EdgeInsets.zero,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: textPadding,
+                    child: Text(
+                      name,
+                      style: textStyle,
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Padding(
-                  padding: textPadding,
-                  child: Text(
-                    removeAMPM(period.startTime.format(context)),
-                    style: textStyle,
-                    textAlign: TextAlign.right,
+                Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding: textPadding,
+                    child: Text(
+                      removeAMPM(period.startTime.format(context)),
+                      style: textStyle,
+                      textAlign: TextAlign.right,
+                    ),
                   ),
                 ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Padding(
-                  padding: textPadding,
-                  child: Text(
-                    removeAMPM(period.endTime.format(context)),
-                    style: textStyle,
-                    textAlign: TextAlign.right,
+                Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding: textPadding,
+                    child: Text(
+                      removeAMPM(period.endTime.format(context)),
+                      style: textStyle,
+                      textAlign: TextAlign.right,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
         textChildren.add(nextPeriodText);
