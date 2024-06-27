@@ -6,13 +6,13 @@ import 'backend/studentvue_api.dart';
 import 'package:integrand/schedule.dart';
 import 'consts.dart';
 
-
 enum AppPage {
   schedule,
   gradebook,
 }
 
 void main() {
+
   runApp(ChangeNotifierProvider(
     create: (context) => StudentVueAPI(),
     child: MaterialApp(
@@ -52,7 +52,7 @@ class _MainState extends State<Main> {
   Widget build(BuildContext context) {
     Provider.of<StudentVueAPI>(context, listen: false).initialize(
       'https://parent-portland.cascadetech.org/portland',
-      'username',
+      'username', 
       'password',
     );
     return const SafeArea(

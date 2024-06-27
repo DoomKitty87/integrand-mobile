@@ -336,7 +336,7 @@ class StudentVueAPI with ChangeNotifier {
     for (int i = 0; i < beginnings.length; i++) {
       BellPeriod period = BellPeriod();
 
-      period.period = 'Period ${i + 1}';
+      period.periodName = 'Period ${i + 1}';
 
       bool isPM = beginnings[i].contains('PM');
       bool isPMEnd = ends[i].contains('PM');
@@ -373,7 +373,7 @@ class StudentVueAPI with ChangeNotifier {
       if (timeDifference > 12) {
         BellPeriod lunch = BellPeriod();
 
-        lunch.period = 'Lunch';
+        lunch.periodName = 'Lunch';
         lunch.startTime = period.endTime;
         lunch.endTime = nextPeriod.startTime;
 

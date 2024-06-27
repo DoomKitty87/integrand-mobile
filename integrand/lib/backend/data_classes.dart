@@ -63,9 +63,13 @@ class GPAData {
 }
 
 class BellPeriod {
-  String period = '';
+  String periodName = '';
   TimeOfDay startTime = const TimeOfDay(hour: 0, minute: 0);
   TimeOfDay endTime = const TimeOfDay(hour: 0, minute: 0);
+
+  BellPeriod();
+  BellPeriod.withValues({required this.periodName, required this.startTime, required this.endTime});
+
   bool willStartAfter(TimeOfDay time) {
     return toMinutesTimeOfDay(time) < toMinutesTimeOfDay(startTime);
   }
@@ -81,6 +85,9 @@ class BellPeriod {
 
 class BellSchedule {
   List<BellPeriod> periods = [];
+
+  BellSchedule();
+  BellSchedule.withValues({required this.periods});
 
   BellPeriod? getCurrentPeriod(TimeOfDay now) {
     for (var period in periods) {
