@@ -30,7 +30,7 @@ class _ScheduleState extends State<Schedule> {
 
   void _update() {
     setState(() {
-      _currentTime = testDateTime;
+      _currentTime = DateTime.now();
     });
   }
 
@@ -143,7 +143,7 @@ class ScheduleTimeIndicators extends StatelessWidget {
               isPassingPeriod: bellSchedule
                   .isPassingPeriod(TimeOfDay.fromDateTime(currentTime))
                   .$1,
-              endTime: periodEnd,
+              endTime: endTime,
             ),
           ],
         ),
@@ -231,9 +231,8 @@ class MinutesLeftText extends StatelessWidget {
       int minutesLeft = differenceMinutesTimeOfDay(endTime, TimeOfDay.now());
 
       // Hours
-      int hours = minutesLeft % 60;
-      minutesLeft = minutesLeft ~/ 60;
-
+      int hours = minutesLeft ~/ 60;
+      minutesLeft = minutesLeft % 60;
       textString =
           "${hours > 0 ? (hours == 1 ? "1 hour and" : "$hours hours") : ""}${hours > 0 && minutesLeft > 0 ? " and " : ""}${minutesLeft > 0 ? (minutesLeft == 1 ? "1 minute" : "$minutesLeft minutes") : ""} left";
     }
