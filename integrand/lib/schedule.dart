@@ -502,49 +502,6 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
             }
           }
         }
-        border = TableRow(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: textColor,
-                      width: borderWidth,
-                    ),
-                  ),
-                ),
-                child: const SizedBox(
-                  height: 0.01,
-                ),
-              ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: textColor,
-                    width: borderWidth,
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 20.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: textColor,
-                      width: borderWidth,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
         textChildren.add(border);
         i++;
       }
