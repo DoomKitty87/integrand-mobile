@@ -319,9 +319,15 @@ class StudentVueAPI with ChangeNotifier {
   BellSchedule updateCurrentBellSchedule() {
     String html = currentWebData.classSchedule;
 
+    RegExp periodExp = RegExp(r'0(.):');
+
     RegExp beginningExp = RegExp(r'startTime">(.*?)</span>');
 
     RegExp endExp = RegExp(r'endTime">(.*?)</span>');
+
+    List<String> periods = periodExp.allMatches(html).map((e) {
+      return e.group(1)!;
+    }).toList();
 
     List<String> beginnings = beginningExp.allMatches(html).map((e) {
       return e.group(1)!;
@@ -336,7 +342,7 @@ class StudentVueAPI with ChangeNotifier {
     for (int i = 0; i < beginnings.length; i++) {
       BellPeriod period = BellPeriod();
 
-      period.periodName = 'Period ${i + 1}';
+      period.periodName = periods[i];
 
       bool isPM = beginnings[i].contains('PM');
       bool isPMEnd = ends[i].contains('PM');
@@ -373,9 +379,39 @@ class StudentVueAPI with ChangeNotifier {
       if (timeDifference > 12) {
         BellPeriod lunch = BellPeriod();
 
+        TimeOfDay lunchStart = period.endTime;
+
+        TimeOfDay lunchEnd = nextPeriod.startTime;
+
+        // Add 1 minute buffer to help with schedule parsing
+        
+        if (lunchStart.minute == 59) {
+          lunchStart = TimeOfDay(
+            hour: lunchStart.hour + 1,
+            minute: 0,
+          );
+        } else {
+          lunchStart = TimeOfDay(
+            hour: lunchStart.hour,
+            minute: lunchStart.minute + 1,
+          );
+        }
+
+        if (lunchEnd.minute == 0) {
+          lunchEnd = TimeOfDay(
+            hour: lunchEnd.hour - 1,
+            minute: 59,
+          );
+        } else {
+          lunchEnd = TimeOfDay(
+            hour: lunchEnd.hour,
+            minute: lunchEnd.minute - 1,
+          );
+        }
+
         lunch.periodName = 'Lunch';
-        lunch.startTime = period.endTime;
-        lunch.endTime = nextPeriod.startTime;
+        lunch.startTime = lunchStart;
+        lunch.endTime = lunchEnd;
 
         data.periods.insert(i + 1, lunch);
       }

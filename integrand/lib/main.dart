@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'backend/studentvue_api.dart';
-
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:integrand/schedule.dart';
 import 'consts.dart';
 
@@ -20,6 +19,7 @@ void main() {
       theme: ThemeData(fontFamily: 'Inter'),
       home: DefaultTextStyle(
         style: const TextStyle(
+          fontFamily: 'Inter',
           color: textColor,
           decoration: TextDecoration.none
         ),
@@ -50,13 +50,17 @@ class _MainState extends State<Main> {
   
   @override
   Widget build(BuildContext context) {
-    Provider.of<StudentVueAPI>(context, listen: false).initialize(
-      'https://parent-portland.cascadetech.org/portland',
-      'username', 
-      'password',
-    );
+    // Provider.of<StudentVueAPI>(context, listen: false).initialize(
+    //   'https://parent-portland.cascadetech.org/portland',
+    //   'username',
+    //   'password',
+    // );
+
+    // TODO: Somewhere in here, add a block to check for studentVueAPI.initialized
+    // Block app view with loading screen until initialized
+
     return const SafeArea(
-      child: Schedule(), 
+      child: Schedule(), // change this to change page
     );
   }
 }

@@ -12,6 +12,15 @@ class Course {
 
 class ScheduleData {
   List<Course> courses = [];
+
+  Course? getCourseByPeriod(String period) {
+    for (var course in courses) {
+      if (course.period == period) {
+        return course;
+      }
+    }
+    return null;
+  }
 }
 
 class Assignment {
