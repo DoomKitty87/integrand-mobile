@@ -127,6 +127,7 @@ class ScheduleTimeIndicators extends StatelessWidget {
           children: [
             ClockTimerHybrid(
               currentDateTime: currentTime,
+              bellSchedule: bellSchedule,
             ),
             PeriodIndicator(
               indicatorText: indicatorText,
@@ -161,15 +162,35 @@ class ScheduleTimeIndicators extends StatelessWidget {
 }
 
 class ClockTimerHybrid extends StatelessWidget {
-  const ClockTimerHybrid({super.key, required this.currentDateTime});
+  const ClockTimerHybrid(
+      {super.key, required this.currentDateTime, required this.bellSchedule});
 
   final DateTime currentDateTime;
+  final BellSchedule bellSchedule;
 
   // TODO: Currently outputs only 12-hour time aka 00:00 AM/PM. Either make this based on device settings or a toggle in the app settings.
   @override
   Widget build(BuildContext context) {
     String output;
-    output = TimeOfDay.fromDateTime(currentDateTime).format(context);
+
+    var info =
+        bellSchedule.isPassingPeriod(TimeOfDay.fromDateTime(currentDateTime));
+    if (info.$1) {
+      int minutesLeft = differenceMinutesTimeOfDay(
+              info.$3!.startTime, TimeOfDay.fromDateTime(currentDateTime)) -
+          1;
+
+      int secondsLeft = 60 - currentDateTime.second;
+
+      if (secondsLeft == 60) {
+        secondsLeft = 0;
+        minutesLeft++;
+      }
+
+      output = "$minutesLeft:$secondsLeft";
+    } else {
+      output = TimeOfDay.fromDateTime(currentDateTime).format(context);
+    }
 
     return Text(
       output,
@@ -386,28 +407,28 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
       textChildren.clear();
       backgroundChildren.clear();
 
-        textChildren.clear();
-        backgroundChildren.clear();
+      textChildren.clear();
+      backgroundChildren.clear();
 
-        // Border element
-        TableRow border = TableRow(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Container(
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: textColor,
-                      width: 0.1,
-                    ),
+      // Border element
+      TableRow border = TableRow(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: Container(
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: textColor,
+                    width: 0.1,
                   ),
                 ),
-                child: const SizedBox(
-                  height: 0.01,
-                ),
+              ),
+              child: const SizedBox(
+                height: 0.01,
               ),
             ),
+          ),
           Container(
             decoration: const BoxDecoration(
               border: Border(
@@ -421,19 +442,19 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
             child: Container(
-                decoration: const BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: textColor,
-                      width: 0.1,
-                    ),
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: textColor,
+                    width: 0.1,
                   ),
                 ),
+              ),
             ),
           ),
-          ],
-        );
-        textChildren.add(border);
+        ],
+      );
+      textChildren.add(border);
 
       for (BellPeriod period in widget.bellSchedule.periods) {
         final bool isCurrentPeriod =
@@ -443,11 +464,12 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
         final Course? course =
             studentVueAPI.scheduleData.getCourseByPeriod(period.periodName);
 
-          final String name = (course == null) ? "N/A" : course.courseTitle;
-          
-          final Decoration textDecoration = BoxDecoration(
-            color: isCurrentPeriod ? darkGrey : Colors.transparent,
-          );
+        final String name =
+            (course == null) ? period.periodName : course.courseTitle;
+
+        final Decoration textDecoration = BoxDecoration(
+          color: isCurrentPeriod ? darkGrey : Colors.transparent,
+        );
 
         const EdgeInsets textPadding = EdgeInsets.only(
           top: 16,
