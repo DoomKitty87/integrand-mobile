@@ -4,6 +4,7 @@ import 'backend/studentvue_api.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:integrand/schedule.dart';
 import 'package:integrand/gradebook.dart';
+import 'package:integrand/intake.dart';
 import 'consts.dart';
 
 enum AppPage {
@@ -50,11 +51,11 @@ class Main extends StatefulWidget {
 class _MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
-    Provider.of<StudentVueAPI>(context, listen: false).initialize(
-      'https://parent-portland.cascadetech.org/portland',
-      'username',
-      'password',
-    );
+    // Provider.of<StudentVueAPI>(context, listen: false).initialize(
+    //   'https://parent-portland.cascadetech.org/portland',
+    //   'username',
+    //   'password',
+    // );
 
     // TODO: Somewhere in here, add a block to check for studentVueAPI.initialized
     // Block app view with loading screen until initialized

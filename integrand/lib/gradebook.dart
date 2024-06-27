@@ -14,16 +14,16 @@ class Gradebook extends StatefulWidget {
 class _GradebookState extends State<Gradebook> {
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       children: [
-        const SizedBox(
+        SizedBox(
           height: 35.0,
         ),
         Padding(
-          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+          padding: EdgeInsets.only(left: 20.0, right: 20.0),
           child: GPADisplay(),
         ),
-        const SizedBox(
+        SizedBox(
           height: 75.0,
         ),
         GradebookDisplay(),

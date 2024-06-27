@@ -7,11 +7,23 @@ const Color backgroundColor = Color.fromRGBO(13, 13, 13, 1); //HSVO(0, 0, 5, 1)
 const Color textColor = Color.fromRGBO(224, 224, 224, 1);
 const Color darkGrey = Color.fromRGBO(50, 50, 50, 1);
 
+const Gradient textGradient = LinearGradient(
+  colors: [Color.fromRGBO(5, 62, 148, 1), Color.fromRGBO(122, 61, 143, 1)],
+);
+
 const TextStyle titleStyle = TextStyle(
   color: textColor,
   fontSize: 48,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
+);
+
+TextStyle titleStyleWithGradient = TextStyle(
+  fontSize: 48,
+  fontWeight: FontWeight.bold,
+  fontFamily: "Inter",
+  foreground: Paint()
+    ..shader = textGradient.createShader(const Rect.fromLTWH(0, 0, 300, 70)),
 );
 
 const TextStyle subtitleStyle = TextStyle(
@@ -23,6 +35,13 @@ const TextStyle subtitleStyle = TextStyle(
 
 const TextStyle bodyStyle = TextStyle(
   color: textColor,
+  fontSize: 16,
+  fontWeight: FontWeight.normal,
+  fontFamily: "Inter",
+);
+
+TextStyle bodyStyleSubdued = TextStyle(
+  color: textColor.withOpacity(0.5),
   fontSize: 16,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
@@ -40,6 +59,16 @@ const TextStyle smallBodyStyle = TextStyle(
   fontSize: 12,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
+);
+
+ButtonStyle buttonStyle = ButtonStyle(
+  backgroundColor: const WidgetStatePropertyAll(darkGrey),
+  fixedSize: const WidgetStatePropertyAll(Size(5000, 50)),
+  shape: WidgetStatePropertyAll(
+    RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(10),
+    ),
+  ),
 );
 
 // For testing
