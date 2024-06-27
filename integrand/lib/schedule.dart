@@ -42,57 +42,57 @@ class _ScheduleState extends State<Schedule> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<StudentVueAPI>(
-      builder: (context, value, child) {
-        
-        // TODO: Uncomment this when school starts lmao
-        // BellSchedule schedule = value.bellSchedule;
+    return Consumer<StudentVueAPI>(builder: (context, value, child) {
+      // TODO: Uncomment this when school starts lmao
+      // BellSchedule schedule = value.bellSchedule;
 
-        BellSchedule schedule = testASchedule;
-        if (schedule.isOutsideSchoolHours(TimeOfDay.fromDateTime(_currentTime))) {
-          return const Padding(
-            padding: EdgeInsets.all(20.0),
-            child: Center(
-              child: Text(
-                "No school today.",
-                style: TextStyle(
-                  fontSize: 16,
-                ),
+      BellSchedule schedule = testASchedule;
+      if (schedule.isOutsideSchoolHours(TimeOfDay.fromDateTime(_currentTime))) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(
+            child: Text(
+              "No school today.",
+              style: TextStyle(
+                fontSize: 16,
               ),
             ),
-          );
-        }
-        else {
-          return Column(
-            children: [
-              const SizedBox(
-                height: 55.0,
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: ScheduleTimeIndicators(
-                  bellSchedule: schedule,
-                  currentTime: _currentTime,
-                  periodNameToIndicatorMap: periodNameToIndicator,
-                ),
-              ),
-              const SizedBox(
-                height: 60,
-              ),
-              ScheduleDisplay(
+          ),
+        );
+      } else {
+        return Column(
+          children: [
+            const SizedBox(
+              height: 55.0,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: ScheduleTimeIndicators(
                 bellSchedule: schedule,
                 currentTime: _currentTime,
+                periodNameToIndicatorMap: periodNameToIndicator,
               ),
-            ],
-          );
-        }
-      } 
-    );
+            ),
+            const SizedBox(
+              height: 60,
+            ),
+            ScheduleDisplay(
+              bellSchedule: schedule,
+              currentTime: _currentTime,
+            ),
+          ],
+        );
+      }
+    });
   }
 }
 
 class ScheduleTimeIndicators extends StatelessWidget {
-  const ScheduleTimeIndicators({super.key, required this.bellSchedule, required this.periodNameToIndicatorMap, required this.currentTime});
+  const ScheduleTimeIndicators(
+      {super.key,
+      required this.bellSchedule,
+      required this.periodNameToIndicatorMap,
+      required this.currentTime});
 
   final BellSchedule bellSchedule;
   final Map periodNameToIndicatorMap;
@@ -100,20 +100,20 @@ class ScheduleTimeIndicators extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     TimeOfDay startTime;
     TimeOfDay endTime;
     String indicatorText;
-    
-    var data = bellSchedule.isPassingPeriod(TimeOfDay.fromDateTime(currentTime));
-    
+
+    var data =
+        bellSchedule.isPassingPeriod(TimeOfDay.fromDateTime(currentTime));
+
     if (data.$1 == true) {
       startTime = data.$2!.endTime;
       endTime = data.$3!.startTime;
       indicatorText = periodNameToIndicatorMap[""]; // Passing period indicator
-    }
-    else {
-      BellPeriod period = bellSchedule.getCurrentPeriod(TimeOfDay.fromDateTime(currentTime))!;
+    } else {
+      BellPeriod period =
+          bellSchedule.getCurrentPeriod(TimeOfDay.fromDateTime(currentTime))!;
       startTime = period.startTime;
       endTime = period.endTime;
       indicatorText = periodNameToIndicatorMap[period.periodName];
@@ -139,7 +139,9 @@ class ScheduleTimeIndicators extends StatelessWidget {
         Row(
           children: [
             MinutesLeftText(
-              isPassingPeriod: bellSchedule.isPassingPeriod(TimeOfDay.fromDateTime(currentTime)).$1,
+              isPassingPeriod: bellSchedule
+                  .isPassingPeriod(TimeOfDay.fromDateTime(currentTime))
+                  .$1,
               endTime: periodEnd,
             ),
           ],
@@ -177,7 +179,6 @@ class ClockTimerHybrid extends StatelessWidget {
 }
 
 class PeriodIndicator extends StatelessWidget {
-
   const PeriodIndicator({super.key, required this.indicatorText});
 
   final String indicatorText;
@@ -205,15 +206,15 @@ class MinutesLeftText extends StatelessWidget {
 
     if (isPassingPeriod) {
       textString = "minutes left";
-    } 
-    else {
+    } else {
       int minutesLeft = differenceMinutesTimeOfDay(endTime, TimeOfDay.now());
-      
+
       // Hours
       int hours = minutesLeft % 60;
       minutesLeft = minutesLeft ~/ 60;
 
-      textString = "${hours > 0 ? (hours == 1 ? "1 hour and" : "$hours hours and") : ""} ${minutesLeft > 0 ? (minutesLeft == 1 ? "1 minute" : "$minutesLeft minutes") : ""} left";
+      textString =
+          "${hours > 0 ? (hours == 1 ? "1 hour and" : "$hours hours") : ""}${hours > 0 && minutesLeft > 0 ? " and" : ""} ${minutesLeft > 0 ? (minutesLeft == 1 ? "1 minute" : "$minutesLeft minutes") : ""} left";
     }
 
     return Text(
@@ -227,7 +228,12 @@ class MinutesLeftText extends StatelessWidget {
 // TODO: Finish time left bar
 
 class TimeLeftBar extends StatelessWidget {
-  const TimeLeftBar({super.key, required this.heightPixels, required this.startTime, required this.currentTime, required this.endTime});
+  const TimeLeftBar(
+      {super.key,
+      required this.heightPixels,
+      required this.startTime,
+      required this.currentTime,
+      required this.endTime});
 
   final TimeOfDay startTime;
   final TimeOfDay currentTime;
@@ -259,17 +265,16 @@ class TimeLeftBar extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: heightPixels,
-          child: Stack(
-            clipBehavior: Clip.antiAlias,
-            children: [
-              TimeLeftBarBackground(),
-              TimeLeftBarIcon(
-                currentTime: currentTime,
-              ),
-            ],
-          )
-        ),
+            height: heightPixels,
+            child: Stack(
+              clipBehavior: Clip.antiAlias,
+              children: [
+                TimeLeftBarBackground(),
+                TimeLeftBarIcon(
+                  currentTime: currentTime,
+                ),
+              ],
+            )),
       ],
     );
   }
@@ -315,7 +320,7 @@ class TimeLeftBarIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container( 
+        Container(
           decoration: BoxDecoration(
             color: backgroundColor,
             shape: BoxShape.circle,
@@ -326,7 +331,6 @@ class TimeLeftBarIcon extends StatelessWidget {
           ),
           constraints: const BoxConstraints(minHeight: 5),
         ),
-
         TimeText(
           time: currentTime,
           textAlign: TextAlign.center,
@@ -359,7 +363,8 @@ String removeAMPM(String time) {
 }
 
 class ScheduleDisplay extends StatefulWidget {
-  const ScheduleDisplay({super.key, required this.bellSchedule, required this.currentTime});
+  const ScheduleDisplay(
+      {super.key, required this.bellSchedule, required this.currentTime});
 
   final BellSchedule bellSchedule;
   final DateTime currentTime;
@@ -369,135 +374,132 @@ class ScheduleDisplay extends StatefulWidget {
 }
 
 class _ScheduleDisplayState extends State<ScheduleDisplay> {
-  
   final List<TableRow> textChildren = [];
   final List<TableRow> backgroundChildren = [];
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<StudentVueAPI>(
-      builder: (context, studentVueAPI, child) {
+    return Consumer<StudentVueAPI>(builder: (context, studentVueAPI, child) {
+      textChildren.clear();
+      backgroundChildren.clear();
 
-        textChildren.clear();
-        backgroundChildren.clear();
-
-        // Border element
-        TableRow border = TableRow(
-          children: [
-            Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: textColor,
-                    width: 0.1,
-                  ),
-                ),
-              ),
-              child: const SizedBox(
-                height: 0.01,
-              ),
-            ),
-            Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: textColor,
-                    width: 0.1,
-                  ),
-                ),
-              ),
-              child: const SizedBox(
-                height: 0.01,
-              ),
-            ),
+      // Border element
+      TableRow border = TableRow(
+        children: [
           Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: textColor,
-                    width: 0.1,
-                  ),
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: textColor,
+                  width: 0.1,
                 ),
               ),
-              child: const SizedBox(
-                height: 0.01,
+            ),
+            child: const SizedBox(
+              height: 0.01,
+            ),
+          ),
+          Container(
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: textColor,
+                  width: 0.1,
+                ),
+              ),
+            ),
+            child: const SizedBox(
+              height: 0.01,
+            ),
+          ),
+          Container(
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: textColor,
+                  width: 0.1,
+                ),
+              ),
+            ),
+            child: const SizedBox(
+              height: 0.01,
+            ),
+          ),
+        ],
+      );
+      textChildren.add(border);
+
+      for (BellPeriod period in widget.bellSchedule.periods) {
+        final bool isCurrentPeriod =
+            period.isHappening(TimeOfDay.fromDateTime(widget.currentTime));
+        final TextStyle textStyle = isCurrentPeriod ? boldBodyStyle : bodyStyle;
+
+        final Course? course =
+            studentVueAPI.scheduleData.getCourseByPeriod(period.periodName);
+
+        final String name = (course == null) ? "N/A" : course.courseTitle;
+
+        final Decoration textDecoration = BoxDecoration(
+          color: isCurrentPeriod ? darkGrey : Colors.transparent,
+          border: const Border(
+            top: BorderSide(
+              color: textColor,
+              width: 0.0,
+            ),
+            bottom: BorderSide(
+              color: textColor,
+              width: 0.0,
+            ),
+          ),
+        );
+
+        const EdgeInsets textPadding = EdgeInsets.only(
+          top: 14.5,
+          bottom: 14.5,
+          left: 25.0,
+          right: 25.0,
+        );
+
+        TableRow nextPeriodText = TableRow(
+          decoration: textDecoration,
+          children: [
+            Padding(
+              padding: textPadding,
+              child: Text(
+                name,
+                style: textStyle,
+              ),
+            ),
+            Padding(
+              padding: textPadding,
+              child: Text(
+                removeAMPM(period.startTime.format(context)),
+                style: textStyle,
+                textAlign: TextAlign.right,
+              ),
+            ),
+            Padding(
+              padding: textPadding,
+              child: Text(
+                removeAMPM(period.endTime.format(context)),
+                style: textStyle,
+                textAlign: TextAlign.right,
               ),
             ),
           ],
         );
-        textChildren.add(border);
-
-        for (BellPeriod period in widget.bellSchedule.periods) {
-          
-          final bool isCurrentPeriod = period.isHappening(TimeOfDay.fromDateTime(widget.currentTime));
-          final TextStyle textStyle = isCurrentPeriod ? boldBodyStyle : bodyStyle;
-
-          final Course? course = studentVueAPI.scheduleData.getCourseByPeriod(period.periodName);
-
-          final String name = (course == null) ? "N/A" : course.courseTitle;
-          
-          final Decoration textDecoration = BoxDecoration(
-            color: isCurrentPeriod ? darkGrey : Colors.transparent,
-            border: const Border(
-              top: BorderSide(
-                color: textColor,
-                width: 0.0,
-              ),
-              bottom: BorderSide(
-                color: textColor,
-                width: 0.0,
-              ),
-            ),
-          );
-
-          const EdgeInsets textPadding = EdgeInsets.only(
-            top: 14.5,
-            bottom: 14.5,
-            left: 25.0,
-            right: 25.0,
-          );
-
-          TableRow nextPeriodText = TableRow(
-            decoration: textDecoration,
-            children: [
-              Padding(
-                padding: textPadding,
-                child: Text(
-                  name,
-                  style: textStyle,
-                ),
-              ),
-              Padding(
-                padding: textPadding,
-                child: Text(
-                  removeAMPM(period.startTime.format(context)),
-                  style: textStyle,
-                  textAlign: TextAlign.right,
-                ),
-              ),
-              Padding(
-                padding: textPadding,
-                child: Text(
-                  removeAMPM(period.endTime.format(context)),
-                  style: textStyle,
-                  textAlign: TextAlign.right,
-                ),
-              ), 
-            ],
-        );
         textChildren.add(nextPeriodText);
         textChildren.add(border);
-        }
-
-        return Table(
-          children: textChildren,
-          columnWidths: const {
-            0: FlexColumnWidth(2),
-            1: FlexColumnWidth(1),
-            2: FlexColumnWidth(1),
-          },
-        );
       }
-    );
+
+      return Table(
+        children: textChildren,
+        columnWidths: const {
+          0: FlexColumnWidth(2),
+          1: FlexColumnWidth(1),
+          2: FlexColumnWidth(1),
+        },
+      );
+    });
   }
 }
