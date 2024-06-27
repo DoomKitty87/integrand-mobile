@@ -262,6 +262,12 @@ class TimeLeftBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double fraction = differenceMinutesTimeOfDay(endTime, currentTime) /
+        differenceMinutesTimeOfDay(endTime, startTime);
+
+    fraction *= 0.992;
+    fraction += 0.004;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -290,10 +296,13 @@ class TimeLeftBar extends StatelessWidget {
               clipBehavior: Clip.antiAlias,
               children: [
                 const TimeLeftBarBackground(),
-                Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: TimeLeftBarIcon(
-                    currentTime: currentTime,
+                Center(
+                  widthFactor: fraction,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: TimeLeftBarIcon(
+                      currentTime: currentTime,
+                    ),
                   ),
                 ),
               ],
