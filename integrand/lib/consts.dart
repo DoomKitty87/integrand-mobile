@@ -11,6 +11,7 @@ const Color lightGrey = Color.fromRGBO(26, 27, 33, 1);
 const Color blueGradient = Color.fromRGBO(5, 62, 148, 1);
 const Color purpleGradient = Color.fromRGBO(122, 61, 143, 1);
 const Color iconColor = purpleGradient;
+const Color errorColor = Color.fromRGBO(255, 0, 0, 1);
 
 class GradientBackground extends StatelessWidget {
   const GradientBackground({super.key, required this.child});
@@ -96,6 +97,14 @@ const TextStyle boldBodyStyle = TextStyle(
 
 const TextStyle smallBodyStyle = TextStyle(
   color: textColor,
+  fontSize: 12,
+  fontWeight: FontWeight.normal,
+  fontFamily: "Inter",
+  decoration: TextDecoration.none,
+);
+
+const TextStyle errorStyle = TextStyle(
+  color: errorColor,
   fontSize: 12,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",

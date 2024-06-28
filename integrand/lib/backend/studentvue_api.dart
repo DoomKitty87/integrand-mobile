@@ -55,6 +55,39 @@ class StudentVueAPI with ChangeNotifier {
     notifyListeners();
   }
 
+  static bool credsAreNull(String user, String pass) {
+    print(user);
+    return user == '' || pass == '';
+  }
+
+  static Future<bool> credsAreInvalid(String user, String pass, String baseUrl) async {
+    String url = '$baseUrl/Service/PXPCommunication.asmx';
+
+    print(user);
+
+    Uri uri = Uri.parse(url);
+
+    String xml =
+        '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ProcessWebServiceRequest xmlns="http://edupoint.com/webservices/"><userID>$user</userID><password>$pass</password><skipLoginLog>1</skipLoginLog><parent>0</parent><webServiceHandleName>PXPWebServices</webServiceHandleName><methodName>StudentInfo</methodName><paramStr>&lt;Parms&gt;&lt;ChildIntID&gt;0&lt;/ChildIntID&gt;&lt;/Parms&gt;</paramStr></ProcessWebServiceRequest></soap:Body></soap:Envelope>';
+
+    http.Response response = await http.post(
+      uri,
+      headers: {
+        'Content-Type': 'text/xml',
+        'SOAPAction':
+            'http://edupoint.com/webservices/ProcessWebServiceRequest',
+      },
+      body: xml,
+    );
+
+    print(response.body);
+
+    if (response.body.contains('Invalid user id or password')) {
+      return true;
+    }
+    return false;
+  }
+
   bool allApiCallsNotFinished() {
     if (!initializedStudent || !initializedGrades || !initializedSchedule) {
       return true;
