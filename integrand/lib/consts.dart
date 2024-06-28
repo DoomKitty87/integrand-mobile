@@ -16,12 +16,14 @@ const TextStyle titleStyle = TextStyle(
   fontSize: 48,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
+  decoration: TextDecoration.none,
 );
 
 TextStyle titleStyleWithGradient = TextStyle(
   fontSize: 48,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
+  decoration: TextDecoration.none,
   foreground: Paint()
     ..shader = textGradient.createShader(const Rect.fromLTWH(0, 0, 300, 70)),
 );
@@ -31,6 +33,7 @@ const TextStyle subtitleStyle = TextStyle(
   fontSize: 48,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
+  decoration: TextDecoration.none,
 );
 
 const TextStyle bodyStyle = TextStyle(
@@ -38,6 +41,7 @@ const TextStyle bodyStyle = TextStyle(
   fontSize: 16,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
+  decoration: TextDecoration.none,
 );
 
 TextStyle bodyStyleSubdued = TextStyle(
@@ -45,6 +49,7 @@ TextStyle bodyStyleSubdued = TextStyle(
   fontSize: 16,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
+  decoration: TextDecoration.none,
 );
 
 const TextStyle boldBodyStyle = TextStyle(
@@ -52,6 +57,7 @@ const TextStyle boldBodyStyle = TextStyle(
   fontSize: 16,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
+  decoration: TextDecoration.none,
 );
 
 const TextStyle smallBodyStyle = TextStyle(
@@ -59,6 +65,7 @@ const TextStyle smallBodyStyle = TextStyle(
   fontSize: 12,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
+  decoration: TextDecoration.none,
 );
 
 ButtonStyle buttonStyle = ButtonStyle(
@@ -70,9 +77,6 @@ ButtonStyle buttonStyle = ButtonStyle(
     ),
   ),
 );
-
-// For testing
-TimeOfDay periodEnd = const TimeOfDay(hour: 11, minute: 25);
 
 DateTime testDateTime = DateTime(
   2024,
@@ -87,50 +91,50 @@ DateTime testDateTime = DateTime(
 
 BellSchedule testASchedule = BellSchedule.withValues(periods: [
   BellPeriod.withValues(
-      periodName: "1",
-      startTime: const TimeOfDay(hour: 8, minute: 30),
-      endTime: const TimeOfDay(hour: 10, minute: 2)),
+    periodName: "1",
+    startTime: const TimeOfDay(hour: 8, minute: 30),
+    endTime: const TimeOfDay(hour: 10, minute: 2)),
   BellPeriod.withValues(
-      periodName: "2",
-      startTime: const TimeOfDay(hour: 10, minute: 9),
-      endTime: const TimeOfDay(hour: 11, minute: 41)),
+    periodName: "2",
+    startTime: const TimeOfDay(hour: 10, minute: 9),
+    endTime: const TimeOfDay(hour: 11, minute: 41)),
   BellPeriod.withValues(
-      periodName: "Lunch",
-      startTime: const TimeOfDay(hour: 11, minute: 41),
-      endTime:
-          const TimeOfDay(hour: 12, minute: 14)), // this will cause problems
+    periodName: "Lunch",
+    startTime: const TimeOfDay(hour: 11, minute: 41),
+    endTime:
+        const TimeOfDay(hour: 12, minute: 14)), // this will cause problems
   BellPeriod.withValues(
-      periodName: "3",
-      startTime: const TimeOfDay(hour: 12, minute: 19),
-      endTime: const TimeOfDay(hour: 13, minute: 51)),
+    periodName: "3",
+    startTime: const TimeOfDay(hour: 12, minute: 19),
+    endTime: const TimeOfDay(hour: 13, minute: 51)),
   BellPeriod.withValues(
-      periodName: "4",
-      startTime: const TimeOfDay(hour: 13, minute: 58),
-      endTime: const TimeOfDay(hour: 15, minute: 30)),
+    periodName: "4",
+    startTime: const TimeOfDay(hour: 13, minute: 58),
+    endTime: const TimeOfDay(hour: 15, minute: 30)),
 ]);
 
 BellSchedule testBSchedule = BellSchedule.withValues(periods: [
   BellPeriod.withValues(
-      periodName: "5",
-      startTime: const TimeOfDay(hour: 8, minute: 30),
-      endTime: const TimeOfDay(hour: 10, minute: 2)),
+    periodName: "5",
+    startTime: const TimeOfDay(hour: 8, minute: 30),
+    endTime: const TimeOfDay(hour: 10, minute: 2)),
   BellPeriod.withValues(
-      periodName: "6",
-      startTime: const TimeOfDay(hour: 10, minute: 9),
-      endTime: const TimeOfDay(hour: 11, minute: 41)),
+    periodName: "6",
+    startTime: const TimeOfDay(hour: 10, minute: 9),
+    endTime: const TimeOfDay(hour: 11, minute: 41)),
   BellPeriod.withValues(
-      periodName: "Lunch",
-      startTime: const TimeOfDay(hour: 11, minute: 41),
-      endTime:
-          const TimeOfDay(hour: 12, minute: 14)), // this will cause problems
+    periodName: "Lunch",
+    startTime: const TimeOfDay(hour: 11, minute: 41),
+    endTime:
+        const TimeOfDay(hour: 12, minute: 14)), // this will cause problems
   BellPeriod.withValues(
-      periodName: "7",
-      startTime: const TimeOfDay(hour: 12, minute: 19),
-      endTime: const TimeOfDay(hour: 13, minute: 51)),
+    periodName: "7",
+    startTime: const TimeOfDay(hour: 12, minute: 19),
+    endTime: const TimeOfDay(hour: 13, minute: 51)),
   BellPeriod.withValues(
-      periodName: "8",
-      startTime: const TimeOfDay(hour: 13, minute: 58),
-      endTime: const TimeOfDay(hour: 15, minute: 30)),
+    periodName: "8",
+    startTime: const TimeOfDay(hour: 13, minute: 58),
+    endTime: const TimeOfDay(hour: 15, minute: 30)),
 ]);
 
 Map<String, String> periodNameToIndicator = {
