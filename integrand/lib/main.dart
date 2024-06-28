@@ -26,7 +26,7 @@ void main() {
               fontFamily: 'Inter',
               color: textColor,
               decoration: TextDecoration.none),
-          child: IntakePrimary(),
+          child: Main(),
         ), // --------------------------------------------
       ),
     ),
@@ -45,11 +45,11 @@ class _MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
     DataStorage.clearData();
-    // Provider.of<StudentVueAPI>(context, listen: false).initialize(
-    //   'https://parent-portland.cascadetech.org/portland',
-    //   'username',
-    //   'password',
-    // );
+    Provider.of<StudentVueAPI>(context, listen: false).initialize(
+      'https://parent-portland.cascadetech.org/portland',
+      'username',
+      'password',
+    );
 
     // TODO: Somewhere in here, add a block to check for studentVueAPI.initialized
     // Block app view with loading screen until initialized
@@ -59,5 +59,3 @@ class _MainState extends State<Main> {
     );
   }
 }
-
-

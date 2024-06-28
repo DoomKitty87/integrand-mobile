@@ -260,7 +260,6 @@ class TimeLeftBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -301,7 +300,7 @@ class TimeLeftBar extends StatelessWidget {
                   ),
                 ],
               );
-            }, 
+            },
           ),
         ),
       ],
@@ -411,12 +410,25 @@ class ScheduleDisplay extends StatefulWidget {
 class _ScheduleDisplayState extends State<ScheduleDisplay> {
   final List<Container> textChildren = [];
 
-  int expandedIndex = -1;
+  int expandedIndexManual = -1;
+  int expandedIndexAutomatic = -1;
 
   @override
   Widget build(BuildContext context) {
     return Consumer<StudentVueAPI>(builder: (context, studentVueAPI, child) {
       textChildren.clear();
+
+      // Set expanded index to that of the next or current period
+      for (int i = 0; i < widget.bellSchedule.periods.length; i++) {
+        if (widget.bellSchedule.periods[i].isHappening(TimeOfDay.fromDateTime(widget.currentTime))) {
+          expandedIndexAutomatic = i;
+          break;
+        }
+      }
+
+      if (expandedIndexManual != -1) {
+        expandedIndexAutomatic = -1;
+      }
 
       // Border element
       // ignore: avoid_unnecessary_containers
@@ -461,7 +473,16 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
           bottom: 34,
         );
 
+        // TODO: Make the current period opened
         Container nextPeriodText = Container(
+          // If IsCurrentPeriod and NOT opened, dark grey. If IsCurrentPeriod and opened,
+          //((expandedIndexManual == index || expandedIndexAutomatic == index) && period.periodName != "Lunch" && period.periodName != "Flex") ? Colors.red : Colors.transparent,
+          decoration: BoxDecoration(
+            gradient: isCurrentPeriod
+                ? textGradient
+                : (expandedIndexManual == index ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [purpleGradient, Colors.transparent]) : const LinearGradient(
+                    colors: [Colors.transparent, Colors.transparent])),
+          ),
           child: TextButton(
             onPressed: () => toggleExpanded(index, name),
             style: TextButton.styleFrom(
@@ -472,41 +493,101 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
               padding: EdgeInsets.zero,
             ),
             child: SizedBox(
-              height: expandedIndex == index ? 200 : 50, // TODO: Make this better
-              child: Row(
+              child: Column(
                 children: [
-                  Expanded(
-                    flex: 2,
-                    child: Padding(
-                      padding: textPadding,
-                      child: Text(
-                        name,
-                        style: textStyle,
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Padding(
+                          padding: textPadding,
+                          child: Text(
+                            name,
+                            style: textStyle,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Padding(
-                      padding: textPadding,
-                      child: Text(
-                        removeAMPM(period.startTime.format(context)),
-                        style: textStyle,
-                        textAlign: TextAlign.right,
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: textPadding,
+                          child: Text(
+                            removeAMPM(period.startTime.format(context)),
+                            style: textStyle,
+                            textAlign: TextAlign.right,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Padding(
-                      padding: textPadding,
-                      child: Text(
-                        removeAMPM(period.endTime.format(context)),
-                        style: textStyle,
-                        textAlign: TextAlign.right,
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: textPadding,
+                          child: Text(
+                            removeAMPM(period.endTime.format(context)),
+                            style: textStyle,
+                            textAlign: TextAlign.right,
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
+                  if ((expandedIndexManual == index || expandedIndexAutomatic == index) && period.periodName != "Lunch" && period.periodName != "Flex")
+                    Padding(
+                      padding: const EdgeInsets.only(
+                        left: 25.0,
+                        right: 25.0,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                top: 14,
+                                bottom: 14,
+                              ),
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.room,
+                                  ),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    "Room ${course?.room ?? "N/A"}",
+                                    style: bodyStyle,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          // TODO: Fix overflow wrapping here
+                          Expanded(
+                            flex: 7,
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 14.0, bottom: 14.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  const Icon(
+                                    Icons.assignment_ind,
+                                  ),
+                                  const SizedBox(
+                                    width: 5,
+                                  ),
+                                  Text(
+                                    "${course?.teacher ?? "N/A"}",
+                                    style: bodyStyle,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
                 ],
               ),
             ),
@@ -514,7 +595,7 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
         );
         textChildren.add(nextPeriodText);
 
-        double borderWidth = 0.1;
+        bool isCurrent = false;
 
         if (widget.bellSchedule
             .isPassingPeriod(TimeOfDay.fromDateTime(widget.currentTime))
@@ -525,7 +606,7 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                 widget.bellSchedule.periods[i].endTime,
                 widget.bellSchedule.periods[i + 1].startTime,
                 TimeOfDay.fromDateTime(widget.currentTime))) {
-              borderWidth = 1.5;
+              isCurrent = true;
             }
           }
         }
@@ -534,13 +615,15 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
           child: Padding(
             padding: const EdgeInsets.only(left: 20.0, right: 20.0),
             child: Container(
+              height: isCurrent ? 1.5 : 0,
               decoration: BoxDecoration(
-                border: Border(
+                gradient: textGradient,
+                border: !isCurrent ? const Border(
                   bottom: BorderSide(
                     color: textColor,
-                    width: borderWidth,
+                    width: 0.1,
                   ),
-                ),
+                ) : null,
               ),
             ),
           ),
@@ -557,11 +640,14 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
   }
 
   void toggleExpanded(int index, String name) {
+    if (name == "Lunch" || name == "Flex") {
+      return;
+    }
     setState(() {
-      if (expandedIndex == index) {
-        expandedIndex = -1;
+      if (expandedIndexManual == index) {
+        expandedIndexManual = -1;
       } else {
-        expandedIndex = index;
+        expandedIndexManual = index;
       }
     });
   }
