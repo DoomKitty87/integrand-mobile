@@ -457,10 +457,11 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
           right: 25.0,
         );
 
+        const EdgeInsets textPaddingOpened = EdgeInsets.only(
+          bottom: 34,
+        );
+
         Container nextPeriodText = Container(
-          color: index == expandedIndex
-              ? Colors.green
-              : (isCurrentPeriod ? darkGrey : Colors.transparent),
           child: TextButton(
             onPressed: () => toggleExpanded(index, name),
             style: TextButton.styleFrom(
@@ -470,41 +471,44 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
               ),
               padding: EdgeInsets.zero,
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Padding(
-                    padding: textPadding,
-                    child: Text(
-                      name,
-                      style: textStyle,
+            child: Container(
+              height: expandedIndex == index ? 200 : 50, // TODO: Make this better
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Padding(
+                      padding: textPadding,
+                      child: Text(
+                        name,
+                        style: textStyle,
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: textPadding,
-                    child: Text(
-                      removeAMPM(period.startTime.format(context)),
-                      style: textStyle,
-                      textAlign: TextAlign.right,
+                  Expanded(
+                    flex: 1,
+                    child: Padding(
+                      padding: textPadding,
+                      child: Text(
+                        removeAMPM(period.startTime.format(context)),
+                        style: textStyle,
+                        textAlign: TextAlign.right,
+                      ),
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: textPadding,
-                    child: Text(
-                      removeAMPM(period.endTime.format(context)),
-                      style: textStyle,
-                      textAlign: TextAlign.right,
+                  Expanded(
+                    flex: 1,
+                    child: Padding(
+                      padding: textPadding,
+                      child: Text(
+                        removeAMPM(period.endTime.format(context)),
+                        style: textStyle,
+                        textAlign: TextAlign.right,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
