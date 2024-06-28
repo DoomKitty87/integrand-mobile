@@ -417,6 +417,29 @@ class StudentVueAPI with ChangeNotifier {
       }
     }
 
+    // If multiple periods marked as lunch, keep the closest to noon and set the rest to flex
+
+    if (data.periods.where((element) => element.periodName == 'Lunch').length >
+        1) {
+      List<BellPeriod> lunches = data.periods
+          .where((element) => element.periodName == 'Lunch')
+          .toList();
+      List<int> distancesFromNoon = lunches
+          .map((e) => (e.startTime.hour - 12).abs() * 60 + e.startTime.minute)
+          .toList();
+
+      int closestLunchIndex = distancesFromNoon.indexOf(distancesFromNoon
+          .reduce((value, element) => value < element ? value : element));
+
+      for (int i = 0; i < lunches.length; i++) {
+        if (i == closestLunchIndex) {
+          continue;
+        }
+
+        lunches[i].periodName = 'Flex';
+      }
+    }
+
     return data;
   }
 
