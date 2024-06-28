@@ -6,6 +6,7 @@ import 'package:integrand/schedule.dart';
 import 'package:integrand/gradebook.dart';
 import 'package:integrand/intake.dart';
 import 'consts.dart';
+import 'backend/data_storage.dart';
 
 enum AppPage {
   schedule,
@@ -51,6 +52,7 @@ class Main extends StatefulWidget {
 class _MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
+    DataStorage.clearData();
     // Provider.of<StudentVueAPI>(context, listen: false).initialize(
     //   'https://parent-portland.cascadetech.org/portland',
     //   'username',

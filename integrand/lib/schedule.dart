@@ -30,7 +30,7 @@ class _ScheduleState extends State<Schedule> {
 
   void _update() {
     setState(() {
-      _currentTime = DateTime.now();
+      _currentTime = testDateTime;
     });
   }
 

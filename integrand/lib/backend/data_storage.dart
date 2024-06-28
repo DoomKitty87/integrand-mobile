@@ -15,4 +15,10 @@ class DataStorage {
     username = prefs.getString('username') ?? '';
     password = prefs.getString('password') ?? '';
   }
+
+  static Future<void> clearData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('username');
+    await prefs.remove('password');
+  }
 }

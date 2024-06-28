@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:integrand/consts.dart';
 import 'package:integrand/gradebook.dart';
+import 'backend/data_storage.dart';
+import 'backend/studentvue_api.dart';
+import 'package:provider/provider.dart';
 
 class Intake extends StatefulWidget {
   const Intake({super.key});
@@ -121,6 +124,13 @@ class _IntakeCredentials extends State<Intake> {
                     style: buttonStyle,
                     onPressed: () => {
                           // Submit credentials form
+                          DataStorage.saveData(),
+                          Provider.of<StudentVueAPI>(context, listen: false)
+                              .initialize(
+                            'https://parent-portland.cascadetech.org/portland',
+                            username,
+                            password,
+                          ),
                         },
                     child: const Text(
                       "Continue",
@@ -184,15 +194,22 @@ class CredentialsForm extends StatelessWidget {
             labelText: "Username",
             labelStyle: bodyStyleSubdued,
           ),
+          onSubmitted: (value) => {
+            username = value,
+          },
         ),
         const SizedBox(
           height: 20.0,
         ),
         TextField(
+          obscureText: true,
           decoration: InputDecoration(
             labelText: "Password",
             labelStyle: bodyStyleSubdued,
           ),
+          onSubmitted: (value) => {
+            password = value,
+          },
         ),
         const SizedBox(
           height: 20.0,
