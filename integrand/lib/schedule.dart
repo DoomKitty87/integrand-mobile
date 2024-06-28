@@ -411,11 +411,11 @@ class ScheduleDisplay extends StatefulWidget {
 class _ScheduleDisplayState extends State<ScheduleDisplay> {
   final List<Container> textChildren = [];
 
+  int expandedIndex = -1;
+
   @override
   Widget build(BuildContext context) {
     return Consumer<StudentVueAPI>(builder: (context, studentVueAPI, child) {
-      textChildren.clear();
-
       textChildren.clear();
 
       // Border element
@@ -436,8 +436,10 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
         ),
       );
       textChildren.add(border);
+
       int i = 0;
       for (BellPeriod period in widget.bellSchedule.periods) {
+        int index = i;
         final bool isCurrentPeriod =
             period.isHappening(TimeOfDay.fromDateTime(widget.currentTime));
         final TextStyle textStyle = isCurrentPeriod ? boldBodyStyle : bodyStyle;
@@ -456,10 +458,13 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
         );
 
         Container nextPeriodText = Container(
-          color: isCurrentPeriod ? darkGrey : Colors.transparent,
+          color: index == expandedIndex
+              ? Colors.green
+              : (isCurrentPeriod ? darkGrey : Colors.transparent),
           child: TextButton(
-            onPressed: () {},
-            style: TextButton.styleFrom( // TODO: Change onclick visuals
+            onPressed: () => toggleExpanded(index, name),
+            style: TextButton.styleFrom(
+              // TODO: Change onclick visuals
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5.0),
               ),
@@ -520,6 +525,23 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
             }
           }
         }
+
+        border = Container(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: textColor,
+                    width: borderWidth,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+
         textChildren.add(border);
         i++;
       }
@@ -527,6 +549,16 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
       return Column(
         children: textChildren,
       );
+    });
+  }
+
+  void toggleExpanded(int index, String name) {
+    setState(() {
+      if (expandedIndex == index) {
+        expandedIndex = -1;
+      } else {
+        expandedIndex = index;
+      }
     });
   }
 }

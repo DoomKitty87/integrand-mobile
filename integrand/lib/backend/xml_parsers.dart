@@ -86,13 +86,13 @@ int getCurrentReportingPeriod(http.Response response) {
 
   List<XmlElement> elements = document.findAllElements('ReportPeriod').toList();
 
-  int currentPeriod = 0;
+  int currentPeriod = -1;
 
   for (XmlElement element in elements) {
     String startDate = element.attributes
         .firstWhere((attribute) => attribute.name.local == 'StartDate')
         .value;
-    
+
     startDate = parseXXSlashXXSlashXXXXIntoParsableByDateTime(startDate);
     if (DateTime.parse(startDate).isBefore(DateTime.now())) {
       currentPeriod++;
@@ -135,8 +135,10 @@ GradebookData parseGradebook(http.Response response) {
             .firstWhere((attribute) => attribute.name.local == 'Type')
             .value,
         weight: double.parse(assignmentType.attributes
-            .firstWhere((attribute) => attribute.name.local == 'Weight')
-            .value),
+                .firstWhere((attribute) => attribute.name.local == 'Weight')
+                .value
+                .replaceFirst('%', '')) /
+            100,
       );
 
       type.points = double.parse(assignmentType.attributes
@@ -171,13 +173,21 @@ GradebookData parseGradebook(http.Response response) {
           .firstWhere((attribute) => attribute.name.local == 'Points')
           .value;
 
-      a.score = scoreType == 'Percent'
+      if (score == 'Not Graded') {
+        continue;
+      }
+
+      a.score = scoreType == 'Percentage'
           ? double.parse(score.substring(0, score.length - 1))
           : double.parse(score.split(' out of ')[0]);
 
-      a.total = scoreType == 'Percent'
+      a.total = scoreType == 'Percentage'
           ? 100.0
           : double.parse(score.split(' out of ')[1]);
+
+      if (points == 'Dropped') {
+        continue;
+      }
 
       a.points = double.parse(points.split(' / ')[0]);
       a.totalPoints = double.parse(points.split(' / ')[1]);

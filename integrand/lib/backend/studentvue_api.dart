@@ -384,7 +384,7 @@ class StudentVueAPI with ChangeNotifier {
         TimeOfDay lunchEnd = nextPeriod.startTime;
 
         // Add 1 minute buffer to help with schedule parsing
-        
+
         if (lunchStart.minute == 59) {
           lunchStart = TimeOfDay(
             hour: lunchStart.hour + 1,
@@ -414,6 +414,29 @@ class StudentVueAPI with ChangeNotifier {
         lunch.endTime = lunchEnd;
 
         data.periods.insert(i + 1, lunch);
+      }
+    }
+
+    // If multiple periods marked as lunch, keep the closest to noon and set the rest to flex
+
+    if (data.periods.where((element) => element.periodName == 'Lunch').length >
+        1) {
+      List<BellPeriod> lunches = data.periods
+          .where((element) => element.periodName == 'Lunch')
+          .toList();
+      List<int> distancesFromNoon = lunches
+          .map((e) => (e.startTime.hour - 12).abs() * 60 + e.startTime.minute)
+          .toList();
+
+      int closestLunchIndex = distancesFromNoon.indexOf(distancesFromNoon
+          .reduce((value, element) => value < element ? value : element));
+
+      for (int i = 0; i < lunches.length; i++) {
+        if (i == closestLunchIndex) {
+          continue;
+        }
+
+        lunches[i].periodName = 'Flex';
       }
     }
 
