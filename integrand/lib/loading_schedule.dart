@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:integrand/consts.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class LoadingSchedule extends StatefulWidget {
   const LoadingSchedule({super.key});

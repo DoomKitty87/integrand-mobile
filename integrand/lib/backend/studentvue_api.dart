@@ -13,6 +13,13 @@ class StudentVueAPI with ChangeNotifier {
 
   bool initialized = false;
 
+  bool initializedStudent = false;
+  bool initializedGrades = false;
+  bool initializedSchedule = false;
+
+  bool initializedCourseHistory = false;
+  bool initializedBellSchedule = false;
+
   ScheduleData scheduleData = ScheduleData();
   GradebookData gradebookData = GradebookData();
   StudentData studentData = StudentData();
@@ -34,14 +41,32 @@ class StudentVueAPI with ChangeNotifier {
     initialized = true;
 
     // Should call data updates here
-    await updateStudent();
-    await updateGrades();
-    await updateSchedule();
+    updateStudent();
+    updateGrades();
+    updateSchedule();
 
     // Updates for data not accessible via SOAP API
-    await initializeClientData();
+    initializeClientData();
+
+    while (allApiCallsNotFinished()) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
 
     notifyListeners();
+  }
+
+  bool allApiCallsNotFinished() {
+    if (!initializedStudent || !initializedGrades || !initializedSchedule) {
+      return true;
+    }
+    return false;
+  }
+
+  bool allWebCallsNotFinished() {
+    if (!initializedCourseHistory || !initializedBellSchedule) {
+      return true;
+    }
+    return false;
   }
 
   Future<http.Response> student() async {
@@ -152,6 +177,8 @@ class StudentVueAPI with ChangeNotifier {
 
     gradebookData = parseGradebook(response);
 
+    initializedGrades = true;
+
     return gradebookData;
   }
 
@@ -160,6 +187,8 @@ class StudentVueAPI with ChangeNotifier {
 
     scheduleData = parseSchedule(response);
 
+    initializedSchedule = true;
+
     return scheduleData;
   }
 
@@ -167,6 +196,8 @@ class StudentVueAPI with ChangeNotifier {
     http.Response response = await student();
 
     studentData = parseStudent(response);
+
+    initializedStudent = true;
 
     return studentData;
   }
@@ -239,7 +270,11 @@ class StudentVueAPI with ChangeNotifier {
 
     // Logged in, complete all necessary data requests
 
-    await requestStudentVueWebData();
+    requestStudentVueWebData();
+
+    while (allWebCallsNotFinished()) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
 
     GPAData gpaData = updateGPA();
 
@@ -252,6 +287,34 @@ class StudentVueAPI with ChangeNotifier {
     CourseHistory courseHistory = updateCourseHistory();
 
     this.courseHistory = courseHistory;
+  }
+
+  Future<void> requestCourseHistory() async {
+    String url = '$baseUrl/PXP2_CourseHistory.aspx?AGU=0';
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Cookie': currentCookies,
+      },
+    );
+
+    currentWebData.courseHistory = removeWhitespace(response.body);
+    initializedCourseHistory = true;
+  }
+
+  Future<void> requestBellSchedule() async {
+    String url = '$baseUrl/PXP2_ClassSchedule.aspx?AGU=0';
+
+    http.Response response = await http.get(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Cookie': currentCookies,
+      },
+    );
+
+    currentWebData.classSchedule = removeWhitespace(response.body);
+    initializedBellSchedule = true;
   }
 
   Future<void> requestStudentVueWebData() async {
