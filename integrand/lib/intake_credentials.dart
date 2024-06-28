@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:integrand/consts.dart';
 import 'package:integrand/helpers/page_animation.dart';
+import 'package:integrand/main.dart';
 import 'package:integrand/schedule.dart';
 import 'backend/data_storage.dart';
 import 'backend/studentvue_api.dart';
@@ -18,60 +19,69 @@ class _IntakeCredentials extends State<IntakeCredentials> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: backgroundColor,
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 100.0,
-          ),
-          const Padding(
-            padding: EdgeInsets.only(left: 30.0, right: 30.0),
-            child: AddInformationTitle(),
-          ),
-          const SizedBox(
-            height: 50.0,
-          ),
-          const Padding(
-            padding: EdgeInsets.only(left: 30.0, right: 30.0),
-            child: CredentialsDescription(),
-          ),
-          const SizedBox(
-            height: 50.0,
-          ),
-          const Padding(
-            padding: EdgeInsets.only(left: 30.0, right: 30.0),
-            child: CredentialsForm(),
-          ),
-          Expanded(
-            child: Container(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  left: 30.0,
-                  right: 30.0,
-                  bottom: 30.0
-                ),
-                child: TextButton(
-                  style: buttonStyle,
-                  onPressed: () {
-                    // Submit credentials form
-                    // DataStorage.saveData(),
-                    Provider.of<StudentVueAPI>(context, listen: false).initialize(
-                      'https://parent-portland.cascadetech.org/portland',
-                      username,
-                      password,
-                    );
-                    animateWithSlideFromRight(context, const Schedule(), Durations.medium2);
-                  },
-                  child: const Text(
-                    "Continue",
-                    style: bodyStyle,
-                  )
+      color: Colors.transparent,
+      child: GradientBackground(
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 100.0,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 30.0, right: 30.0),
+              child: AddInformationTitle(),
+            ),
+            const SizedBox(
+              height: 50.0,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 30.0, right: 30.0),
+              child: CredentialsDescription(),
+            ),
+            const SizedBox(
+              height: 50.0,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 30.0, right: 30.0),
+              child: CredentialsForm(),
+            ),
+            const SizedBox(
+              height: 60.0,
+            ),
+            const Padding(
+              padding: EdgeInsets.only(left: 30.0, right: 30.0),
+              child: CredentialsSafetyMessage(),
+            ),
+            Expanded(
+              child: Container(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 30.0,
+                    right: 30.0,
+                    bottom: 30.0
+                  ),
+                  child: TextButton(
+                    style: buttonStyle,
+                    onPressed: () {
+                      // Submit credentials form
+                      // DataStorage.saveData(),
+                      Provider.of<StudentVueAPI>(context, listen: false).initialize(
+                        'https://parent-portland.cascadetech.org/portland',
+                        username,
+                        password,
+                      );
+                      animateWithSlideFromRight(context, const LoadingSchedule(), Durations.medium2);
+                    },
+                    child: const Text(
+                      "Continue",
+                      style: bodyStyle,
+                    )
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -125,7 +135,7 @@ class CredentialsForm extends StatelessWidget {
         TextField(
           style: bodyStyle,
           decoration: InputDecoration(
-            labelText: "Username",
+            labelText: "Username (without @domain.com)",
             labelStyle: bodyStyleSubdued,
           ),
           onSubmitted: (value) => {
@@ -150,6 +160,32 @@ class CredentialsForm extends StatelessWidget {
           height: 20.0,
         ),
       ],
+    );
+  }
+}
+
+class CredentialsSafetyMessage extends StatelessWidget {
+  const CredentialsSafetyMessage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      text: const TextSpan(
+        children: <TextSpan>[
+          TextSpan(
+            text: "Your data will ",
+            style: bodyStyle,
+          ),
+          TextSpan(
+            text: "never",
+            style: boldBodyStyle,
+          ),
+          TextSpan(
+            text: " be sold or shared with third parties.",
+            style: bodyStyle,
+          ),
+        ],
+      )
     );
   }
 }

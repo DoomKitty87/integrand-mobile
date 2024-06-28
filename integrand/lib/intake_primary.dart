@@ -13,41 +13,43 @@ class IntakePrimary extends StatefulWidget {
 class _IntakePrimary extends State<IntakePrimary> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(
-          height: 100.0,
-        ),
-        const Padding(
+    return GradientBackground(
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 100.0,
+          ),
+          const Padding(
+              padding: EdgeInsets.only(left: 30.0, right: 30.0),
+              child: WelcomeText()),
+          const SizedBox(
+            height: 50.0,
+          ),
+          const Padding(
             padding: EdgeInsets.only(left: 30.0, right: 30.0),
-            child: WelcomeText()),
-        const SizedBox(
-          height: 50.0,
-        ),
-        const Padding(
-          padding: EdgeInsets.only(left: 30.0, right: 30.0),
-          child: DescriptionText(),
-        ),
-        Expanded(
-          child: Container(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding:
-                const EdgeInsets.only(left: 30.0, right: 30.0, bottom: 30.0),
-              child: TextButton(
-                style: buttonStyle,
-                onPressed: () => {
-                  animateWithSlideFromRight(context, IntakeCredentials(), Durations.medium2)
-                },
-                child: const Text(
-                  "Get Started",
-                  style: bodyStyle,
-                )
+            child: DescriptionText(),
+          ),
+          Expanded(
+            child: Container(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding:
+                  const EdgeInsets.only(left: 30.0, right: 30.0, bottom: 30.0),
+                child: TextButton(
+                  style: buttonStyle,
+                  onPressed: () => {
+                    animateWithSlideFromRight(context, const IntakeCredentials(), Durations.medium2)
+                  },
+                  child: const Text(
+                    "Get Started",
+                    style: bodyStyle,
+                  )
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

@@ -4,8 +4,33 @@ import 'package:integrand/backend/data_classes.dart';
 const String appName = "Integrand";
 
 const Color backgroundColor = Color.fromRGBO(13, 13, 13, 1); //HSVO(0, 0, 5, 1)
+const Color backgroundColorSecondary = Color.fromRGBO(10, 1, 24, 1);
 const Color textColor = Color.fromRGBO(224, 224, 224, 1);
-const Color darkGrey = Color.fromRGBO(50, 50, 50, 1);
+const Color darkGrey = Color.fromRGBO(14, 14, 14, 1);
+const Color lightGrey = Color.fromRGBO(26, 27, 33, 1);
+
+class GradientBackground extends StatelessWidget {
+  const GradientBackground({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // BACKGROUND --------------------------------
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [backgroundColor, backgroundColorSecondary],
+          begin: Alignment(0.5, -1),
+          end: Alignment(0.5, 1),
+        ),
+      ),
+      child: SafeArea(
+        child: child
+      ),
+    );
+  }
+}
 
 const Gradient textGradient = LinearGradient(
   colors: [Color.fromRGBO(5, 62, 148, 1), Color.fromRGBO(122, 61, 143, 1)],

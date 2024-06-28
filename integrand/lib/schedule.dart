@@ -471,7 +471,7 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
               ),
               padding: EdgeInsets.zero,
             ),
-            child: Container(
+            child: SizedBox(
               height: expandedIndex == index ? 200 : 50, // TODO: Make this better
               child: Row(
                 children: [

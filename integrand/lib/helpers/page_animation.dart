@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 
 void animateWithSlideFromRight(BuildContext context, Widget child, Duration duration) {
-  child = SafeArea(
-    child: child
-  );
   Navigator.push(
     context,
     PageRouteBuilder(
