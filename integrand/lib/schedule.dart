@@ -168,7 +168,7 @@ class ClockTimerHybrid extends StatelessWidget {
   final DateTime currentDateTime;
   final BellSchedule bellSchedule;
 
-  // TODO: Currently outputs only 12-hour time aka 00:00 AM/PM. Either make this based on device settings or a toggle in the app settings.
+  // NOTE: 12 hour vs 24 hours is based on device settings, could this become a toggle in the app settings?
   @override
   Widget build(BuildContext context) {
     String output;
@@ -245,8 +245,6 @@ class MinutesLeftText extends StatelessWidget {
   }
 }
 
-// TODO: Finish time left bar
-
 class TimeLeftBar extends StatelessWidget {
   const TimeLeftBar(
       {super.key,
@@ -262,11 +260,6 @@ class TimeLeftBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double fraction = differenceMinutesTimeOfDay(endTime, currentTime) /
-        differenceMinutesTimeOfDay(endTime, startTime);
-
-    fraction *= 0.992;
-    fraction += 0.004;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -291,22 +284,26 @@ class TimeLeftBar extends StatelessWidget {
           ),
         ),
         SizedBox(
-            height: heightPixels + 8.0,
-            child: Stack(
-              clipBehavior: Clip.antiAlias,
-              children: [
-                const TimeLeftBarBackground(),
-                Center(
-                  widthFactor: fraction,
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
+          height: heightPixels + 8.0,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.centerLeft,
+                children: [
+                  const TimeLeftBarBackground(),
+                  Positioned(
+                    left: constraints.minWidth,
+                    top: 8,
                     child: TimeLeftBarIcon(
                       currentTime: currentTime,
                     ),
                   ),
-                ),
-              ],
-            )),
+                ],
+              );
+            }, 
+          ),
+        ),
       ],
     );
   }
@@ -342,7 +339,7 @@ class TimeLeftBarBackground extends StatelessWidget {
   }
 }
 
-// TODO: Finish this icon, make it a resonable size with widget inspector and position it properly
+// TODO: Finish this icon, make it a resonable size
 class TimeLeftBarIcon extends StatelessWidget {
   const TimeLeftBarIcon({super.key, required this.currentTime});
 
@@ -361,7 +358,13 @@ class TimeLeftBarIcon extends StatelessWidget {
               width: 1,
             ),
           ),
-          constraints: const BoxConstraints(minHeight: 5),
+          child: const SizedBox(
+            height: 10,
+            width: 10,
+          ),
+        ),
+        const SizedBox(
+          height: 5,
         ),
         TimeText(
           time: currentTime,
@@ -416,6 +419,7 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
       textChildren.clear();
 
       // Border element
+      // ignore: avoid_unnecessary_containers
       Container border = Container(
         child: Padding(
           padding: const EdgeInsets.only(left: 20.0, right: 20.0),
