@@ -469,19 +469,15 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
           right: 25.0,
         );
 
-        const EdgeInsets textPaddingOpened = EdgeInsets.only(
-          bottom: 34,
-        );
-
         // TODO: Make the current period opened
         Container nextPeriodText = Container(
           // If IsCurrentPeriod and NOT opened, dark grey. If IsCurrentPeriod and opened,
           //((expandedIndexManual == index || expandedIndexAutomatic == index) && period.periodName != "Lunch" && period.periodName != "Flex") ? Colors.red : Colors.transparent,
           decoration: BoxDecoration(
             gradient: isCurrentPeriod
-                ? textGradient
-                : (expandedIndexManual == index ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [purpleGradient, Colors.transparent]) : const LinearGradient(
-                    colors: [Colors.transparent, Colors.transparent])),
+              ? textGradient
+              : (expandedIndexManual == index ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.transparent]) : const LinearGradient(
+                  colors: [Colors.transparent, Colors.transparent])),
           ),
           child: TextButton(
             onPressed: () => toggleExpanded(index, name),
@@ -536,55 +532,70 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                       padding: const EdgeInsets.only(
                         left: 25.0,
                         right: 25.0,
+                        bottom: 14.0,
                       ),
                       child: Row(
                         children: [
-                          Expanded(
-                            flex: 3,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                top: 14,
-                                bottom: 14,
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Container(
+                            width: 5.0,
+                            height: 80,
+                            decoration: const BoxDecoration(
+                              gradient: verticalGradientAccent,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(5.0)),
+                            )
+                          ),
+                          const SizedBox(
+                            width: 12,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  top: 8.0, bottom: 8.0,
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.room,
+                                      color: iconColor,
+                                    ),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    Text(
+                                      "Room ${course?.room ?? "N/A"}",
+                                      style: bodyStyle,
+                                    ),
+                                  ],
+                                ),
                               ),
-                              child: Row(
-                                children: [
-                                  const Icon(
-                                    Icons.room,
-                                  ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    "Room ${course?.room ?? "N/A"}",
-                                    style: bodyStyle,
-                                  ),
-                                ],
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    top: 8.0, bottom: 8.0),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.assignment_ind,
+                                      color: iconColor,
+                                    ),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
+                                    Text(
+                                      course?.teacher ?? "N/A",
+                                      style: bodyStyle,
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                           // TODO: Fix overflow wrapping here
-                          Expanded(
-                            flex: 7,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 14.0, bottom: 14.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  const Icon(
-                                    Icons.assignment_ind,
-                                  ),
-                                  const SizedBox(
-                                    width: 5,
-                                  ),
-                                  Text(
-                                    "${course?.teacher ?? "N/A"}",
-                                    style: bodyStyle,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     )
@@ -615,8 +626,11 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
           child: Padding(
             padding: const EdgeInsets.only(left: 20.0, right: 20.0),
             child: Container(
-              height: isCurrent ? 1.5 : 0,
+              height: isCurrent ? 5.0 : 0,
               decoration: BoxDecoration(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(5.0),
+                ),
                 gradient: textGradient,
                 border: !isCurrent ? const Border(
                   bottom: BorderSide(

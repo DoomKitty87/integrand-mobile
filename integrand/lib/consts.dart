@@ -8,9 +8,8 @@ const Color backgroundColorSecondary = Color.fromRGBO(10, 1, 24, 1);
 const Color textColor = Color.fromRGBO(224, 224, 224, 1);
 const Color darkGrey = Color.fromRGBO(14, 14, 14, 1);
 const Color lightGrey = Color.fromRGBO(26, 27, 33, 1);
-
-const Color blueGradiant = Color.fromRGBO(5, 62, 148, 1);
 const Color purpleGradient = Color.fromRGBO(122, 61, 143, 1);
+const Color iconColor = purpleGradient;
 
 class GradientBackground extends StatelessWidget {
   const GradientBackground({super.key, required this.child});
@@ -36,7 +35,13 @@ class GradientBackground extends StatelessWidget {
 }
 
 const Gradient textGradient = LinearGradient(
-  colors: [blueGradiant, purpleGradient],
+  colors: [Color.fromRGBO(5, 62, 148, 1), Color.fromRGBO(122, 61, 143, 1)],
+);
+
+const Gradient verticalGradientAccent = LinearGradient(
+  colors: [Color.fromRGBO(5, 62, 148, 1), Color.fromRGBO(122, 61, 143, 1)],
+  begin: Alignment.topCenter,
+  end: Alignment.bottomCenter,
 );
 
 const TextStyle titleStyle = TextStyle(
@@ -110,8 +115,8 @@ DateTime testDateTime = DateTime(
   2024,
   1,
   1,
-  12,
-  05,
+  10,
+  07,
   1,
   1,
   1,
