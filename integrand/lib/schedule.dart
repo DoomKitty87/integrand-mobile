@@ -62,9 +62,6 @@ class _ScheduleState extends State<Schedule> {
       } else {
         return Column(
           children: [
-            const SizedBox(
-              height: 35.0,
-            ),
             Padding(
               padding: const EdgeInsets.only(left: 20.0, right: 20.0),
               child: ScheduleTimeIndicators(
@@ -74,7 +71,7 @@ class _ScheduleState extends State<Schedule> {
               ),
             ),
             const SizedBox(
-              height: 75,
+              height: 50,
             ),
             ScheduleDisplay(
               bellSchedule: schedule,
@@ -112,7 +109,8 @@ class ScheduleTimeIndicators extends StatelessWidget {
       endTime = data.$3!.startTime;
       indicatorText = periodNameToIndicatorMap[""]; // Passing period indicator
     } else {
-      BellPeriod period = bellSchedule.getCurrentPeriod(TimeOfDay.fromDateTime(currentTime))!;
+      BellPeriod period =
+          bellSchedule.getCurrentPeriod(TimeOfDay.fromDateTime(currentTime))!;
       startTime = period.startTime;
       endTime = period.endTime;
       indicatorText = periodNameToIndicatorMap[period.periodName];
@@ -260,7 +258,6 @@ class TimeLeftBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     double percentage;
     percentage = differenceMinutesTimeOfDay(currentTime, startTime) /
         differenceMinutesTimeOfDay(endTime, startTime);
@@ -297,7 +294,10 @@ class TimeLeftBar extends StatelessWidget {
                 children: [
                   const TimeLeftBarBackground(),
                   Positioned(
-                    left: constraints.minWidth - 17 + (percentage * (constraints.maxWidth - constraints.minWidth)),
+                    left: constraints.minWidth -
+                        17 +
+                        (percentage *
+                            (constraints.maxWidth - constraints.minWidth)),
                     top: 8,
                     child: TimeLeftBarIcon(
                       currentTime: currentTime,
@@ -441,7 +441,8 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
 
       // Set expanded index to that of the next or current period
       for (int i = 0; i < widget.bellSchedule.periods.length; i++) {
-        if (widget.bellSchedule.periods[i].isHappening(TimeOfDay.fromDateTime(widget.currentTime))) {
+        if (widget.bellSchedule.periods[i]
+            .isHappening(TimeOfDay.fromDateTime(widget.currentTime))) {
           expandedIndexAutomatic = i;
           break;
         }
@@ -452,9 +453,7 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
           BellPeriod period = widget.bellSchedule.periods[i];
           BellPeriod nextPeriod = widget.bellSchedule.periods[i + 1];
 
-          if (isBetweenTimeOfDayInclusive(
-              period.endTime,
-              nextPeriod.startTime,
+          if (isBetweenTimeOfDayInclusive(period.endTime, nextPeriod.startTime,
               TimeOfDay.fromDateTime(widget.currentTime))) {
             expandedIndexAutomatic = i + 1;
             break;
@@ -525,9 +524,19 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                   Container(
                     decoration: BoxDecoration(
                       gradient: isCurrentPeriod
-                        ? textGradient
-                        : (expandedIndexManual == index ? const LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter, colors: [Colors.transparent, Colors.transparent]) : const LinearGradient(
-                        colors: [Colors.transparent, Colors.transparent])),
+                          ? textGradient
+                          : (expandedIndexManual == index
+                              ? const LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                      Colors.transparent,
+                                      Colors.transparent
+                                    ])
+                              : const LinearGradient(colors: [
+                                  Colors.transparent,
+                                  Colors.transparent
+                                ])),
                     ),
                     child: Row(
                       children: [
@@ -566,7 +575,10 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                       ],
                     ),
                   ),
-                  if ((expandedIndexManual == index || expandedIndexAutomatic == index) && period.periodName != "Lunch" && period.periodName != "Flex")
+                  if ((expandedIndexManual == index ||
+                          expandedIndexAutomatic == index) &&
+                      period.periodName != "Lunch" &&
+                      period.periodName != "Flex")
                     Padding(
                       padding: const EdgeInsets.only(
                         left: 25.0,
@@ -580,14 +592,13 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                             width: 10,
                           ),
                           Container(
-                            width: 5.0,
-                            height: 80,
-                            decoration: const BoxDecoration(
-                              gradient: verticalGradientAccent,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(5.0)),
-                            )
-                          ),
+                              width: 5.0,
+                              height: 80,
+                              decoration: const BoxDecoration(
+                                gradient: verticalGradientAccent,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5.0)),
+                              )),
                           const SizedBox(
                             width: 12,
                           ),
@@ -596,7 +607,8 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(
-                                  top: 8.0, bottom: 8.0,
+                                  top: 8.0,
+                                  bottom: 8.0,
                                 ),
                                 child: Row(
                                   children: [
@@ -672,12 +684,14 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                   Radius.circular(5.0),
                 ),
                 gradient: textGradient,
-                border: !isCurrent ? const Border(
-                  bottom: BorderSide(
-                    color: textColor,
-                    width: 0.1,
-                  ),
-                ) : null,
+                border: !isCurrent
+                    ? const Border(
+                        bottom: BorderSide(
+                          color: textColor,
+                          width: 0.1,
+                        ),
+                      )
+                    : null,
               ),
             ),
           ),

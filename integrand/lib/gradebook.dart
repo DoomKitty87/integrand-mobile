@@ -16,9 +16,6 @@ class _GradebookState extends State<Gradebook> {
   Widget build(BuildContext context) {
     return const Column(
       children: [
-        SizedBox(
-          height: 35.0,
-        ),
         Padding(
           padding: EdgeInsets.only(left: 20.0, right: 20.0),
           child: GPADisplay(),

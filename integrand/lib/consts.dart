@@ -6,6 +6,7 @@ const String appName = "Integrand";
 const Color backgroundColor = Color.fromRGBO(13, 13, 13, 1); //HSVO(0, 0, 5, 1)
 const Color backgroundColorSecondary = Color.fromRGBO(10, 1, 24, 1);
 const Color textColor = Color.fromRGBO(224, 224, 224, 1);
+const Color textColorSecondary = Color.fromRGBO(112, 112, 112, 1);
 const Color darkGrey = Color.fromRGBO(14, 14, 14, 1);
 const Color lightGrey = Color.fromRGBO(26, 27, 33, 1);
 const Color lighterGrey = Color.fromRGBO(45, 47, 57, 1);
@@ -13,6 +14,8 @@ const Color blueGradient = Color.fromRGBO(5, 62, 148, 1);
 const Color purpleGradient = Color.fromRGBO(122, 61, 143, 1);
 const Color iconColor = purpleGradient;
 const Color errorColor = Color.fromRGBO(255, 0, 0, 1);
+const Color barColor = textColorSecondary;
+const Color barColorSelected = textColor;
 
 class GradientBackground extends StatelessWidget {
   const GradientBackground({super.key, required this.child});
@@ -30,9 +33,7 @@ class GradientBackground extends StatelessWidget {
           end: Alignment(0.5, 1),
         ),
       ),
-      child: SafeArea(
-        child: child
-      ),
+      child: SafeArea(child: child),
     );
   }
 }
@@ -112,6 +113,22 @@ const TextStyle errorStyle = TextStyle(
   decoration: TextDecoration.none,
 );
 
+const TextStyle barStyle = TextStyle(
+  color: textColorSecondary,
+  fontSize: 12,
+  fontWeight: FontWeight.normal,
+  fontFamily: "Inter",
+  decoration: TextDecoration.none,
+);
+
+const TextStyle barStyleSelected = TextStyle(
+  color: textColor,
+  fontSize: 12,
+  fontWeight: FontWeight.bold,
+  fontFamily: "Inter",
+  decoration: TextDecoration.none,
+);
+
 ButtonStyle buttonStyle = ButtonStyle(
   backgroundColor: const WidgetStatePropertyAll(darkGrey),
   fixedSize: const WidgetStatePropertyAll(Size(5000, 50)),
@@ -135,50 +152,50 @@ DateTime testDateTime = DateTime(
 
 BellSchedule testASchedule = BellSchedule.withValues(periods: [
   BellPeriod.withValues(
-    periodName: "1",
-    startTime: const TimeOfDay(hour: 8, minute: 30),
-    endTime: const TimeOfDay(hour: 10, minute: 2)),
+      periodName: "1",
+      startTime: const TimeOfDay(hour: 8, minute: 30),
+      endTime: const TimeOfDay(hour: 10, minute: 2)),
   BellPeriod.withValues(
-    periodName: "2",
-    startTime: const TimeOfDay(hour: 10, minute: 9),
-    endTime: const TimeOfDay(hour: 11, minute: 41)),
+      periodName: "2",
+      startTime: const TimeOfDay(hour: 10, minute: 9),
+      endTime: const TimeOfDay(hour: 11, minute: 41)),
   BellPeriod.withValues(
-    periodName: "Lunch",
-    startTime: const TimeOfDay(hour: 11, minute: 41),
-    endTime:
-        const TimeOfDay(hour: 12, minute: 14)), // this will cause problems
+      periodName: "Lunch",
+      startTime: const TimeOfDay(hour: 11, minute: 41),
+      endTime:
+          const TimeOfDay(hour: 12, minute: 14)), // this will cause problems
   BellPeriod.withValues(
-    periodName: "3",
-    startTime: const TimeOfDay(hour: 12, minute: 19),
-    endTime: const TimeOfDay(hour: 13, minute: 51)),
+      periodName: "3",
+      startTime: const TimeOfDay(hour: 12, minute: 19),
+      endTime: const TimeOfDay(hour: 13, minute: 51)),
   BellPeriod.withValues(
-    periodName: "4",
-    startTime: const TimeOfDay(hour: 13, minute: 58),
-    endTime: const TimeOfDay(hour: 15, minute: 30)),
+      periodName: "4",
+      startTime: const TimeOfDay(hour: 13, minute: 58),
+      endTime: const TimeOfDay(hour: 15, minute: 30)),
 ]);
 
 BellSchedule testBSchedule = BellSchedule.withValues(periods: [
   BellPeriod.withValues(
-    periodName: "5",
-    startTime: const TimeOfDay(hour: 8, minute: 30),
-    endTime: const TimeOfDay(hour: 10, minute: 2)),
+      periodName: "5",
+      startTime: const TimeOfDay(hour: 8, minute: 30),
+      endTime: const TimeOfDay(hour: 10, minute: 2)),
   BellPeriod.withValues(
-    periodName: "6",
-    startTime: const TimeOfDay(hour: 10, minute: 9),
-    endTime: const TimeOfDay(hour: 11, minute: 41)),
+      periodName: "6",
+      startTime: const TimeOfDay(hour: 10, minute: 9),
+      endTime: const TimeOfDay(hour: 11, minute: 41)),
   BellPeriod.withValues(
-    periodName: "Lunch",
-    startTime: const TimeOfDay(hour: 11, minute: 41),
-    endTime:
-        const TimeOfDay(hour: 12, minute: 14)), // this will cause problems
+      periodName: "Lunch",
+      startTime: const TimeOfDay(hour: 11, minute: 41),
+      endTime:
+          const TimeOfDay(hour: 12, minute: 14)), // this will cause problems
   BellPeriod.withValues(
-    periodName: "7",
-    startTime: const TimeOfDay(hour: 12, minute: 19),
-    endTime: const TimeOfDay(hour: 13, minute: 51)),
+      periodName: "7",
+      startTime: const TimeOfDay(hour: 12, minute: 19),
+      endTime: const TimeOfDay(hour: 13, minute: 51)),
   BellPeriod.withValues(
-    periodName: "8",
-    startTime: const TimeOfDay(hour: 13, minute: 58),
-    endTime: const TimeOfDay(hour: 15, minute: 30)),
+      periodName: "8",
+      startTime: const TimeOfDay(hour: 13, minute: 58),
+      endTime: const TimeOfDay(hour: 15, minute: 30)),
 ]);
 
 Map<String, String> periodNameToIndicator = {
