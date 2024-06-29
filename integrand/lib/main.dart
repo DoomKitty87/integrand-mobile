@@ -107,7 +107,7 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     // TODO: Remove if not testing
-    DataStorage.clearData();
+    // DataStorage.clearData();
 
     return Consumer<AppData>(
       builder: (context, appData, child) {
@@ -168,14 +168,23 @@ class _MainState extends State<Main> {
     // TODO: Somewhere in here, add a block to check for studentVueAPI.initialized
     // Block app view with loading screen until initialized
 
+    List<Widget> pages = const [
+      Schedule(),
+      Gradebook(),
+    ];
+
+    PageController pageController = PageController(initialPage: 1); // Make starting index go to schedule page
+
     return GradientBackground(
       child: Consumer<AppData>(
         builder: (context, value, child) {
-          return PageView(
-            children: [
-              const Schedule(),
-              const Gradebook(),
-            ],
+          return PageView.builder(
+            itemCount: 2,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return pages[index];
+            },
+            controller: pageController,
           );
         },
       ),

@@ -260,6 +260,11 @@ class TimeLeftBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
+    double percentage;
+    percentage = differenceMinutesTimeOfDay(currentTime, startTime) /
+        differenceMinutesTimeOfDay(endTime, startTime);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -292,7 +297,7 @@ class TimeLeftBar extends StatelessWidget {
                 children: [
                   const TimeLeftBarBackground(),
                   Positioned(
-                    left: constraints.maxWidth,
+                    left: constraints.minWidth - 17 + (percentage * (constraints.maxWidth - constraints.minWidth)),
                     top: 8,
                     child: TimeLeftBarIcon(
                       currentTime: currentTime,
