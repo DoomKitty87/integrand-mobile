@@ -29,22 +29,6 @@ enum IntakePage {
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => StudentVueAPI(),
-      child: MaterialApp(
-        title: appName,
-        theme: ThemeData(fontFamily: 'Inter'),
-        home: const DefaultTextStyle(
-          style: TextStyle(
-              fontFamily: 'Inter',
-              color: textColor,
-              decoration: TextDecoration.none),
-          child: App(),
-        ), // --------------------------------------------
-      ),
-    ),
-  );
-  runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => AppData()),
