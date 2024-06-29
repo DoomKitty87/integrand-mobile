@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:integrand/backend/studentvue_api.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
@@ -32,7 +33,7 @@ class _ScheduleState extends State<Schedule> {
     setState(() {
       _currentTime = DateTime.fromMillisecondsSinceEpoch(
           _currentTime.millisecondsSinceEpoch + 500);
-      print(_currentTime);
+      // print(_currentTime);
     });
   }
 
@@ -73,7 +74,7 @@ class _ScheduleState extends State<Schedule> {
               ),
             ),
             const SizedBox(
-              height: 40,
+              height: 30,
             ),
             ScheduleDisplay(
               bellSchedule: schedule,
@@ -118,8 +119,32 @@ class ScheduleTimeIndicators extends StatelessWidget {
       indicatorText = periodNameToIndicatorMap[period.periodName];
     }
 
+    const List<String> daysOfWeek = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ];
+
+    final String timeOfDayLabel =
+        DateTime.now().hour < 12 ? " morning" : " afternoon";
+
+    final String dayLabel = daysOfWeek[DateTime.now().weekday] + timeOfDayLabel;
+
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          textAlign: TextAlign.left,
+          dayLabel,
+          style: bodyStyle,
+        ),
+        const SizedBox(
+          height: 8,
+        ),
         // TODO: passing period background goes here
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -147,6 +172,83 @@ class ScheduleTimeIndicators extends StatelessWidget {
               endTime: endTime,
             ),
           ],
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        LayeredProgressIndicator(
+          startTime: startTime,
+          endTime: endTime,
+          currentTime: TimeOfDay.fromDateTime(currentTime),
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text(
+            removeAMPM(startTime.format(context)),
+            style: smallBodyStyle,
+          ),
+          Text(
+            removeAMPM(endTime.format(context)),
+            style: smallBodyStyle,
+          ),
+        ])
+      ],
+    );
+  }
+}
+
+class LayeredProgressIndicator extends StatelessWidget {
+  const LayeredProgressIndicator(
+      {super.key,
+      required this.startTime,
+      required this.endTime,
+      required this.currentTime});
+
+  final TimeOfDay startTime;
+  final TimeOfDay endTime;
+  final TimeOfDay currentTime;
+
+  @override
+  Widget build(BuildContext context) {
+    final int total = differenceMinutesTimeOfDay(endTime, startTime);
+    final int current = differenceMinutesTimeOfDay(currentTime, startTime);
+
+    final double progress = current / total;
+
+    final int flex1 = (progress * 100).toInt();
+    final int flex2 = 100 - flex1;
+
+    return Row(
+      children: [
+        Expanded(
+          flex: flex1,
+          child: Container(
+            height: 5,
+            decoration: BoxDecoration(
+              gradient: textGradient,
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+        ),
+        Container(
+          width: 5,
+          height: 5,
+          decoration: BoxDecoration(
+            color: textColor,
+            borderRadius: BorderRadius.circular(5),
+          ),
+        ),
+        Expanded(
+          flex: flex2,
+          child: Container(
+            height: 5,
+            decoration: BoxDecoration(
+              color: lighterGrey,
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
         ),
       ],
     );
@@ -180,9 +282,11 @@ class ClockTimerHybrid extends StatelessWidget {
       }
 
       output =
-          "$minutesLeft:${secondsLeft > 10 ? secondsLeft : '0${secondsLeft}'}";
+          "$minutesLeft:${secondsLeft > 9 ? secondsLeft : '0$secondsLeft'}";
     } else {
       output = TimeOfDay.fromDateTime(currentDateTime).format(context);
+      //.replaceAll("AM", "a.m.")
+      //.replaceAll("PM", "p.m.");
     }
 
     return Text(
@@ -235,7 +339,7 @@ class MinutesLeftText extends StatelessWidget {
         if (hours == 1) {
           textString += "1 hour ";
         } else {
-          textString += "${hours} hours ";
+          textString += "$hours hours ";
         }
       }
       if (minutesLeft > 0) {
@@ -243,7 +347,7 @@ class MinutesLeftText extends StatelessWidget {
         if (minutesLeft == 1) {
           textString += "1 minute ";
         } else {
-          textString += "${minutesLeft} minutes ";
+          textString += "$minutesLeft minutes ";
         }
       }
       textString += "left";
@@ -253,177 +357,6 @@ class MinutesLeftText extends StatelessWidget {
       textString,
       textAlign: TextAlign.left,
       style: bodyStyle,
-    );
-  }
-}
-
-class TimeLeftBar extends StatelessWidget {
-  const TimeLeftBar(
-      {super.key,
-      required this.heightPixels,
-      required this.startTime,
-      required this.currentTime,
-      required this.endTime});
-
-  final TimeOfDay startTime;
-  final DateTime currentTime;
-  final TimeOfDay endTime;
-  final double heightPixels;
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: Make this constant - maybe create a TimeOfDayPrecise class with seconds?
-    double percentage;
-    percentage = differenceMinutesTimeOfDay(
-            TimeOfDay.fromDateTime(currentTime), startTime) /
-        differenceMinutesTimeOfDay(endTime, startTime) *
-        Duration.microsecondsPerMinute;
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(
-            left: 5.0,
-            right: 5.0,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              TimeText(
-                time: startTime,
-                textAlign: TextAlign.left,
-              ),
-              TimeText(
-                time: endTime,
-                textAlign: TextAlign.right,
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: heightPixels + 8.0,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Stack(
-                clipBehavior: Clip.none,
-                alignment: Alignment.centerLeft,
-                children: [
-                  const TimeLeftBarBackground(),
-                  Positioned(
-                    left: constraints.minWidth -
-                        17 +
-                        (percentage *
-                            (constraints.maxWidth - constraints.minWidth - 14)),
-                    top: 8,
-                    child: TimeLeftBarIcon(
-                      currentTime: TimeOfDay.fromDateTime(currentTime),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class TimeLeftBarBackground extends StatelessWidget {
-  const TimeLeftBarBackground({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Container(
-          width: 1,
-          height: 12,
-          color: textColor,
-        ),
-        Expanded(
-          child: Container(
-            height: 1,
-            color: textColor,
-          ),
-        ),
-        Container(
-          width: 1,
-          height: 12,
-          color: textColor,
-        ),
-      ],
-    );
-  }
-}
-
-// TODO: Finish this icon, make it a resonable size
-class TimeLeftBarIcon extends StatelessWidget {
-  const TimeLeftBarIcon({super.key, required this.currentTime});
-
-  final TimeOfDay currentTime;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: textColor,
-              width: 1,
-            ),
-          ),
-          child: const SizedBox(
-            height: 10,
-            width: 10,
-          ),
-        ),
-        const SizedBox(
-          height: 5,
-        ),
-        BoldTimeText(
-          time: currentTime,
-          textAlign: TextAlign.center,
-        ),
-      ],
-    );
-  }
-}
-
-class TimeText extends StatelessWidget {
-  const TimeText({super.key, required this.time, required this.textAlign});
-
-  final TimeOfDay time;
-  final TextAlign textAlign;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      removeAMPM(time.format(context)),
-      textAlign: textAlign,
-      style: smallBodyStyle,
-    );
-  }
-}
-
-class BoldTimeText extends StatelessWidget {
-  const BoldTimeText({super.key, required this.time, required this.textAlign});
-
-  final TimeOfDay time;
-  final TextAlign textAlign;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      removeAMPM(time.format(context)),
-      textAlign: textAlign,
-      style: boldBodyStyle,
     );
   }
 }

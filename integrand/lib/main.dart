@@ -221,7 +221,7 @@ class CenterPage extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 15),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -356,19 +356,19 @@ class PageSelect extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  text,
-                  style:
-                      appData.currentPage == page ? barStyleSelected : barStyle,
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
                 Icon(
                   icon,
                   size: 25,
                   color:
                       appData.currentPage == page ? barColorSelected : barColor,
+                ),
+                const SizedBox(
+                  height: 2,
+                ),
+                Text(
+                  text,
+                  style:
+                      appData.currentPage == page ? barStyleSelected : barStyle,
                 ),
               ],
             ));
