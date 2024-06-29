@@ -15,6 +15,11 @@ enum AppPage {
   gradebook,
 }
 
+enum IntakePage {
+  primary,
+  credentials,
+}
+
 void main() {
   runApp(
     ChangeNotifierProvider(
@@ -32,6 +37,55 @@ void main() {
       ),
     ),
   );
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => AppData()),
+        ChangeNotifierProvider(create: (context) => StudentVueAPI()),
+      ],
+      child: MaterialApp(
+        title: appName,
+        theme: ThemeData(fontFamily: 'Inter'),
+        home: const DefaultTextStyle(
+          style: TextStyle(
+              fontFamily: 'Inter',
+              color: textColor,
+              decoration: TextDecoration.none),
+          child: App(),
+        ), // --------------------------------------------
+      ),
+    ),
+  );
+}
+
+class AppData extends ChangeNotifier {
+  AppPage _currentPage = AppPage.schedule;
+  AppPage get currentPage => _currentPage;
+
+  void changePage(AppPage page) {
+    _currentPage = page;
+    notifyListeners();
+  }
+
+  bool _isIntake = false;
+  bool get isIntake => _isIntake;
+
+  IntakePage _intakePage = IntakePage.primary;
+  IntakePage get intakePage => _intakePage;
+
+  void changeIntakePage(IntakePage page) {
+    _intakePage = page;
+    notifyListeners();
+  }
+
+  void setIntake(bool intake) {
+    _isIntake = intake;
+    notifyListeners();
+  }
+
+  void update() {
+    notifyListeners();
+  }
 }
 
 class App extends StatefulWidget {
@@ -52,34 +106,42 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-
+    // TODO: Remove if not testing
     DataStorage.clearData();
 
-    return FutureBuilder<bool>(
-      future: isCredsStored(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const LoadingSchedule();
-        } 
-        else {
-          if (snapshot.data!) {
-            Provider.of<StudentVueAPI>(context, listen: false).initialize(
-              'https://parent-portland.cascadetech.org/portland',
-              username,
-              password,
-            );
-            return Consumer<StudentVueAPI>(
-              builder: (context, studentVueAPI, child) {
-                if (!studentVueAPI.initialized) {
-                  return const LoadingSchedule();
+    return Consumer<AppData>(
+      builder: (context, appData, child) {
+        return FutureBuilder<bool>(
+          future: isCredsStored(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const LoadingSchedule();
+            } else {
+              bool _ = appData.isIntake;
+              if (snapshot.data!) {
+                Provider.of<StudentVueAPI>(context, listen: false).initialize(
+                  'https://parent-portland.cascadetech.org/portland',
+                  username,
+                  password,
+                );
+                return Consumer<StudentVueAPI>(
+                  builder: (context, studentVueAPI, child) {
+                    if (!studentVueAPI.ready) {
+                      return const LoadingSchedule();
+                    }
+                    return const Main();
+                  },
+                );
+              } else {
+                if (appData.intakePage == IntakePage.credentials) {
+                  return const IntakeCredentials();
+                } else {
+                  return const IntakePrimary();
                 }
-                return const Main();
-              },
-            );
-          } else {
-            return const IntakePrimary();
-          }
-        }
+              }
+            }
+          },
+        );
       },
     );
   }
@@ -107,7 +169,16 @@ class _MainState extends State<Main> {
     // Block app view with loading screen until initialized
 
     return GradientBackground(
-      child: Schedule(),
+      child: Consumer<AppData>(
+        builder: (context, value, child) {
+          return PageView(
+            children: [
+              const Schedule(),
+              const Gradebook(),
+            ],
+          );
+        },
+      ),
     );
   }
 }

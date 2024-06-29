@@ -8,6 +8,7 @@ const Color backgroundColorSecondary = Color.fromRGBO(10, 1, 24, 1);
 const Color textColor = Color.fromRGBO(224, 224, 224, 1);
 const Color darkGrey = Color.fromRGBO(14, 14, 14, 1);
 const Color lightGrey = Color.fromRGBO(26, 27, 33, 1);
+const Color lighterGrey = Color.fromRGBO(45, 47, 57, 1);
 const Color blueGradient = Color.fromRGBO(5, 62, 148, 1);
 const Color purpleGradient = Color.fromRGBO(122, 61, 143, 1);
 const Color iconColor = purpleGradient;

@@ -112,8 +112,7 @@ class ScheduleTimeIndicators extends StatelessWidget {
       endTime = data.$3!.startTime;
       indicatorText = periodNameToIndicatorMap[""]; // Passing period indicator
     } else {
-      BellPeriod period =
-          bellSchedule.getCurrentPeriod(TimeOfDay.fromDateTime(currentTime))!;
+      BellPeriod period = bellSchedule.getCurrentPeriod(TimeOfDay.fromDateTime(currentTime))!;
       startTime = period.startTime;
       endTime = period.endTime;
       indicatorText = periodNameToIndicatorMap[period.periodName];
@@ -293,7 +292,7 @@ class TimeLeftBar extends StatelessWidget {
                 children: [
                   const TimeLeftBarBackground(),
                   Positioned(
-                    left: constraints.minWidth,
+                    left: constraints.maxWidth,
                     top: 8,
                     child: TimeLeftBarIcon(
                       currentTime: currentTime,

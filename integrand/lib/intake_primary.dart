@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:integrand/consts.dart';
 import 'package:integrand/helpers/page_animation.dart';
 import 'package:integrand/intake_credentials.dart';
+import 'package:provider/provider.dart';
+import 'package:integrand/main.dart';
 
 class IntakePrimary extends StatefulWidget {
   const IntakePrimary({super.key});
@@ -38,7 +40,7 @@ class _IntakePrimary extends State<IntakePrimary> {
                 child: TextButton(
                   style: buttonStyle,
                   onPressed: () => {
-                    animateWithSlideFromRight(context, const IntakeCredentials(), Durations.medium2)
+                    Provider.of<AppData>(context, listen: false).changeIntakePage(IntakePage.credentials)
                   },
                   child: const Text(
                     "Get Started",

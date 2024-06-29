@@ -12,6 +12,7 @@ class StudentVueAPI with ChangeNotifier {
   late String password;
 
   bool initialized = false;
+  bool ready = false;
 
   bool initializedStudent = false;
   bool initializedGrades = false;
@@ -46,24 +47,27 @@ class StudentVueAPI with ChangeNotifier {
     updateSchedule();
 
     // Updates for data not accessible via SOAP API
-    initializeClientData();
+    await initializeClientData();
 
     while (allApiCallsNotFinished()) {
       await Future.delayed(const Duration(milliseconds: 100));
     }
 
+    ready = true;
+
     notifyListeners();
   }
 
   static bool credsAreNull(String user, String pass) {
-    print(user);
+    // print("credsAreNull Run, with Username: ${user}");
     return user == '' || pass == '';
   }
 
-  static Future<bool> credsAreInvalid(String user, String pass, String baseUrl) async {
+  static Future<bool> credsAreInvalid(
+      String user, String pass, String baseUrl) async {
     String url = '$baseUrl/Service/PXPCommunication.asmx';
 
-    print(user);
+    // print("credsAreInvalid Run, with Username: ${user}");
 
     Uri uri = Uri.parse(url);
 
@@ -80,7 +84,7 @@ class StudentVueAPI with ChangeNotifier {
       body: xml,
     );
 
-    print(response.body);
+    // print(response.body);
 
     if (response.body.contains('Invalid user id or password')) {
       return true;
@@ -350,29 +354,34 @@ class StudentVueAPI with ChangeNotifier {
     initializedBellSchedule = true;
   }
 
-  Future<void> requestStudentVueWebData() async {
-    String url = '$baseUrl/PXP2_CourseHistory.aspx?AGU=0';
-
-    http.Response response = await http.get(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Cookie': currentCookies,
-      },
-    );
-
-    currentWebData.courseHistory = removeWhitespace(response.body);
-
-    url = '$baseUrl/PXP2_ClassSchedule.aspx?AGU=0';
-
-    response = await http.get(
-      Uri.parse(url),
-      headers: <String, String>{
-        'Cookie': currentCookies,
-      },
-    );
-
-    currentWebData.classSchedule = removeWhitespace(response.body);
+  void requestStudentVueWebData() {
+    requestCourseHistory();
+    requestBellSchedule();
   }
+
+  // Future<void> requestStudentVueWebData() async {
+  //   String url = '$baseUrl/PXP2_CourseHistory.aspx?AGU=0';
+
+  //   http.Response response = await http.get(
+  //     Uri.parse(url),
+  //     headers: <String, String>{
+  //       'Cookie': currentCookies,
+  //     },
+  //   );
+
+  //   currentWebData.courseHistory = removeWhitespace(response.body);
+
+  //   url = '$baseUrl/PXP2_ClassSchedule.aspx?AGU=0';
+
+  //   response = await http.get(
+  //     Uri.parse(url),
+  //     headers: <String, String>{
+  //       'Cookie': currentCookies,
+  //     },
+  //   );
+
+  //   currentWebData.classSchedule = removeWhitespace(response.body);
+  // }
 
   static String removeWhitespace(String html) {
     return html

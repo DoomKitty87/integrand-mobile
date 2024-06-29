@@ -12,15 +12,15 @@ class LoadingSchedule extends StatefulWidget {
 class _LoadingScheduleState extends State<LoadingSchedule> {
   @override
   Widget build(BuildContext context) {
-    return const GradientBackground(
+    return GradientBackground(
       child: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 35.0,
             ),
-            SizedBox(
+            const SizedBox(
               height: 95.0,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -38,34 +38,46 @@ class _LoadingScheduleState extends State<LoadingSchedule> {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 30.0,
             ),
-            SizedBox(
+            const SizedBox(
               height: 60.0,
               child: GreyRoundedContainer(
                 padding: 10.0,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 50,
             ),
-            SizedBox(
+            const SizedBox(
               height: 250.0,
               child: GreyRoundedContainer(
                 padding: 10.0,
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
-            SizedBox(
+            const SizedBox(
               height: 250.0,
               child: GreyRoundedContainer(
                 padding: 10.0,
               ),
             ),
-          ]
+          ].animate(
+            onPlay: (controller) => controller.repeat(reverse: true),
+            interval: Durations.short2,
+            effects: [
+              const ColorEffect(
+                blendMode: ShimmerEffect.defaultBlendMode,
+                duration: Durations.long4,
+                begin: lightGrey,
+                end: lighterGrey,
+                curve: Curves.ease,
+              ),
+            ]
+          ),
         ),
       ),
     );

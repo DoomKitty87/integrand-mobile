@@ -28,7 +28,6 @@ class _IntakeCredentials extends State<IntakeCredentials> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -55,9 +54,23 @@ class _IntakeCredentials extends State<IntakeCredentials> {
             ),
             Padding(
               padding: const EdgeInsets.only(left: 30.0, right: 30.0),
-              child: CredentialsForm(obscureText: _obscureText, showButtonCallback: _toggle),
+              child: CredentialsForm(
+                  obscureText: _obscureText, showButtonCallback: _toggle),
             ),
-            SizedBox(
+            const SizedBox(
+              height: 40.0,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 30.0, right: 30.0),
+              child: ErrorText(
+                message: _nullCredsBool
+                    ? "Please enter your username and password."
+                    : _invalidCredsBool
+                        ? "Invalid username or password."
+                        : "",
+              ),
+            ),
+            const SizedBox(
               height: 60.0,
             ),
             const Padding(
@@ -79,25 +92,24 @@ class _IntakeCredentials extends State<IntakeCredentials> {
                           _nullCredsBool = true;
                           _invalidCredsBool = false;
                         });
-                      } 
+                      }
                       // TODO: remove the hard coded url
-                      else if (await StudentVueAPI.credsAreInvalid(username, password, 'https://parent-portland.cascadetech.org/portland')) {
+                      else if (await StudentVueAPI.credsAreInvalid(
+                          username,
+                          password,
+                          'https://parent-portland.cascadetech.org/portland')) {
                         // Show error message
                         setState(() {
                           _nullCredsBool = false;
                           _invalidCredsBool = true;
                         });
-                        print("Invalid credentials");
-                      } 
-                      else {
+                      } else {
                         // Submit credentials form
                         await DataStorage.saveData();
+                        // Trigger rebuild of main App widget
                         if (!context.mounted) return;
-                        Provider.of<StudentVueAPI>(context, listen: false).initialize(
-                          'https://parent-portland.cascadetech.org/portland',
-                          username,
-                          password,
-                        );
+                        Provider.of<AppData>(context, listen: false)
+                            .setIntake(true);
                         // animateWithSlideFromRight(context, const LoadingSchedule(), Durations.medium2);
                       }
                     },
@@ -154,7 +166,8 @@ class CredentialsDescription extends StatelessWidget {
 }
 
 class CredentialsForm extends StatelessWidget {
-  const CredentialsForm({super.key, required this.obscureText, required this.showButtonCallback});
+  const CredentialsForm(
+      {super.key, required this.obscureText, required this.showButtonCallback});
 
   final bool obscureText;
   final Function showButtonCallback;
@@ -166,14 +179,15 @@ class CredentialsForm extends StatelessWidget {
         TextFormField(
           style: bodyStyle,
           autocorrect: false,
+          cursorColor: purpleGradient,
           decoration: InputDecoration(
             labelText: "Username (without @domain.com)",
+            focusedBorder: const UnderlineInputBorder(
+              borderSide: BorderSide(color: purpleGradient),
+            ),
             labelStyle: bodyStyleSubdued,
           ),
-          onFieldSubmitted: (value) => {
-            username = value,
-            print(username)
-          },
+          onChanged: (value) => {username = value},
         ),
         const SizedBox(
           height: 20.0,
@@ -187,29 +201,32 @@ class CredentialsForm extends StatelessWidget {
                 autocorrect: false,
                 enableSuggestions: false,
                 style: bodyStyle,
-                decoration: const InputDecoration(
+                cursorColor: purpleGradient,
+                decoration: InputDecoration(
                   labelText: 'Password',
+                  focusedBorder: const UnderlineInputBorder(
+                    borderSide: BorderSide(color: purpleGradient),
+                  ),
+                  labelStyle: bodyStyleSubdued,
                 ),
                 obscureText: obscureText,
-                onFieldSubmitted: (value) => {
-                  password = value,
-                  print(password)
+                onChanged: (value) {
+                  password = value;
                 },
               ),
             ),
             Expanded(
               flex: 1,
               child: IconButton(
-                icon: Icon((obscureText) ? Icons.remove_red_eye_outlined : Icons.remove_red_eye),
+                icon: Icon((obscureText)
+                    ? Icons.remove_red_eye_outlined
+                    : Icons.remove_red_eye),
                 onPressed: () {
                   showButtonCallback();
                 },
               ),
             ),
           ],
-        ),
-        const SizedBox(
-          height: 20.0,
         ),
       ],
     );
@@ -225,7 +242,7 @@ class CredentialsSafetyMessage extends StatelessWidget {
       text: const TextSpan(
         children: <TextSpan>[
           TextSpan(
-            text: "Your data will ",
+            text: "Your information will ",
             style: bodyStyle,
           ),
           TextSpan(
@@ -252,6 +269,9 @@ class ErrorText extends StatelessWidget {
     return Text(
       message,
       style: errorStyle,
-    ).animate(effects: [FadeEffect()]);
+    ).animate(
+      target: 1,
+      effects: [const FadeEffect()]
+    );
   }
 }
