@@ -30,7 +30,8 @@ class _ScheduleState extends State<Schedule> {
 
   void _update() {
     setState(() {
-      _currentTime = testDateTime;
+      _currentTime = DateTime.fromMillisecondsSinceEpoch(_currentTime.millisecondsSinceEpoch + 500);
+      print(_currentTime);
     });
   }
 
@@ -140,9 +141,8 @@ class ScheduleTimeIndicators extends StatelessWidget {
         Row(
           children: [
             MinutesLeftText(
-              isPassingPeriod: bellSchedule
-                  .isPassingPeriod(TimeOfDay.fromDateTime(currentTime))
-                  .$1,
+              isPassingPeriod: bellSchedule.isPassingPeriod(TimeOfDay.fromDateTime(currentTime)).$1,
+              currentTime: TimeOfDay.fromDateTime(currentTime),
               endTime: endTime,
             ),
           ],
@@ -154,7 +154,7 @@ class ScheduleTimeIndicators extends StatelessWidget {
           heightPixels: 20,
           startTime: startTime,
           endTime: endTime,
-          currentTime: TimeOfDay.fromDateTime(currentTime),
+          currentTime: currentTime,
         ),
       ],
     );
@@ -176,9 +176,7 @@ class ClockTimerHybrid extends StatelessWidget {
     var info =
         bellSchedule.isPassingPeriod(TimeOfDay.fromDateTime(currentDateTime));
     if (info.$1) {
-      int minutesLeft = differenceMinutesTimeOfDay(
-              info.$3!.startTime, TimeOfDay.fromDateTime(currentDateTime)) -
-          1;
+      int minutesLeft = differenceMinutesTimeOfDay(info.$3!.startTime, TimeOfDay.fromDateTime(currentDateTime)) - 1;
 
       int secondsLeft = 60 - currentDateTime.second;
 
@@ -187,7 +185,7 @@ class ClockTimerHybrid extends StatelessWidget {
         minutesLeft++;
       }
 
-      output = "$minutesLeft:$secondsLeft";
+      output = "$minutesLeft:${secondsLeft > 10 ? secondsLeft : '0${secondsLeft}'}";
     } else {
       output = TimeOfDay.fromDateTime(currentDateTime).format(context);
     }
@@ -216,25 +214,44 @@ class PeriodIndicator extends StatelessWidget {
 
 class MinutesLeftText extends StatelessWidget {
   const MinutesLeftText(
-      {super.key, required this.isPassingPeriod, required this.endTime});
+      {super.key, required this.isPassingPeriod, required this.currentTime, required this.endTime});
 
   final bool isPassingPeriod;
+  final TimeOfDay currentTime;
   final TimeOfDay endTime;
 
   @override
   Widget build(BuildContext context) {
-    String textString;
+    String textString = "";
 
     if (isPassingPeriod) {
       textString = "minutes left";
-    } else {
-      int minutesLeft = differenceMinutesTimeOfDay(endTime, TimeOfDay.now());
+    } 
+    else {
+      int minutesLeft = differenceMinutesTimeOfDay(endTime, currentTime);
 
       // Hours
       int hours = minutesLeft ~/ 60;
       minutesLeft = minutesLeft % 60;
-      textString =
-          "${hours > 0 ? (hours == 1 ? "1 hour and" : "$hours hours") : ""}${hours > 0 && minutesLeft > 0 ? " and " : ""}${minutesLeft > 0 ? (minutesLeft == 1 ? "1 minute" : "$minutesLeft minutes") : ""} left";
+
+      if (hours > 0) {
+        if (hours == 1) {
+          textString += "1 hour ";
+        }
+        else {
+          textString += "${hours} hours ";
+        }
+      }
+      if (minutesLeft > 0) {
+        textString += "and ";
+        if (minutesLeft == 1) {
+          textString += "1 minute ";
+        }
+        else {
+          textString += "${minutesLeft} minutes ";
+        }
+      }
+      textString += "left";
     }
 
     return Text(
@@ -254,16 +271,17 @@ class TimeLeftBar extends StatelessWidget {
       required this.endTime});
 
   final TimeOfDay startTime;
-  final TimeOfDay currentTime;
+  final DateTime currentTime;
   final TimeOfDay endTime;
   final double heightPixels;
 
   @override
   Widget build(BuildContext context) {
-    
+  
+    // TODO: Make this constant - maybe create a TimeOfDayPrecise class with seconds?
     double percentage;
-    percentage = differenceMinutesTimeOfDay(currentTime, startTime) /
-        differenceMinutesTimeOfDay(endTime, startTime);
+    percentage = differenceMinutesTimeOfDay(TimeOfDay.fromDateTime(currentTime), startTime) /
+        differenceMinutesTimeOfDay(endTime, startTime) * Duration.microsecondsPerMinute;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -297,10 +315,10 @@ class TimeLeftBar extends StatelessWidget {
                 children: [
                   const TimeLeftBarBackground(),
                   Positioned(
-                    left: constraints.minWidth - 17 + (percentage * (constraints.maxWidth - constraints.minWidth)),
+                    left: constraints.minWidth - 17 + (percentage * (constraints.maxWidth - constraints.minWidth - 14)),
                     top: 8,
                     child: TimeLeftBarIcon(
-                      currentTime: currentTime,
+                      currentTime: TimeOfDay.fromDateTime(currentTime),
                     ),
                   ),
                 ],
@@ -505,7 +523,6 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
           right: 25.0,
         );
 
-        // TODO: Make the current period opened
         Container nextPeriodText = Container(
           child: TextButton(
             // Disable the button if it's lunch or flex`
@@ -580,16 +597,23 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                             width: 10,
                           ),
                           Container(
-                            width: 5.0,
+                            width:  isCurrentPeriod ? 5.0 : 3.0,
                             height: 80,
-                            decoration: const BoxDecoration(
-                              gradient: verticalGradientAccent,
+                            decoration: isCurrentPeriod ? const BoxDecoration(
+                              color: blueGradient,
                               borderRadius: BorderRadius.all(
-                                Radius.circular(5.0)),
+                                Radius.circular(5.0)
+                              ),
+                            ) :
+                            const BoxDecoration(
+                              color: lighterGrey,
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(5.0)
+                              ),
                             )
                           ),
                           const SizedBox(
-                            width: 12,
+                            width: 20,
                           ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
