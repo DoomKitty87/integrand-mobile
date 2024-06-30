@@ -132,7 +132,7 @@ class ScheduleTimeIndicators extends StatelessWidget {
     final String timeOfDayLabel =
         DateTime.now().hour < 12 ? " morning" : " afternoon";
 
-    final String dayLabel = daysOfWeek[DateTime.now().weekday] + timeOfDayLabel;
+    final String dayLabel = daysOfWeek[DateTime.now().weekday - 1] + timeOfDayLabel;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,7 +150,7 @@ class ScheduleTimeIndicators extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ClockTimerHybrid(
+            TimeLeftLarge(
               currentDateTime: currentTime,
               bellSchedule: bellSchedule,
             ),
@@ -255,8 +255,8 @@ class LayeredProgressIndicator extends StatelessWidget {
   }
 }
 
-class ClockTimerHybrid extends StatelessWidget {
-  const ClockTimerHybrid(
+class TimeLeftLarge extends StatelessWidget {
+  const TimeLeftLarge(
       {super.key, required this.currentDateTime, required this.bellSchedule});
 
   final DateTime currentDateTime;
@@ -280,7 +280,7 @@ class ClockTimerHybrid extends StatelessWidget {
         secondsLeft = 0;
         minutesLeft++;
       }
-
+      // TODO: Make this support switching to hour:minute format when there's more than an hour left
       output =
           "$minutesLeft:${secondsLeft > 9 ? secondsLeft : '0$secondsLeft'}";
     } else {
