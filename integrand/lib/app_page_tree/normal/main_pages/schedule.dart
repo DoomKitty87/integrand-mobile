@@ -29,10 +29,14 @@ class _ScheduleState extends State<Schedule> {
   }
 
   void _update() {
-    if (mounted == false) return;
+    if (mounted == false) {
+      _timer.cancel();
+      return;
+    }
+      
     setState(() {
-      _currentTime = DateTime.fromMillisecondsSinceEpoch(
-          _currentTime.millisecondsSinceEpoch + 500);
+      // TODO: Change this to change the timescale of the app
+      _currentTime = DateTime.fromMillisecondsSinceEpoch(_currentTime.millisecondsSinceEpoch + 50000);
       // print(_currentTime);
     });
   }
@@ -119,29 +123,10 @@ class ScheduleTimeIndicators extends StatelessWidget {
       indicatorText = periodNameToIndicatorMap[period.periodName];
     }
 
-    const List<String> daysOfWeek = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday"
-    ];
-
-    final String timeOfDayLabel =
-        DateTime.now().hour < 12 ? " morning" : " afternoon";
-
-    final String dayLabel = daysOfWeek[DateTime.now().weekday - 1] + timeOfDayLabel;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          textAlign: TextAlign.left,
-          dayLabel,
-          style: bodyStyle,
-        ),
+        DayOfWeekText(currentTime: currentTime),
         const SizedBox(
           height: 8,
         ),
@@ -199,62 +184,38 @@ class ScheduleTimeIndicators extends StatelessWidget {
   }
 }
 
-class LayeredProgressIndicator extends StatelessWidget {
-  const LayeredProgressIndicator(
-      {super.key,
-      required this.startTime,
-      required this.endTime,
-      required this.currentTime});
+class DayOfWeekText extends StatelessWidget {
+  const DayOfWeekText({super.key, required this.currentTime});
 
-  final TimeOfDay startTime;
-  final TimeOfDay endTime;
-  final TimeOfDay currentTime;
+  final DateTime currentTime;
+
+  final List<String> daysOfWeek = const [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final int total = differenceMinutesTimeOfDay(endTime, startTime);
-    final int current = differenceMinutesTimeOfDay(currentTime, startTime);
+    String timeOfDayLabel;
+    String dayLabel;
+    
+    timeOfDayLabel = currentTime.hour < 12 ? " morning" : " afternoon";
+    dayLabel = daysOfWeek[currentTime.weekday - 1] + timeOfDayLabel;
 
-    final double progress = current / total;
-
-    final int flex1 = (progress * 100).toInt();
-    final int flex2 = 100 - flex1;
-
-    return Row(
-      children: [
-        Expanded(
-          flex: flex1,
-          child: Container(
-            height: 5,
-            decoration: BoxDecoration(
-              gradient: textGradient,
-              borderRadius: BorderRadius.circular(5),
-            ),
-          ),
-        ),
-        Container(
-          width: 5,
-          height: 5,
-          decoration: BoxDecoration(
-            color: textColor,
-            borderRadius: BorderRadius.circular(5),
-          ),
-        ),
-        Expanded(
-          flex: flex2,
-          child: Container(
-            height: 5,
-            decoration: BoxDecoration(
-              color: lighterGrey,
-              borderRadius: BorderRadius.circular(5),
-            ),
-          ),
-        ),
-      ],
+    return Text(
+      textAlign: TextAlign.left,
+      dayLabel,
+      style: bodyStyle,
     );
   }
 }
 
+// TODO: Turn this into purely how much time is left in class, passing, lunch, flex, etc.
 class TimeLeftLarge extends StatelessWidget {
   const TimeLeftLarge(
       {super.key, required this.currentDateTime, required this.bellSchedule});
@@ -357,6 +318,62 @@ class MinutesLeftText extends StatelessWidget {
       textString,
       textAlign: TextAlign.left,
       style: bodyStyle,
+    );
+  }
+}
+
+class LayeredProgressIndicator extends StatelessWidget {
+  const LayeredProgressIndicator(
+      {super.key,
+      required this.startTime,
+      required this.endTime,
+      required this.currentTime});
+
+  final TimeOfDay startTime;
+  final TimeOfDay endTime;
+  final TimeOfDay currentTime;
+
+  @override
+  Widget build(BuildContext context) {
+    final int total = differenceMinutesTimeOfDay(endTime, startTime);
+    final int current = differenceMinutesTimeOfDay(currentTime, startTime);
+
+    final double progress = current / total;
+
+    final int flex1 = (progress * 100).toInt();
+    final int flex2 = 100 - flex1;
+
+    return Row(
+      children: [
+        Expanded(
+          flex: flex1,
+          child: Container(
+            height: 5,
+            decoration: BoxDecoration(
+              gradient: textGradient,
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+        ),
+        Container(
+          width: 5,
+          height: 5,
+          decoration: BoxDecoration(
+            color: textColor,
+            borderRadius: BorderRadius.circular(5),
+          ),
+        ),
+        Expanded(
+          flex: flex2,
+          child: Container(
+            height: 5,
+            decoration: BoxDecoration(
+              color: lighterGrey,
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

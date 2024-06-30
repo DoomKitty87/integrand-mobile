@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:integrand/consts.dart';
 import 'package:integrand/helpers/page_animation.dart';
-import 'package:integrand/app_page_tree/app.dart';
+import 'package:integrand/main.dart';
 import 'package:integrand/app_page_tree/normal/main_pages/schedule.dart';
 import '../../backend/data_storage.dart';
 import '../../backend/studentvue_api.dart';
