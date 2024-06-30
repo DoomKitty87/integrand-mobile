@@ -175,7 +175,31 @@ class _MainState extends State<Main> {
         itemCount: pages.length,
         scrollDirection: Axis.vertical,
         itemBuilder: (context, index) {
-          return pages[index];
+          if (index == 1) {
+            return pages[index];
+          }
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 15),
+                child: Row(children: [
+                  IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back_ios,
+                      size: 25,
+                      color: textColor,
+                    ),
+                    onPressed: () {
+                      pageController.animateToPage(1,
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeInOut);
+                    },
+                  ),
+                ]),
+              ),
+              pages[index],
+            ],
+          );
         },
         controller: pageController,
       ),
