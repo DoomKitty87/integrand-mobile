@@ -487,41 +487,40 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                                   Colors.transparent
                                 ])),
                     ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          child: Padding(
-                            padding: textPadding,
-                            child: Text(
-                              name,
-                              style: textStyle,
+                    child: Padding(
+                      padding: textPadding,
+                      child: Row(
+                        children: [
+                          Expanded(
+                          child: SizedBox(width: 200.0,
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                name,
+                                style: textStyle,
+                              ),
                             ),
                           ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Padding(
-                            padding: textPadding,
+                          ),
+                          SizedBox(
+                            width: 80.0,
                             child: Text(
                               removeAMPM(period.startTime.format(context)),
                               style: textStyle,
                               textAlign: TextAlign.right,
                             ),
                           ),
-                        ),
-                        Expanded(
-                          flex: 1,
-                          child: Padding(
-                            padding: textPadding,
+                          SizedBox(
+                            width: 80.0,
                             child: Text(
                               removeAMPM(period.endTime.format(context)),
                               style: textStyle,
                               textAlign: TextAlign.right,
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   if ((expandedIndexManual == index ||
