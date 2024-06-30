@@ -173,7 +173,7 @@ class _MainState extends State<Main> {
     return GradientBackground(
       child: PageView.builder(
         itemCount: pages.length,
-        scrollDirection: Axis.horizontal,
+        scrollDirection: Axis.vertical,
         itemBuilder: (context, index) {
           return pages[index];
         },
@@ -254,13 +254,16 @@ class CenterPage extends StatelessWidget {
         // ),
         Expanded(
           child: PageView.builder(
-            itemCount: innerPages.length,
-            scrollDirection: Axis.vertical,
-            itemBuilder: (context, index) {
-              return innerPages[index];
-            },
-            controller: innerPageController,
-          ),
+              itemCount: innerPages.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                return innerPages[index];
+              },
+              controller: innerPageController,
+              onPageChanged: (value) => {
+                    Provider.of<AppData>(context, listen: false)
+                        .changePage(AppPage.values[value])
+                  }),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -332,7 +335,6 @@ class PageSelect extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              appData.changePage(page);
               pageController.animateToPage(AppData.indexFromPage(page),
                   duration: const Duration(milliseconds: 250),
                   curve: Curves.easeInOut);
