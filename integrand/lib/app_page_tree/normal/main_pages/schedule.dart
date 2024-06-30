@@ -4,9 +4,9 @@ import 'package:integrand/backend/studentvue_api.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 
-import 'helpers/time_of_day_helpers.dart';
-import 'consts.dart';
-import 'backend/data_classes.dart';
+import '../../../helpers/time_of_day_helpers.dart';
+import '../../../consts.dart';
+import '../../../backend/data_classes.dart';
 
 // Main Widget
 // ============================================================================================
@@ -25,11 +25,11 @@ class _ScheduleState extends State<Schedule> {
   @override
   void initState() {
     super.initState();
-    _timer =
-        Timer.periodic(const Duration(milliseconds: 500), (timer) => _update());
+    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) => _update());
   }
 
   void _update() {
+    if (mounted == false) return;
     setState(() {
       _currentTime = DateTime.fromMillisecondsSinceEpoch(
           _currentTime.millisecondsSinceEpoch + 500);
@@ -145,7 +145,7 @@ class ScheduleTimeIndicators extends StatelessWidget {
         const SizedBox(
           height: 8,
         ),
-        // TODO: passing period background goes here
+        // TODO: passing period background goes here in a stack
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,

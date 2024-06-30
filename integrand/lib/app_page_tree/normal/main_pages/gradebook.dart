@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:integrand/backend/studentvue_api.dart';
 import 'package:provider/provider.dart';
 
-import 'consts.dart';
+import '../../../consts.dart';
 
 class Gradebook extends StatefulWidget {
   const Gradebook({super.key});

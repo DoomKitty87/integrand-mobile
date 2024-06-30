@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:integrand/backend/studentvue_api.dart';
-import 'package:integrand/schedule.dart';
-import 'package:integrand/gradebook.dart';
-import 'package:integrand/news.dart';
-import 'package:integrand/transit.dart';
-import 'package:integrand/calendar.dart';
-import 'package:integrand/profile.dart';
-import 'package:integrand/settings.dart';
-import 'package:integrand/intake_primary.dart';
-import 'package:integrand/intake_credentials.dart';
+import 'package:integrand/app_page_tree/normal/main_pages/schedule.dart';
+import 'package:integrand/app_page_tree/normal/main_pages/gradebook.dart';
+import 'package:integrand/app_page_tree/normal/main_pages/news.dart';
+import 'package:integrand/app_page_tree/normal/main_pages/transit.dart';
+import 'package:integrand/app_page_tree/normal/main_pages/calendar.dart';
+import 'package:integrand/app_page_tree/normal/profile.dart';
+import 'package:integrand/app_page_tree/normal/settings.dart';
+import 'package:integrand/app_page_tree/intake/intake_primary.dart';
+import 'package:integrand/app_page_tree/intake/intake_credentials.dart';
 import 'package:integrand/consts.dart';
 import 'package:integrand/backend/data_storage.dart';
-import 'package:integrand/loading_schedule.dart';
+import 'package:integrand/app_page_tree/loading_page.dart';
 
 enum AppPage {
   transit,
@@ -162,44 +162,21 @@ class _MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
     PageController pageController = PageController(
-        initialPage: 1); // Make starting index go to schedule page
+        initialPage: 1,
+      ); // Make starting index go to schedule page
 
     List<Widget> pages = [
-      const Profile(),
+      Profile(pageController: pageController),
       CenterPage(pageController: pageController),
-      const Settings(),
+      Settings(pageController: pageController),
     ];
 
     return GradientBackground(
       child: PageView.builder(
         itemCount: pages.length,
-        scrollDirection: Axis.vertical,
+        scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
-          if (index == 1) {
-            return pages[index];
-          }
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 15),
-                child: Row(children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.arrow_back_ios,
-                      size: 25,
-                      color: textColor,
-                    ),
-                    onPressed: () {
-                      pageController.animateToPage(1,
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeInOut);
-                    },
-                  ),
-                ]),
-              ),
-              pages[index],
-            ],
-          );
+          return pages[index];
         },
         controller: pageController,
       ),
@@ -228,103 +205,23 @@ class CenterPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20, bottom: 15),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.account_circle_sharp,
-                  size: 25,
-                  color: textColor,
-                ),
-                onPressed: () {
-                  pageController.animateToPage(0,
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.easeInOut);
-                },
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.settings_sharp,
-                  size: 25,
-                  color: textColor,
-                ),
-                onPressed: () {
-                  pageController.animateToPage(2,
-                      duration: const Duration(milliseconds: 250),
-                      curve: Curves.easeInOut);
-                },
-              ),
-            ],
-          ),
+        TopLevelPageSelectBar(
+          topLevelPageController: pageController,
         ),
-        // Consumer<AppData>(
-        //   builder: (context, appData, child) {
-        //     switch (appData.currentPage) {
-        //       case AppPage.transit:
-        //         return const Transit();
-        //       case AppPage.calendar:
-        //         return const Calendar();
-        //       case AppPage.schedule:
-        //         return const Schedule();
-        //       case AppPage.gradebook:
-        //         return const Gradebook();
-        //       case AppPage.news:
-        //         return const News();
-        //     }
-        //   },
-        // ),
         Expanded(
           child: PageView.builder(
-              itemCount: innerPages.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                return innerPages[index];
-              },
-              controller: innerPageController,
-              onPageChanged: (value) => {
-                    Provider.of<AppData>(context, listen: false)
-                        .changePage(AppPage.values[value])
-                  }),
+            itemCount: innerPages.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return innerPages[index];
+            },
+            controller: innerPageController,
+            onPageChanged: (value) => {
+              Provider.of<AppData>(context, listen: false).changePage(AppPage.values[value])
+            }
+          ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            PageSelect(
-              page: AppPage.transit,
-              text: 'Transit',
-              icon: Icons.commute_sharp,
-              pageController: innerPageController,
-            ),
-            PageSelect(
-              page: AppPage.calendar,
-              text: 'Calendar',
-              icon: Icons.calendar_month_sharp,
-              pageController: innerPageController,
-            ),
-            PageSelect(
-              page: AppPage.schedule,
-              text: 'Schedule',
-              icon: Icons.browse_gallery_sharp,
-              pageController: innerPageController,
-            ),
-            PageSelect(
-              page: AppPage.gradebook,
-              text: 'Gradebook',
-              icon: Icons.book_sharp,
-              pageController: innerPageController,
-            ),
-            PageSelect(
-              page: AppPage.news,
-              text: 'News',
-              icon: Icons.newspaper_sharp,
-              pageController: innerPageController,
-            ),
-          ],
-        ),
+        PageSelectBar(pageController: innerPageController),
         const SizedBox(
           height: 10.0,
         ),
@@ -333,8 +230,100 @@ class CenterPage extends StatelessWidget {
   }
 }
 
-class PageSelect extends StatelessWidget {
-  const PageSelect(
+class TopLevelPageSelectBar extends StatelessWidget {
+  const TopLevelPageSelectBar({super.key, required this.topLevelPageController});
+
+  final PageController topLevelPageController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 15),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            icon: const Icon(
+              Icons.account_circle_sharp,
+              size: 25,
+              color: textColor,
+            ),
+            onPressed: () {
+              topLevelPageController.animateToPage(
+                0,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(
+              Icons.settings_sharp,
+              size: 25,
+              color: textColor,
+            ),
+            onPressed: () {
+              topLevelPageController.animateToPage(
+                2,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class PageSelectBar extends StatelessWidget {
+  const PageSelectBar({super.key, required this.pageController});
+
+  final PageController pageController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        PageSelectIcon(
+          page: AppPage.transit,
+          text: 'Transit',
+          icon: Icons.commute_sharp,
+          pageController: pageController,
+        ),
+        PageSelectIcon(
+          page: AppPage.calendar,
+          text: 'Calendar',
+          icon: Icons.calendar_month_sharp,
+          pageController: pageController,
+        ),
+        PageSelectIcon(
+          page: AppPage.schedule,
+          text: 'Schedule',
+          icon: Icons.browse_gallery_sharp,
+          pageController: pageController,
+        ),
+        PageSelectIcon(
+          page: AppPage.gradebook,
+          text: 'Gradebook',
+          icon: Icons.book_sharp,
+          pageController: pageController,
+        ),
+        PageSelectIcon(
+          page: AppPage.news,
+          text: 'News',
+          icon: Icons.newspaper_sharp,
+          pageController: pageController,
+        ),
+      ],
+    );
+  }
+}
+
+class PageSelectIcon extends StatelessWidget {
+  const PageSelectIcon(
       {super.key,
       required this.page,
       required this.text,

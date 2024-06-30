@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:integrand/consts.dart';
 import 'package:integrand/helpers/page_animation.dart';
-import 'package:integrand/intake_credentials.dart';
+import 'package:integrand/app_page_tree/intake/intake_credentials.dart';
 import 'package:provider/provider.dart';
-import 'package:integrand/main.dart';
+import 'package:integrand/app_page_tree/app.dart';
 
 class IntakePrimary extends StatefulWidget {
   const IntakePrimary({super.key});
