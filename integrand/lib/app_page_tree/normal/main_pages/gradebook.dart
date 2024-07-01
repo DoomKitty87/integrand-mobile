@@ -185,7 +185,7 @@ class _GradebookDisplayState extends State<GradebookDisplay> {
             ),
             Padding(
               padding: textPadding,
-              child: Text(grade.toString(),
+              child: Text(grade.toStringAsFixed(2),
                   style: bodyStyle, textAlign: TextAlign.right),
             ),
           ],
