@@ -177,20 +177,27 @@ GradebookData parseGradebook(http.Response response) {
         continue;
       }
 
-      a.score = scoreType == 'Percentage'
-          ? double.parse(score.substring(0, score.length - 1))
-          : double.parse(score.split(' out of ')[0]);
-
-      a.total = scoreType == 'Percentage'
-          ? 100.0
-          : double.parse(score.split(' out of ')[1]);
+      switch (scoreType) {
+        case 'Percentage':
+          a.score = double.parse(score.substring(0, score.length - 1));
+          a.total = 100.0;
+          break;
+        case 'Raw Score':
+          a.score = double.parse(score.split(' out of ')[0]);
+          a.total = double.parse(score.split(' out of ')[1]);
+          break;
+        case '4pt Rubric':
+          a.score = double.parse(score);
+          a.total = 4.0;
+          break;
+        default:
+          // TODO: Report to server so we can add any unknown score types
+          break;
+      }
 
       if (points == 'Dropped') {
         continue;
       }
-
-      a.points = double.parse(points.split(' / ')[0]);
-      a.totalPoints = double.parse(points.split(' / ')[1]);
 
       // Score is the teacher's grade given for the assignment
       // Points is the contribution the assignment makes to the grading category (Assignment Type)
