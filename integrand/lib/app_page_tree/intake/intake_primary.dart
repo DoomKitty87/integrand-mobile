@@ -6,7 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:integrand/main.dart';
 
 class IntakePrimary extends StatefulWidget {
-  const IntakePrimary({super.key});
+  const IntakePrimary({super.key, required this.pageController});
+
+  final PageController pageController;
 
   @override
   State<IntakePrimary> createState() => _IntakePrimary();
@@ -35,18 +37,21 @@ class _IntakePrimary extends State<IntakePrimary> {
             child: Container(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding:
-                  const EdgeInsets.only(left: 30.0, right: 30.0, bottom: 30.0),
+                padding: const EdgeInsets.only(
+                    left: 30.0, right: 30.0, bottom: 30.0),
                 child: TextButton(
-                  style: buttonStyle,
-                  onPressed: () => {
-                    Provider.of<AppData>(context, listen: false).changeIntakePage(IntakePage.credentials)
-                  },
-                  child: const Text(
-                    "Get Started",
-                    style: bodyStyle,
-                  )
-                ),
+                    style: buttonStyle,
+                    onPressed: () => {
+                          Provider.of<AppData>(context, listen: false)
+                              .changeIntakePage(IntakePage.credentials),
+                          widget.pageController.nextPage(
+                              duration: const Duration(milliseconds: 500),
+                              curve: Curves.easeInOut)
+                        },
+                    child: const Text(
+                      "Get Started",
+                      style: bodyStyle,
+                    )),
               ),
             ),
           ),

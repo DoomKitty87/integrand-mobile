@@ -136,11 +136,23 @@ class _AppState extends State<App> {
                   },
                 );
               } else {
-                if (appData.intakePage == IntakePage.credentials) {
-                  return const IntakeCredentials();
-                } else {
-                  return const IntakePrimary();
-                }
+                PageController pageController = PageController(
+                  initialPage: 0,
+                );
+
+                return PageView(
+                  controller: pageController,
+                  children: [
+                    IntakePrimary(
+                      pageController: pageController,
+                    ),
+                    const IntakeCredentials(),
+                  ],
+                  onPageChanged: (value) {
+                    Provider.of<AppData>(context, listen: false)
+                        .changeIntakePage(IntakePage.values[value]);
+                  },
+                );
               }
             }
           },
@@ -162,8 +174,8 @@ class _MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
     PageController pageController = PageController(
-        initialPage: 1,
-      ); // Make starting index go to schedule page
+      initialPage: 1,
+    ); // Make starting index go to schedule page
 
     List<Widget> pages = [
       Profile(pageController: pageController),
@@ -210,16 +222,16 @@ class CenterPage extends StatelessWidget {
         ),
         Expanded(
           child: PageView.builder(
-            itemCount: innerPages.length,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              return innerPages[index];
-            },
-            controller: innerPageController,
-            onPageChanged: (value) => {
-              Provider.of<AppData>(context, listen: false).changePage(AppPage.values[value])
-            }
-          ),
+              itemCount: innerPages.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                return innerPages[index];
+              },
+              controller: innerPageController,
+              onPageChanged: (value) => {
+                    Provider.of<AppData>(context, listen: false)
+                        .changePage(AppPage.values[value])
+                  }),
         ),
         PageSelectBar(pageController: innerPageController),
         const SizedBox(
@@ -231,7 +243,8 @@ class CenterPage extends StatelessWidget {
 }
 
 class TopLevelPageSelectBar extends StatelessWidget {
-  const TopLevelPageSelectBar({super.key, required this.topLevelPageController});
+  const TopLevelPageSelectBar(
+      {super.key, required this.topLevelPageController});
 
   final PageController topLevelPageController;
 
@@ -249,11 +262,9 @@ class TopLevelPageSelectBar extends StatelessWidget {
               color: textColor,
             ),
             onPressed: () {
-              topLevelPageController.animateToPage(
-                0,
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut
-              );
+              topLevelPageController.animateToPage(0,
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut);
             },
           ),
           IconButton(
@@ -263,11 +274,9 @@ class TopLevelPageSelectBar extends StatelessWidget {
               color: textColor,
             ),
             onPressed: () {
-              topLevelPageController.animateToPage(
-                2,
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut
-              );
+              topLevelPageController.animateToPage(2,
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut);
             },
           ),
         ],
