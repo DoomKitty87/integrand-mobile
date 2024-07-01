@@ -25,7 +25,8 @@ class _ScheduleState extends State<Schedule> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(milliseconds: 500), (timer) => _update());
+    _timer =
+        Timer.periodic(const Duration(milliseconds: 500), (timer) => _update());
   }
 
   void _update() {
@@ -33,10 +34,11 @@ class _ScheduleState extends State<Schedule> {
       _timer.cancel();
       return;
     }
-      
+
     setState(() {
       // TODO: Change this to change the timescale of the app
-      _currentTime = DateTime.fromMillisecondsSinceEpoch(_currentTime.millisecondsSinceEpoch + 50000);
+      _currentTime = DateTime.fromMillisecondsSinceEpoch(
+          _currentTime.millisecondsSinceEpoch + 50000);
       // print(_currentTime);
     });
   }
@@ -203,7 +205,7 @@ class DayOfWeekText extends StatelessWidget {
   Widget build(BuildContext context) {
     String timeOfDayLabel;
     String dayLabel;
-    
+
     timeOfDayLabel = currentTime.hour < 12 ? " morning" : " afternoon";
     dayLabel = daysOfWeek[currentTime.weekday - 1] + timeOfDayLabel;
 
@@ -304,7 +306,7 @@ class MinutesLeftText extends StatelessWidget {
         }
       }
       if (minutesLeft > 0) {
-        textString += "and ";
+        if (hours > 0) textString += "and ";
         if (minutesLeft == 1) {
           textString += "1 minute ";
         } else {
@@ -509,16 +511,17 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                       child: Row(
                         children: [
                           Expanded(
-                          child: SizedBox(width: 200.0,
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                name,
-                                style: textStyle,
+                            child: SizedBox(
+                              width: 200.0,
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  name,
+                                  style: textStyle,
+                                ),
                               ),
                             ),
-                          ),
                           ),
                           SizedBox(
                             width: 80.0,
