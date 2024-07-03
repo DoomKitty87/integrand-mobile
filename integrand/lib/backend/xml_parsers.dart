@@ -26,6 +26,8 @@ StudentData parseStudent(http.Response response) {
   XmlElement grade = document.findAllElements('Grade').first;
   XmlElement studentId = document.findAllElements('PermID').first;
   XmlElement school = document.findAllElements('CurrentSchool').first;
+  XmlElement counselorName = document.findAllElements('CounselorName').first;
+  XmlElement photo = document.findAllElements('Photo').first;
 
   StudentData data = StudentData();
 
@@ -33,6 +35,21 @@ StudentData parseStudent(http.Response response) {
   data.grade = int.parse(grade.innerText);
   data.studentId = int.parse(studentId.innerText);
   data.school = school.innerText;
+  data.counselor = counselorName.innerText;
+  data.photo = photo.innerText;
+
+  XmlElement? lockerRecord =
+      document.findAllElements('StudentLockerInfoRecord').firstOrNull;
+
+  if (lockerRecord != null) {
+    data.locker = lockerRecord.attributes
+        .firstWhere((attribute) => attribute.name.local == 'LockerNumber')
+        .value;
+
+    data.lockerCombo = lockerRecord.attributes
+        .firstWhere((attribute) => attribute.name.local == 'CurrentCombination')
+        .value;
+  }
 
   return data;
 }

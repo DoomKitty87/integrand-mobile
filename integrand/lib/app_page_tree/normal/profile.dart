@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:integrand/consts.dart';
 import 'package:provider/provider.dart';
 import 'package:integrand/backend/studentvue_api.dart';
+import 'package:barcode_widget/barcode_widget.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key, required this.pageController});
@@ -19,68 +22,98 @@ class _ProfileState extends State<Profile> {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 20, right: 20),
-          child: Stack(
-            alignment: Alignment.centerRight,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.arrow_forward_ios,
-                      size: 25,
-                      color: textColor,
-                    ),
-                    onPressed: () {
-                      widget.pageController.animateToPage(
-                        1,
-                        duration: const Duration(milliseconds: 250),
-                        curve: Curves.easeInOut
-                      );
-                    },
-                  ),
-                ]
-              ),
-              const Center(
-                child: Text(
-                  'Student Info',
-                  style: boldBodyStyle,
+          child: Stack(alignment: Alignment.centerRight, children: [
+            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 25,
+                  color: textColor,
                 ),
-              )
-            ]
-          ),
+                onPressed: () {
+                  widget.pageController.animateToPage(1,
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeInOut);
+                },
+              ),
+            ]),
+            const Center(
+              child: Text(
+                'Student Info',
+                style: boldBodyStyle,
+              ),
+            )
+          ]),
         ),
-        Consumer<StudentVueAPI>(
-          builder: (context, studentVueAPI, child) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start, 
+        Consumer<StudentVueAPI>(builder: (context, studentVueAPI, child) {
+          return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20),
-                  child: Row(
-                    children: [
-                      Text(
-                        studentVueAPI.studentData.name,
-                        style: titleStyle,
+                    padding: const EdgeInsets.only(
+                        left: 20, right: 20, top: 60, bottom: 80),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.memory(
+                        base64Decode(studentVueAPI.studentData.photo),
+                        fit: BoxFit.fill,
+                        height: 250,
                       ),
-                    ],
-                  ),
-                ),
+                    )),
                 Padding(
                   padding: const EdgeInsets.only(left: 20, right: 20),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        studentVueAPI.studentData.studentId.toString(),
-                        style: subtitleStyle,
+                        textAlign: TextAlign.left,
+                        studentVueAPI.studentData.name,
+                        style: mediumTitleStyle,
                       ),
+                      Text(
+                        textAlign: TextAlign.left,
+                        "Student ID: ${studentVueAPI.studentData.studentId.toString()}",
+                        style: bodyStyle,
+                      ),
+                      Text(
+                        textAlign: TextAlign.left,
+                        "Grade: ${studentVueAPI.studentData.grade.toString()}",
+                        style: bodyStyle,
+                      ),
+                      Text(
+                        textAlign: TextAlign.left,
+                        "School: ${studentVueAPI.studentData.school}",
+                        style: bodyStyle,
+                      ),
+                      Text(
+                        textAlign: TextAlign.left,
+                        "Counselor: ${studentVueAPI.studentData.counselor}",
+                        style: bodyStyle,
+                      ),
+                      if (studentVueAPI.studentData.locker != '')
+                        Text(
+                          textAlign: TextAlign.left,
+                          "Locker: ${studentVueAPI.studentData.locker}",
+                          style: bodyStyle,
+                        ),
+                      if (studentVueAPI.studentData.lockerCombo != '')
+                        Text(
+                          textAlign: TextAlign.left,
+                          "Locker Combo: ${studentVueAPI.studentData.lockerCombo}",
+                          style: bodyStyle,
+                        ),
                     ],
                   ),
                 ),
-              ]
-            );
-          }
-        ),
+                BarcodeWidget(
+                  barcode: Barcode.code39(),
+                  backgroundColor: Colors.white,
+                  color: Colors.blue,
+                  data: "*${studentVueAPI.studentData.studentId.toString()}*",
+                )
+              ]);
+        }),
       ],
     );
   }

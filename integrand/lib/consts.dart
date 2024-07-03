@@ -74,6 +74,22 @@ const TextStyle subtitleStyle = TextStyle(
   decoration: TextDecoration.none,
 );
 
+const TextStyle mediumTitleStyle = TextStyle(
+  color: textColor,
+  fontSize: 24,
+  fontWeight: FontWeight.bold,
+  fontFamily: "Inter",
+  decoration: TextDecoration.none,
+);
+
+const TextStyle mediumSubtitleStyle = TextStyle(
+  color: textColor,
+  fontSize: 24,
+  fontWeight: FontWeight.normal,
+  fontFamily: "Inter",
+  decoration: TextDecoration.none,
+);
+
 const TextStyle bodyStyle = TextStyle(
   color: textColor,
   fontSize: 16,

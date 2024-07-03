@@ -77,7 +77,10 @@ class BellPeriod {
   TimeOfDay endTime = const TimeOfDay(hour: 0, minute: 0);
 
   BellPeriod();
-  BellPeriod.withValues({required this.periodName, required this.startTime, required this.endTime});
+  BellPeriod.withValues(
+      {required this.periodName,
+      required this.startTime,
+      required this.endTime});
 
   bool willStartAfter(TimeOfDay time) {
     return toMinutesTimeOfDay(time) < toMinutesTimeOfDay(startTime);
@@ -132,7 +135,7 @@ class BellSchedule {
 
   (bool, BellPeriod?, BellPeriod?) isPassingPeriod(TimeOfDay now) {
     if (periods.isEmpty) return (false, null, null);
-    
+
     // If within period check
     for (var period in periods) {
       if (period.isHappening(now)) {
@@ -146,12 +149,11 @@ class BellSchedule {
     }
 
     return (true, getPreviousPeriod(now), getNextPeriod(now));
-
   }
 
   bool isOutsideSchoolHours(TimeOfDay now) {
     if (periods.isEmpty) return true;
-    
+
     if (periods.first.willStartAfter(now) || periods.last.endedBefore(now)) {
       return true;
     }
@@ -179,4 +181,8 @@ class StudentData {
   int grade = 0;
   int studentId = 0;
   String school = '';
+  String locker = '';
+  String lockerCombo = '';
+  String counselor = '';
+  String photo = '';
 }
