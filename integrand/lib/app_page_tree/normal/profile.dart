@@ -71,6 +71,7 @@ class _ProfileState extends State<Profile> {
                         studentVueAPI.studentData.name,
                         style: mediumTitleStyle,
                       ),
+                      const SizedBox(height: 30),
                       Text(
                         textAlign: TextAlign.left,
                         "Student ID: ${studentVueAPI.studentData.studentId.toString()}",
@@ -106,11 +107,17 @@ class _ProfileState extends State<Profile> {
                     ],
                   ),
                 ),
-                BarcodeWidget(
-                  barcode: Barcode.code39(),
-                  backgroundColor: Colors.white,
-                  color: Colors.blue,
-                  data: "*${studentVueAPI.studentData.studentId.toString()}*",
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20, top: 80),
+                  child: BarcodeWidget(
+                    barcode: Barcode.code39(),
+                    drawText: false,
+                    width: 250,
+                    height: 50,
+                    backgroundColor: textColor,
+                    color: backgroundColor,
+                    data: studentVueAPI.studentData.studentId.toString(),
+                  ),
                 )
               ]);
         }),
