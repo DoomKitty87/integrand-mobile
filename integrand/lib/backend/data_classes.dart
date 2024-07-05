@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:integrand/app_page_tree/normal/main_pages/news.dart';
 
 import '../helpers/time_of_day_helpers.dart';
 
@@ -185,4 +188,25 @@ class StudentData {
   String lockerCombo = '';
   String counselor = '';
   String photo = '';
+}
+
+class NewsArticle {
+  String title = 'Welcome To Integrand!';
+  String author = 'Integrand';
+  DateTime releaseDate = DateTime.now();
+  String content = 'Integrand is a new app that is designed to help students keep track of their grades, assignments, and more! We hope you enjoy using our app!';
+  // TODO: NewsArticles don't have images, we need a AssetImage or NetworkImage object - make backend first then go back here
+
+  bool sameAuthorAs(NewsArticle other) {
+    return author == other.author;
+  }
+  bool sameReleaseDateAs(NewsArticle other) {
+    return releaseDate.year == other.releaseDate.year && releaseDate.month == other.releaseDate.month && releaseDate.day == other.releaseDate.day;
+  }
+  String getDateString({bool includeYear = false}) {
+    if (includeYear) {
+      return '${weekdayToName(releaseDate.weekday)}, ${monthToName(releaseDate.month)} ${numberWithSuffix(releaseDate.day)} ${releaseDate.year}';
+    }
+    return '${weekdayToName(releaseDate.weekday)}, ${monthToName(releaseDate.month)} ${numberWithSuffix(releaseDate.day)}';
+  }
 }

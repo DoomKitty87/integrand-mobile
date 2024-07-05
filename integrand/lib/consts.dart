@@ -9,6 +9,7 @@ const Color textColor = Color.fromRGBO(224, 224, 224, 1);
 const Color textColorSecondary = Color.fromRGBO(112, 112, 112, 1);
 const Color darkGrey = Color.fromRGBO(14, 14, 14, 1);
 const Color lightGrey = Color.fromRGBO(26, 27, 33, 1);
+const Color lightGreyTransparent = Color.fromRGBO(217, 217, 217, 0.02);
 const Color lighterGrey = Color.fromRGBO(45, 47, 57, 1);
 const Color lightestGrey = Color.fromRGBO(85, 87, 97, 1);
 const Color blueGradient = Color.fromRGBO(5, 62, 148, 1);
@@ -141,6 +142,14 @@ const TextStyle barStyle = TextStyle(
 const TextStyle barStyleSelected = TextStyle(
   color: textColor,
   fontSize: 12,
+  fontWeight: FontWeight.bold,
+  fontFamily: "Inter",
+  decoration: TextDecoration.none,
+);
+
+const TextStyle newsDateStyle = TextStyle(
+  color: textColor,
+  fontSize: 10,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
   decoration: TextDecoration.none,

@@ -191,23 +191,13 @@ class DayOfWeekText extends StatelessWidget {
 
   final DateTime currentTime;
 
-  final List<String> daysOfWeek = const [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday"
-  ];
-
   @override
   Widget build(BuildContext context) {
     String timeOfDayLabel;
     String dayLabel;
 
     timeOfDayLabel = currentTime.hour < 12 ? " morning" : " afternoon";
-    dayLabel = daysOfWeek[currentTime.weekday - 1] + timeOfDayLabel;
+    dayLabel = weekdayToName(currentTime.weekday) + timeOfDayLabel;
 
     return Text(
       textAlign: TextAlign.left,
