@@ -127,7 +127,7 @@ class ArticleListItem extends StatelessWidget {
   const ArticleListItem({super.key, required this.newsArticle});
 
   final NewsArticle newsArticle;
-  final double height = 200;
+  final double height = 170;
 
   @override
   Widget build(BuildContext context) {
@@ -142,58 +142,64 @@ class ArticleListItem extends StatelessWidget {
           SizedBox(
             height: height,
             // TODO: Add lr padding here
-            child: Row(
-              children: [
-                const Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: Row(
+                children: [
+                  const Expanded(
+                    flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // TODO: NewsArticles don't have images, we need a AssetImage or NetworkImage object - make backend first then go back here
+                          // Container(
+                          //   height: 100,
+                          //   width: 100,
+                          //   decoration: BoxDecoration(
+                          //     image: DecorationImage(
+                          //       image: newsArticle.image,
+                          //       fit: BoxFit.cover,
+                          //     ),
+                          //   ),
+                          // ),
+                          SizedBox(
+                            width: 146,
+                            height: 82,
+                            child: Placeholder(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    flex: 1,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // TODO: NewsArticles don't have images, we need a AssetImage or NetworkImage object - make backend first then go back here
-                        // Container(
-                        //   height: 100,
-                        //   width: 100,
-                        //   decoration: BoxDecoration(
-                        //     image: DecorationImage(
-                        //       image: newsArticle.image,
-                        //       fit: BoxFit.cover,
-                        //     ),
-                        //   ),
-                        // ),
-                        SizedBox(
-                          width: 146,
-                          height: 82,
-                          child: Placeholder(),
+                        Text(
+                          newsArticle.title,
+                          style: boldBodyStyle,
+                        ),
+                        SizedBox(height: 15),
+                        Text(
+                          newsArticle.content,
+                          style: smallBodyStyle,
+                          textAlign: TextAlign.left,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 3,
                         ),
                       ],
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        newsArticle.title,
-                        style: boldBodyStyle,
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        newsArticle.content,
-                        style: smallBodyStyle,
-                        textAlign: TextAlign.left,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 3,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           Container(
