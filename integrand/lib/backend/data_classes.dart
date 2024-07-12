@@ -190,23 +190,66 @@ class StudentData {
   String photo = '';
 }
 
+class School {
+  String name = '';
+
+  School();
+
+  // Decode json object into School object
+  School.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+  }
+}
+
+class Event {
+  String title = '';
+  String description = '';
+  DateTime startDate = DateTime.now();
+  DateTime endDate = DateTime.now();
+  String location = '';
+
+  Event();
+
+  Event.fromJson(Map<String, dynamic> json) {
+    title = json['title'];
+    description = json['description'];
+    startDate = DateTime.parse(json['startDate']);
+    endDate = DateTime.parse(json['endDate']);
+    location = json['location'];
+  }
+}
+
 class NewsArticle {
   String title = 'Welcome To Integrand!';
   String author = 'Integrand';
   DateTime releaseDate = DateTime.now();
-  String content = 'Integrand is a new app that is designed to help students keep track of their grades, assignments, and more! We hope you enjoy using our app!';
+  String content =
+      'Integrand is a new app that is designed to help students keep track of their grades, assignments, and more! We hope you enjoy using our app!';
   // TODO: NewsArticles don't have images, we need a AssetImage or NetworkImage object - make backend first then go back here
 
   bool sameAuthorAs(NewsArticle other) {
     return author == other.author;
   }
+
   bool sameReleaseDateAs(NewsArticle other) {
-    return releaseDate.year == other.releaseDate.year && releaseDate.month == other.releaseDate.month && releaseDate.day == other.releaseDate.day;
+    return releaseDate.year == other.releaseDate.year &&
+        releaseDate.month == other.releaseDate.month &&
+        releaseDate.day == other.releaseDate.day;
   }
+
   String getDateString({bool includeYear = false}) {
     if (includeYear) {
       return '${weekdayToName(releaseDate.weekday)}, ${monthToName(releaseDate.month)} ${numberWithSuffix(releaseDate.day)} ${releaseDate.year}';
     }
     return '${weekdayToName(releaseDate.weekday)}, ${monthToName(releaseDate.month)} ${numberWithSuffix(releaseDate.day)}';
+  }
+
+  NewsArticle();
+
+  NewsArticle.fromJson(Map<String, dynamic> json) {
+    title = json['title'];
+    author = json['author'];
+    releaseDate = DateTime.parse(json['releaseDate']);
+    content = json['content'];
   }
 }
