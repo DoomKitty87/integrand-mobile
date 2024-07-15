@@ -10,7 +10,6 @@ class News extends StatefulWidget {
 }
 
 class _NewsState extends State<News> {
- 
   // TODO: move this into consts later or implement backend
   final List<NewsArticle> _newsArticles = [
     NewsArticle(),
@@ -20,7 +19,7 @@ class _NewsState extends State<News> {
     NewsArticle(),
     NewsArticle()
   ];
-  
+
   final int _articleCount = 6;
 
   @override
@@ -35,7 +34,8 @@ class _NewsState extends State<News> {
 // Main News Page ========================================
 
 class ArticleList extends StatelessWidget {
-  const ArticleList({super.key, required this.newsArticles, required this.articleCount});
+  const ArticleList(
+      {super.key, required this.newsArticles, required this.articleCount});
 
   final List<NewsArticle> newsArticles;
   final int articleCount;
@@ -73,7 +73,8 @@ class ArticleSearchBar extends StatelessWidget {
 }
 
 class ArticleListItemContainer extends StatelessWidget {
-  const ArticleListItemContainer({super.key, required this.newsArticle, this.hasDate = false});
+  const ArticleListItemContainer(
+      {super.key, required this.newsArticle, this.hasDate = false});
 
   final NewsArticle newsArticle;
   final bool hasDate;
@@ -94,8 +95,7 @@ class ArticleListItemContainer extends StatelessWidget {
           ),
         ],
       );
-    } 
-    else {
+    } else {
       return Column(
         children: [
           SizedBox(height: topSpacing),

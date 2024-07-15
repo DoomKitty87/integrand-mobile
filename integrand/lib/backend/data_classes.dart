@@ -191,45 +191,53 @@ class StudentData {
 }
 
 class School {
+  int id = 0;
   String name = '';
+  String district = '';
 
   School();
 
   // Decode json object into School object
   School.fromJson(Map<String, dynamic> json) {
-    name = json['name'];
+    id = json['ID'];
+    name = json['SchoolName'];
+    district = json['DistrictName'];
   }
 }
 
 class Event {
+  int id = 0;
   String title = '';
   String description = '';
   DateTime startDate = DateTime.now();
+  TimeOfDay startTime = TimeOfDay.now();
   DateTime endDate = DateTime.now();
+  TimeOfDay endTime = TimeOfDay.now();
   String location = '';
 
   Event();
 
   Event.fromJson(Map<String, dynamic> json) {
-    title = json['title'];
-    description = json['description'];
-    startDate = DateTime.parse(json['startDate']);
-    endDate = DateTime.parse(json['endDate']);
-    location = json['location'];
+    id = json['ID'];
+    title = json['Title'];
+    description = json['Description'];
+    startDate = DateTime.parse(json['StartDate']);
+    endDate = DateTime.parse(json['EndDate']);
+    startTime = TimeOfDay.fromDateTime(json['StartTime']);
+    endTime = TimeOfDay.fromDateTime(json['EndTime']);
+    location = json['Location'];
   }
 }
 
 class NewsArticle {
+  int id = 0;
   String title = 'Welcome To Integrand!';
-  String author = 'Integrand';
+  String image = '';
   DateTime releaseDate = DateTime.now();
+  TimeOfDay releaseTime = TimeOfDay.now();
   String content =
       'Integrand is a new app that is designed to help students keep track of their grades, assignments, and more! We hope you enjoy using our app!';
   // TODO: NewsArticles don't have images, we need a AssetImage or NetworkImage object - make backend first then go back here
-
-  bool sameAuthorAs(NewsArticle other) {
-    return author == other.author;
-  }
 
   bool sameReleaseDateAs(NewsArticle other) {
     return releaseDate.year == other.releaseDate.year &&
@@ -247,9 +255,11 @@ class NewsArticle {
   NewsArticle();
 
   NewsArticle.fromJson(Map<String, dynamic> json) {
-    title = json['title'];
-    author = json['author'];
-    releaseDate = DateTime.parse(json['releaseDate']);
-    content = json['content'];
+    id = json['ID'];
+    title = json['Title'];
+    image = json['Image'];
+    releaseDate = DateTime.parse(json['Date']);
+    releaseTime = TimeOfDay.fromDateTime(json['Time']);
+    content = json['Content'];
   }
 }
