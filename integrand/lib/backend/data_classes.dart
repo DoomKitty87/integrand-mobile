@@ -243,9 +243,7 @@ class NewsArticle {
   String image = '';
   DateTime releaseDate = DateTime.now();
   TimeOfDay releaseTime = TimeOfDay.now();
-  String content =
-      'Integrand is a new app that is designed to help students keep track of their grades, assignments, and more! We hope you enjoy using our app!';
-  // TODO: NewsArticles don't have images, we need a AssetImage or NetworkImage object - make backend first then go back here
+  String content = 'Integrand is a new app that is designed to help students keep track of their grades, assignments, and more! We hope you enjoy using our app!';
 
   bool sameReleaseDateAs(NewsArticle other) {
     return releaseDate.year == other.releaseDate.year &&

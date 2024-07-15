@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:integrand/consts.dart';
 import 'package:integrand/backend/data_classes.dart';
@@ -160,29 +162,20 @@ class ArticleListItem extends StatelessWidget {
               padding: const EdgeInsets.only(left: 20, right: 20),
               child: Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     flex: 1,
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: EdgeInsets.all(8.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // TODO: NewsArticles don't have images, we need a AssetImage or NetworkImage object - make backend first then go back here
-                          // Container(
-                          //   height: 100,
-                          //   width: 100,
-                          //   decoration: BoxDecoration(
-                          //     image: DecorationImage(
-                          //       image: newsArticle.image,
-                          //       fit: BoxFit.cover,
-                          //     ),
-                          //   ),
-                          // ),
-                          SizedBox(
-                            width: 146,
-                            height: 82,
-                            child: Placeholder(),
+                          Container(
+                            height: 100,
+                            width: 100,
+                            child: Image.memory(
+                              base64Decode(newsArticle.image)
+                            ),
                           ),
                         ],
                       ),

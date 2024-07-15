@@ -3,8 +3,8 @@ import 'package:integrand/backend/data_classes.dart';
 
 const String appName = "Integrand";
 
-const Color backgroundColor = Color.fromRGBO(13, 13, 13, 1); //HSVO(0, 0, 5, 1)
-const Color backgroundColorSecondary = Color.fromRGBO(10, 1, 24, 1);
+const Color backgroundColor = Color.fromRGBO(5, 5, 5, 1); //HSVO(0, 0, 2, 1)
+const Color backgroundColorSecondary = Color.fromRGBO(5, 5, 5, 1);
 const Color textColor = Color.fromRGBO(224, 224, 224, 1);
 const Color textColorSecondary = Color.fromRGBO(112, 112, 112, 1);
 const Color darkGrey = Color.fromRGBO(14, 14, 14, 1);
