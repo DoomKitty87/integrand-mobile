@@ -58,6 +58,8 @@ class ArticleList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Sort articles by release date and release time, with most recent first
+    newsArticles.sort((a, b) => b.compareTo(a));
     return Column(
       children: [
         const ArticleSearchBar(),
@@ -65,9 +67,28 @@ class ArticleList extends StatelessWidget {
           child: ListView.builder(
             itemCount: articleCount,
             itemBuilder: (context, index) {
-              return ArticleListItemContainer(
-                newsArticle: newsArticles[index],
-              );
+              // If the current article is the first article, show the date
+              if (index == 0) {
+                return ArticleListItemContainer(
+                  newsArticle: newsArticles[index],
+                  hasDate: true,
+                );
+              }
+              // If the current article is not the first article, check if the date is different from the previous article
+              // If the date is different, show the date
+              if (!newsArticles[index].sameReleaseDateAs(newsArticles[index - 1])) {
+                return ArticleListItemContainer(
+                  newsArticle: newsArticles[index],
+                  hasDate: true,
+                );
+              }
+              // If the date is the same, don't show the date
+              else {
+                return ArticleListItemContainer(
+                  newsArticle: newsArticles[index],
+                  hasDate: false,
+                );
+              }
             },
           ),
         ),
@@ -171,8 +192,8 @@ class ArticleListItem extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Container(
-                            height: 100,
-                            width: 100,
+                            height: 150,
+                            width: 150,
                             child: Image.memory(
                               base64Decode(newsArticle.image)
                             ),

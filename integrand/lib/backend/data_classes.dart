@@ -210,9 +210,7 @@ class Event {
   String title = '';
   String description = '';
   DateTime startDate = DateTime.now();
-  TimeOfDay startTime = TimeOfDay.now();
   DateTime endDate = DateTime.now();
-  TimeOfDay endTime = TimeOfDay.now();
   String location = '';
 
   Event();
@@ -223,8 +221,22 @@ class Event {
     description = json['Description'];
     startDate = DateTime.parse(json['StartDate']);
     endDate = DateTime.parse(json['EndDate']);
-    startTime = TimeOfDay.fromDateTime(json['StartTime']);
-    endTime = TimeOfDay.fromDateTime(json['EndTime']);
+    TimeOfDay startTime = TimeOfDay.fromDateTime(json['StartTime']);
+    TimeOfDay endTime = TimeOfDay.fromDateTime(json['EndTime']);
+    startDate = DateTime(
+      startDate.year,
+      startDate.month,
+      startDate.day,
+      startTime.hour,
+      startTime.minute,
+    );
+    endDate = DateTime(
+      endDate.year,
+      endDate.month,
+      endDate.day,
+      endTime.hour,
+      endTime.minute,
+    );
     location = json['Location'];
   }
 }
@@ -242,7 +254,6 @@ class NewsArticle {
   String title = 'Welcome To Integrand!';
   String image = '';
   DateTime releaseDate = DateTime.now();
-  TimeOfDay releaseTime = TimeOfDay.now();
   String content = 'Integrand is a new app that is designed to help students keep track of their grades, assignments, and more! We hope you enjoy using our app!';
 
   bool sameReleaseDateAs(NewsArticle other) {
@@ -265,7 +276,25 @@ class NewsArticle {
     title = json['Title'];
     image = json['Image'];
     releaseDate = DateTime.parse(json['Date']);
-    releaseTime = timeOfDayFromJson(json['Time']);
+    TimeOfDay releaseTime = timeOfDayFromJson(json['Time']);
+    releaseDate = DateTime(
+      releaseDate.year,
+      releaseDate.month,
+      releaseDate.day,
+      releaseTime.hour,
+      releaseTime.minute,
+    );
+
     content = json['Content'];
+  }
+
+  int compareTo(NewsArticle other) {
+    // check for date
+    if (releaseDate.isBefore(other.releaseDate)) {
+      return -1;
+    } else if (releaseDate.isAfter(other.releaseDate)) {
+      return 1;
+    }
+    return 0;
   }
 }

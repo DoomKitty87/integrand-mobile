@@ -47,7 +47,7 @@ String weekdayToName(int dateTimeWeekday) {
     "Wednesday",
     "Thursday",
     "Friday",
-    "Saturday"
+    "Saturday",
     "Sunday",
   ];
   return daysOfWeek[dateTimeWeekday - 1];

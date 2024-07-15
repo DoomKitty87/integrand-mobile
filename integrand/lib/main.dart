@@ -37,6 +37,7 @@ void main() {
       child: MaterialApp(
         title: appName,
         theme: ThemeData(fontFamily: 'Inter'),
+        debugShowCheckedModeBanner: false,
         home: const DefaultTextStyle(
           style: TextStyle(
               fontFamily: 'Inter',
