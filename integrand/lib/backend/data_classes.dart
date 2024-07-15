@@ -229,6 +229,14 @@ class Event {
   }
 }
 
+TimeOfDay timeOfDayFromJson(String time) {
+  List<String> timeParts = time.split(':');
+  return TimeOfDay(
+    hour: int.parse(timeParts[0]),
+    minute: int.parse(timeParts[1]),
+  );
+}
+
 class NewsArticle {
   int id = 0;
   String title = 'Welcome To Integrand!';
@@ -259,7 +267,7 @@ class NewsArticle {
     title = json['Title'];
     image = json['Image'];
     releaseDate = DateTime.parse(json['Date']);
-    releaseTime = TimeOfDay.fromDateTime(json['Time']);
+    releaseTime = timeOfDayFromJson(json['Time']);
     content = json['Content'];
   }
 }

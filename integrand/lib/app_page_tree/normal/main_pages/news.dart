@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:integrand/consts.dart';
 import 'package:integrand/backend/data_classes.dart';
+import 'package:integrand/backend/database_interactions.dart';
 
 class News extends StatefulWidget {
   const News({super.key});
@@ -11,22 +12,35 @@ class News extends StatefulWidget {
 
 class _NewsState extends State<News> {
   // TODO: move this into consts later or implement backend
-  final List<NewsArticle> _newsArticles = [
-    NewsArticle(),
-    NewsArticle(),
-    NewsArticle(),
-    NewsArticle(),
-    NewsArticle(),
-    NewsArticle()
-  ];
+  List<NewsArticle> _newsArticles = [];
 
-  final int _articleCount = 6;
+  int _articleCount = 0;
 
   @override
   Widget build(BuildContext context) {
-    return ArticleList(
-      newsArticles: _newsArticles,
-      articleCount: _articleCount,
+    // Fetch articles from backend
+    return FutureBuilder<List<NewsArticle>>(
+      future: fetchNews(4),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          _newsArticles = snapshot.data!;
+          _articleCount = _newsArticles.length;
+          return ArticleList(
+            newsArticles: _newsArticles,
+            articleCount: _articleCount,
+          );
+        } else if (snapshot.hasError) {
+          return const Center(
+            child: Text('Error loading news'),
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(purpleGradient),
+            ),
+          );
+        }
+      },
     );
   }
 }
