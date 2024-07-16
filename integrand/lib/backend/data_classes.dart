@@ -275,16 +275,7 @@ class NewsArticle {
     id = json['ID'];
     title = json['Title'];
     image = json['Image'];
-    releaseDate = DateTime.parse(json['Date']);
-    TimeOfDay releaseTime = timeOfDayFromJson(json['Time']);
-    releaseDate = DateTime(
-      releaseDate.year,
-      releaseDate.month,
-      releaseDate.day,
-      releaseTime.hour,
-      releaseTime.minute,
-    );
-
+    releaseDate = DateTime.fromMillisecondsSinceEpoch(json['EpochTime']);
     content = json['Content'];
   }
 
