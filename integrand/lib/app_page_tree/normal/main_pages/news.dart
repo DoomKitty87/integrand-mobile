@@ -168,6 +168,35 @@ class ArticleListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget image;
+    
+    if (newsArticle.image == '') {
+      image = Container(
+        height: 100,
+        width: 150,
+        decoration: const BoxDecoration(
+          color: Colors.black,
+          borderRadius: BorderRadius.all(Radius.circular(5)),
+        )
+      );
+    } 
+    else {
+      image = Container(
+        height: 100,
+        width: 150,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5),
+          child: Image.memory(
+            base64Decode(newsArticle.image),
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    }
+
+
+
+
     return Container(
       color: lightGreyTransparent,
       child: Column(
@@ -191,13 +220,7 @@ class ArticleListItem extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
-                            height: 150,
-                            width: 150,
-                            child: Image.memory(
-                              base64Decode(newsArticle.image)
-                            ),
-                          ),
+                          image,
                         ],
                       ),
                     ),
