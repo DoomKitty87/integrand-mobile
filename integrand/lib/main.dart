@@ -136,8 +136,7 @@ class _AppState extends State<App> {
                     return const Main();
                   },
                 );
-              } 
-              else {
+              } else {
                 PageController pageController = PageController(
                   initialPage: 0,
                 );

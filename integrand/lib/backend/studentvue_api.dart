@@ -36,6 +36,7 @@ class StudentVueAPI with ChangeNotifier {
   StudentVueAPI();
 
   void initialize(String baseUrl, String username, String password) async {
+    if (initialized) return;
     this.baseUrl = baseUrl;
     this.username = username;
     this.password = password;
