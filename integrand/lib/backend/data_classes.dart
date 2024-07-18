@@ -274,7 +274,9 @@ class NewsArticle {
   NewsArticle.fromJson(Map<String, dynamic> json) {
     id = json['ID'];
     title = json['Title'];
-    image = Image.network("https://integrand.app/cdn/${json['Image']}", fit: BoxFit.cover);
+    if (json['Image'] != "") {
+      image = Image.network("https://integrand.app/cdn/${json['Image']}", fit: BoxFit.cover);
+    }
     releaseDate = DateTime.fromMillisecondsSinceEpoch(json['EpochTime']);
     content = json['Content'];
   }
