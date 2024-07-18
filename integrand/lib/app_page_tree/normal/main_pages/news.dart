@@ -178,7 +178,7 @@ class ArticleListItemContainer extends StatelessWidget {
             newsArticle: newsArticle,
             onTapCallback: (NewsArticle newsArticle) {
               enterArticleView(newsArticle);
-              pageController.animateToPage(1, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+              pageController.animateToPage(1, duration: const Duration(milliseconds: 250), curve: Curves.easeInOut);
             },
           ),
         ],
@@ -190,7 +190,7 @@ class ArticleListItemContainer extends StatelessWidget {
             newsArticle: newsArticle,
             onTapCallback: (NewsArticle newsArticle) {
               enterArticleView(newsArticle);
-              pageController.animateToPage(1, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+              pageController.animateToPage(1, duration: const Duration(milliseconds: 250), curve: Curves.easeInOut);
             },
           ),
         ],
@@ -334,7 +334,7 @@ class ArticleFullscreenPage extends StatelessWidget {
             ArticleFullscreenPageHeader(
               newsArticle: newsArticle,
               exitArticleView: () {
-                pageController.animateToPage(0, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+                pageController.animateToPage(0, duration: const Duration(milliseconds: 250), curve: Curves.easeInOut);
               },
             ),
             ArticleFullscreenPageContent(newsArticle: newsArticle),
@@ -386,7 +386,8 @@ class ArticleFullscreenPageContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ArticleFullscreenImage(newsArticle: newsArticle)
+        ArticleFullscreenImage(newsArticle: newsArticle),
+        ArticleFullscreenText(newsArticle: newsArticle),
       ],
     );
   }
@@ -406,6 +407,30 @@ class ArticleFullscreenImage extends StatelessWidget {
         borderRadius: BorderRadius.circular(5),
         child: newsArticle.image,
       ),
+    );
+  }
+}
+
+class ArticleFullscreenText extends StatelessWidget {
+  const ArticleFullscreenText({super.key, required this.newsArticle});
+
+  final NewsArticle newsArticle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          newsArticle.title,
+          style: mediumTitleStyle,
+        ),
+        SizedBox(height: 15),
+        Text(
+          newsArticle.content,
+          style: smallBodyStyle,
+          textAlign: TextAlign.left,
+        ),
+      ],
     );
   }
 }

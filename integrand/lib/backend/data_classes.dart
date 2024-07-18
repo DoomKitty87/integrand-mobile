@@ -275,7 +275,12 @@ class NewsArticle {
     id = json['ID'];
     title = json['Title'];
     if (json['Image'] != "") {
-      image = Image.network("https://integrand.app/cdn/${json['Image']}", fit: BoxFit.cover);
+      try {
+        image = Image.network("https://integrand.app/cdn/${json['Image']}", fit: BoxFit.cover);
+      }
+      on NetworkImageLoadException {
+        image = null;
+      }
     }
     releaseDate = DateTime.fromMillisecondsSinceEpoch(json['EpochTime']);
     content = json['Content'];
