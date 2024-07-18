@@ -18,8 +18,20 @@ class _NewsState extends State<News> {
 
   int _articleCount = 0;
 
+  NewsArticle _currentArticle = NewsArticle();
+
+  void enterArticleView(NewsArticle article) {
+    setState(() {
+      _currentArticle = article;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    PageController pageController = PageController(
+      initialPage: 0,
+    );
+
     // Fetch articles from backend
     return FutureBuilder<List<NewsArticle>>(
       future: fetchNews(4),
@@ -27,15 +39,30 @@ class _NewsState extends State<News> {
         if (snapshot.hasData) {
           _newsArticles = snapshot.data!;
           _articleCount = _newsArticles.length;
-          return ArticleList(
-            newsArticles: _newsArticles,
-            articleCount: _articleCount,
+
+          return PageView(
+            physics: const NeverScrollableScrollPhysics(),
+            controller: pageController,
+            children: [
+              ArticleList(
+                newsArticles: _newsArticles,
+                articleCount: _articleCount,
+                enterArticleView: enterArticleView,
+                pageController: pageController,
+              ),
+              ArticleFullscreenPage(
+                newsArticle: _currentArticle,
+                pageController: pageController,
+              ),
+            ],
           );
-        } else if (snapshot.hasError) {
+        } 
+        else if (snapshot.hasError) {
           return const Center(
             child: Text('Error loading news'),
           );
-        } else {
+        } 
+        else {
           return const Center(
             child: CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(purpleGradient),
@@ -51,10 +78,12 @@ class _NewsState extends State<News> {
 
 class ArticleList extends StatelessWidget {
   const ArticleList(
-      {super.key, required this.newsArticles, required this.articleCount});
+      {super.key, required this.newsArticles, required this.articleCount, required this.enterArticleView, required this.pageController});
 
   final List<NewsArticle> newsArticles;
   final int articleCount;
+  final void Function(NewsArticle newsArticle) enterArticleView;
+  final PageController pageController;
 
   @override
   Widget build(BuildContext context) {
@@ -72,14 +101,20 @@ class ArticleList extends StatelessWidget {
                 return ArticleListItemContainer(
                   newsArticle: newsArticles[index],
                   hasDate: true,
+                  enterArticleView: enterArticleView,
+                  ignoreDateSpacing: true,
+                  pageController: pageController,
                 );
               }
               // If the current article is not the first article, check if the date is different from the previous article
               // If the date is different, show the date
-              if (!newsArticles[index].sameReleaseDateAs(newsArticles[index - 1])) {
+              if (!newsArticles[index]
+                  .sameReleaseDateAs(newsArticles[index - 1])) {
                 return ArticleListItemContainer(
                   newsArticle: newsArticles[index],
                   hasDate: true,
+                  enterArticleView: enterArticleView,
+                  pageController: pageController,
                 );
               }
               // If the date is the same, don't show the date
@@ -87,6 +122,8 @@ class ArticleList extends StatelessWidget {
                 return ArticleListItemContainer(
                   newsArticle: newsArticles[index],
                   hasDate: false,
+                  enterArticleView: enterArticleView,
+                  pageController: pageController,
                 );
               }
             },
@@ -110,34 +147,51 @@ class ArticleSearchBar extends StatelessWidget {
 }
 
 class ArticleListItemContainer extends StatelessWidget {
-  const ArticleListItemContainer(
-      {super.key, required this.newsArticle, this.hasDate = false});
+  const ArticleListItemContainer({super.key, required this.newsArticle, this.hasDate = false, this.ignoreDateSpacing = false, required this.enterArticleView, required this.pageController});
 
   final NewsArticle newsArticle;
   final bool hasDate;
-  final double topSpacing = 20;
+  final double dateSpacing = 40;
+  final bool ignoreDateSpacing;
+  final void Function(NewsArticle newsArticle) enterArticleView;
+  final PageController pageController;
 
   @override
   Widget build(BuildContext context) {
+    double spacing;
+    if (ignoreDateSpacing) {
+      spacing = 0;
+    }
+    else {
+      spacing = dateSpacing;
+    }
+
     if (hasDate) {
       return Column(
         children: [
-          SizedBox(height: topSpacing + 10),
+          SizedBox(height: spacing),
           ArticleListItemDate(
             newsArticle: newsArticle,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 20),
           ArticleListItem(
             newsArticle: newsArticle,
+            onTapCallback: (NewsArticle newsArticle) {
+              enterArticleView(newsArticle);
+              pageController.animateToPage(1, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+            },
           ),
         ],
       );
     } else {
       return Column(
         children: [
-          SizedBox(height: topSpacing),
           ArticleListItem(
             newsArticle: newsArticle,
+            onTapCallback: (NewsArticle newsArticle) {
+              enterArticleView(newsArticle);
+              pageController.animateToPage(1, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+            },
           ),
         ],
       );
@@ -155,32 +209,31 @@ class ArticleListItemDate extends StatelessWidget {
     return Text(
       newsArticle.getDateString(),
       textAlign: TextAlign.center,
-      style: newsDateStyle,
+      style: boldSmallBodyStyle,
     );
   }
 }
 
 class ArticleListItem extends StatelessWidget {
-  const ArticleListItem({super.key, required this.newsArticle});
+  const ArticleListItem({super.key, required this.newsArticle, required this.onTapCallback});
 
   final NewsArticle newsArticle;
   final double height = 170;
+  final void Function(NewsArticle newsArticle) onTapCallback;
 
   @override
   Widget build(BuildContext context) {
     Widget image;
-    
+
     if (newsArticle.image == null) {
       image = Container(
-        height: 100,
-        width: 150,
-        decoration: const BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.all(Radius.circular(5)),
-        )
-      );
-    } 
-    else {
+          height: 100,
+          width: 150,
+          decoration: const BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+          ));
+    } else {
       image = Container(
         height: 100,
         width: 150,
@@ -191,72 +244,168 @@ class ArticleListItem extends StatelessWidget {
       );
     }
 
-
-
-
-    return Container(
-      color: lightGreyTransparent,
-      child: Column(
-        children: [
-          Container(
-            color: lightGrey,
-            height: 1,
-          ),
-          SizedBox(
-            height: height,
-            // TODO: Add lr padding here
-            child: Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Padding(
-                      padding: EdgeInsets.all(8.0),
+    return GestureDetector(
+      onTap: () {
+        onTapCallback(newsArticle);
+        print("Tapped on article ${newsArticle.title}");
+      },
+      child: Container(
+        color: lightGreyTransparent,
+        child: Column(
+          children: [
+            Container(
+              color: lightGrey,
+              height: 1,
+            ),
+            SizedBox(
+              height: height,
+              // TODO: Add lr padding here
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20, right: 20),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            image,
+                          ],
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Expanded(
+                      flex: 1,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          image,
+                          Text(
+                            newsArticle.title,
+                            style: boldBodyStyle,
+                          ),
+                          SizedBox(height: 15),
+                          Text(
+                            newsArticle.content,
+                            style: smallBodyStyle,
+                            textAlign: TextAlign.left,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 3,
+                          ),
                         ],
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          newsArticle.title,
-                          style: boldBodyStyle,
-                        ),
-                        SizedBox(height: 15),
-                        Text(
-                          newsArticle.content,
-                          style: smallBodyStyle,
-                          textAlign: TextAlign.left,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 3,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
+            Container(
+              color: lightGrey,
+              height: 1,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+// News Article Fullscreen ===============================
+
+class ArticleFullscreenPage extends StatelessWidget {
+  const ArticleFullscreenPage({super.key, required this.newsArticle, required this.pageController});
+
+  final NewsArticle newsArticle;
+  final PageController pageController;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: primaryColor,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            ArticleFullscreenPageHeader(
+              newsArticle: newsArticle,
+              exitArticleView: () {
+                pageController.animateToPage(0, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+              },
+            ),
+            ArticleFullscreenPageContent(newsArticle: newsArticle),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ArticleFullscreenPageHeader extends StatelessWidget {
+  const ArticleFullscreenPageHeader({super.key, required this.newsArticle, required this.exitArticleView});
+
+  final void Function() exitArticleView;
+  final NewsArticle newsArticle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: exitArticleView,
+              ),
+            ],
           ),
-          Container(
-            color: lightGrey,
-            height: 1,
+          Text(
+            newsArticle.getDateString(),
+            textAlign: TextAlign.center,
+            style: boldSmallBodyStyle,
           ),
         ],
       ),
     );
   }
 }
-// News Article Fullscreen ===============================
+
+class ArticleFullscreenPageContent extends StatelessWidget {
+  const ArticleFullscreenPageContent({super.key, required this.newsArticle});
+
+  final NewsArticle newsArticle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ArticleFullscreenImage(newsArticle: newsArticle)
+      ],
+    );
+  }
+}
+
+class ArticleFullscreenImage extends StatelessWidget {
+  const ArticleFullscreenImage({super.key, required this.newsArticle});
+
+  final NewsArticle newsArticle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200,
+      width: 200,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(5),
+        child: newsArticle.image,
+      ),
+    );
+  }
+}
