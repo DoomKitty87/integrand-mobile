@@ -170,7 +170,7 @@ class ArticleListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget image;
     
-    if (newsArticle.image == '') {
+    if (newsArticle.image == null) {
       image = Container(
         height: 100,
         width: 150,
@@ -186,10 +186,7 @@ class ArticleListItem extends StatelessWidget {
         width: 150,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(5),
-          child: Image.memory(
-            base64Decode(newsArticle.image),
-            fit: BoxFit.cover,
-          ),
+          child: newsArticle.image,
         ),
       );
     }

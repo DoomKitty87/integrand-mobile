@@ -252,7 +252,7 @@ TimeOfDay timeOfDayFromJson(String time) {
 class NewsArticle {
   int id = 0;
   String title = 'Welcome To Integrand!';
-  String image = '';
+  Image? image;
   DateTime releaseDate = DateTime.now();
   String content = 'Integrand is a new app that is designed to help students keep track of their grades, assignments, and more! We hope you enjoy using our app!';
 
@@ -274,7 +274,7 @@ class NewsArticle {
   NewsArticle.fromJson(Map<String, dynamic> json) {
     id = json['ID'];
     title = json['Title'];
-    image = json['Image'];
+    image = Image.network("https://integrand.app/cdn/${json['Image']}", fit: BoxFit.cover);
     releaseDate = DateTime.fromMillisecondsSinceEpoch(json['EpochTime']);
     content = json['Content'];
   }
