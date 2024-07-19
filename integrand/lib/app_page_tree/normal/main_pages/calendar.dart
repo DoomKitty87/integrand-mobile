@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:integrand/backend/studentvue_api.dart';
 import 'package:integrand/consts.dart';
+import 'package:integrand/backend/data_classes.dart';
+import 'package:integrand/backend/database_interactions.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
@@ -17,6 +18,10 @@ class _CalendarState extends State<Calendar> {
         Expanded(child: Center(child: MonthDisplay())),
       ]),
       CalendarGrid(),
+      Padding(
+        padding: const EdgeInsets.all(30.0),
+        child: EventCard(event: Event()),
+      ),
     ]);
   }
 }
@@ -168,6 +173,98 @@ class DayEvents extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: icons,
+    );
+  }
+}
+
+class EventCard extends StatelessWidget {
+  const EventCard({super.key, required this.event});
+
+  final Event event;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: lightGrey,
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
+      ),
+      child: Row(children: [
+        Container(
+          width: 70,
+          height: 70,
+          decoration: BoxDecoration(
+            color: purpleGradient,
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
+          ),
+          child: Center(
+            child: Icon(
+              Icons.food_bank,
+              color: textColor,
+              size: 50,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 12.0),
+            child: Column(children: [
+              Row(
+                children: [
+                  Text("Title", style: bodyStyle, textAlign: TextAlign.left),
+                ],
+              ),
+              SizedBox(height: 12),
+              Row(
+                children: [
+                  Icon(Icons.place, size: 20, color: textColor),
+                  SizedBox(width: 5),
+                  Text("Location", style: bodyStyle),
+                ],
+              )
+            ]),
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: Text(
+            "Start time",
+            style: bodyStyle,
+          ),
+        ),
+        Container(
+          width: 15,
+          height: 70,
+          decoration: BoxDecoration(
+            color: lighterGrey,
+            borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(10),
+                bottomRight: Radius.circular(10)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.circle,
+                size: 4,
+                color: textColor,
+              ),
+              Icon(
+                Icons.circle,
+                size: 4,
+                color: textColor,
+              ),
+              Icon(
+                Icons.circle,
+                size: 4,
+                color: textColor,
+              ),
+            ],
+          ),
+        )
+      ]),
     );
   }
 }
