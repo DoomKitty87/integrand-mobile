@@ -11,7 +11,7 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
-  int selectedDay = DateTime.now().day;
+  DateTime selectedTime = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -22,24 +22,65 @@ class _CalendarState extends State<Calendar> {
           List<Event> events = snapshot.data as List<Event>;
           return Column(children: [
             Row(children: [
-              Expanded(child: Center(child: MonthDisplay())),
+              Expanded(
+                child: IconButton(
+                  icon:
+                      const Icon(Icons.arrow_back, color: textColor, size: 20),
+                  onPressed: () {
+                    setState(() {
+                      if (selectedTime.month == 1) {
+                        selectedTime = DateTime(
+                            selectedTime.year - 1, 12, selectedTime.day);
+                      } else {
+                        selectedTime = DateTime(selectedTime.year,
+                            selectedTime.month - 1, selectedTime.day);
+                      }
+                    });
+                  },
+                ),
+              ),
+              Expanded(
+                  child:
+                      Center(child: MonthDisplay(currentTime: selectedTime))),
+              Expanded(
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_forward,
+                      color: textColor, size: 20),
+                  onPressed: () {
+                    setState(() {
+                      if (selectedTime.month == 12) {
+                        selectedTime = DateTime(
+                            selectedTime.year + 1, 1, selectedTime.day);
+                      } else {
+                        selectedTime = DateTime(selectedTime.year,
+                            selectedTime.month + 1, selectedTime.day);
+                      }
+                    });
+                  },
+                ),
+              ),
             ]),
             CalendarGrid(
                 events: events,
                 selectDayCallback: (day) {
                   setState(() {
-                    selectedDay = day;
+                    selectedTime = DateTime(
+                        selectedTime.year,
+                        selectedTime.month,
+                        day,
+                        selectedTime.hour,
+                        selectedTime.minute);
                   });
                 },
-                day: selectedDay),
+                currentTime: selectedTime),
             Padding(
               padding: const EdgeInsets.only(left: 30, right: 30),
-              child: DayEventsList(events: events, day: selectedDay),
+              child: DayEventsList(events: events, currentTime: selectedTime),
             ),
           ]);
         } else if (snapshot.hasError) {
-          return Center(
-            child: Text("Error loading events" + snapshot.error.toString()),
+          return const Center(
+            child: Text("Error loading events"),
           );
         } else {
           return const Center(
@@ -52,11 +93,12 @@ class _CalendarState extends State<Calendar> {
 }
 
 class MonthDisplay extends StatelessWidget {
-  const MonthDisplay({super.key});
+  const MonthDisplay({super.key, required this.currentTime});
+
+  final DateTime currentTime;
 
   @override
   Widget build(BuildContext context) {
-    DateTime currentTime = DateTime.now();
     String month = months[currentTime.month - 1];
     String year = currentTime.year.toString();
 
@@ -72,16 +114,17 @@ class CalendarGrid extends StatelessWidget {
       {super.key,
       required this.events,
       required this.selectDayCallback,
-      required this.day});
+      required this.currentTime});
 
   final List<Event> events;
   final Function(int) selectDayCallback;
-  final int day;
+  final DateTime currentTime;
 
   @override
   Widget build(BuildContext context) {
-    int month = DateTime.now().month;
-    int year = DateTime.now().year;
+    int month = currentTime.month;
+    int year = currentTime.year;
+    int day = currentTime.day;
     int daysInMonth = DateUtils.getDaysInMonth(year, month);
     int offset = DateTime(year, month, 1).weekday % 7;
 
@@ -325,15 +368,16 @@ class EventCard extends StatelessWidget {
 }
 
 class DayEventsList extends StatelessWidget {
-  const DayEventsList({super.key, required this.events, required this.day});
+  const DayEventsList(
+      {super.key, required this.events, required this.currentTime});
 
   final List<Event> events;
-  final int day;
+  final DateTime currentTime;
 
   @override
   Widget build(BuildContext context) {
     List<Event> eventsThisDay = events.where((event) {
-      return event.startTime.day == day;
+      return event.startTime.day == currentTime.day;
     }).toList();
 
     eventsThisDay.sort((a, b) {
@@ -349,7 +393,7 @@ class DayEventsList extends StatelessWidget {
         displayedTimes.add(TimeOfDay.fromDateTime(event.startTime));
         eventCards.add(
           Padding(
-            padding: const EdgeInsets.only(top: 20, bottom: 10),
+            padding: const EdgeInsets.only(bottom: 10),
             child: Row(children: [
               const SizedBox(width: 10),
               Text(
