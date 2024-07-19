@@ -209,8 +209,8 @@ class Event {
   int id = 0;
   String title = '';
   String description = '';
-  DateTime startDate = DateTime.now();
-  DateTime endDate = DateTime.now();
+  DateTime startTime = DateTime.now();
+  DateTime endTime = DateTime.now();
   String location = '';
 
   Event();
@@ -219,24 +219,8 @@ class Event {
     id = json['ID'];
     title = json['Title'];
     description = json['Description'];
-    startDate = DateTime.parse(json['StartDate']);
-    endDate = DateTime.parse(json['EndDate']);
-    TimeOfDay startTime = TimeOfDay.fromDateTime(json['StartTime']);
-    TimeOfDay endTime = TimeOfDay.fromDateTime(json['EndTime']);
-    startDate = DateTime(
-      startDate.year,
-      startDate.month,
-      startDate.day,
-      startTime.hour,
-      startTime.minute,
-    );
-    endDate = DateTime(
-      endDate.year,
-      endDate.month,
-      endDate.day,
-      endTime.hour,
-      endTime.minute,
-    );
+    startTime = DateTime.fromMillisecondsSinceEpoch(json['StartTime'] * 1000);
+    endTime = DateTime.fromMillisecondsSinceEpoch(json['EndTime'] * 1000);
     location = json['Location'];
   }
 }
@@ -254,7 +238,8 @@ class NewsArticle {
   String title = 'Welcome To Integrand!';
   Image? image;
   DateTime releaseDate = DateTime.now();
-  String content = 'Integrand is a new app that is designed to help students keep track of their grades, assignments, and more! We hope you enjoy using our app!';
+  String content =
+      'Integrand is a new app that is designed to help students keep track of their grades, assignments, and more! We hope you enjoy using our app!';
 
   bool sameReleaseDateAs(NewsArticle other) {
     return releaseDate.year == other.releaseDate.year &&
@@ -276,9 +261,9 @@ class NewsArticle {
     title = json['Title'];
     if (json['Image'] != "") {
       try {
-        image = Image.network("https://integrand.app/cdn/${json['Image']}", fit: BoxFit.contain);
-      }
-      on NetworkImageLoadException {
+        image = Image.network("https://integrand.app/cdn/${json['Image']}",
+            fit: BoxFit.contain);
+      } on NetworkImageLoadException {
         image = null;
       }
     }

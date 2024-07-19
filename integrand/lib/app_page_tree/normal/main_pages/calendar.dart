@@ -13,16 +13,32 @@ class Calendar extends StatefulWidget {
 class _CalendarState extends State<Calendar> {
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      Row(children: [
-        Expanded(child: Center(child: MonthDisplay())),
-      ]),
-      CalendarGrid(),
-      Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: EventCard(event: Event()),
-      ),
-    ]);
+    return FutureBuilder(
+      future: fetchEvents(4),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          List<Event> events = snapshot.data as List<Event>;
+          return Column(children: [
+            Row(children: [
+              Expanded(child: Center(child: MonthDisplay())),
+            ]),
+            CalendarGrid(events: events),
+            Padding(
+              padding: const EdgeInsets.only(left: 30, right: 30),
+              child: DayEventsList(events: events, day: DateTime.now().day),
+            ),
+          ]);
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text("Error loading events" + snapshot.error.toString()),
+          );
+        } else {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
+    );
   }
 }
 
@@ -43,7 +59,9 @@ class MonthDisplay extends StatelessWidget {
 }
 
 class CalendarGrid extends StatelessWidget {
-  const CalendarGrid({super.key});
+  const CalendarGrid({super.key, required this.events});
+
+  final List<Event> events;
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +70,10 @@ class CalendarGrid extends StatelessWidget {
     int day = DateTime.now().day;
     int daysInMonth = DateUtils.getDaysInMonth(year, month);
     int offset = DateTime(year, month, 1).weekday % 7;
+
+    List<Event> eventsThisMonth = events.where((event) {
+      return event.startTime.month == month;
+    }).toList();
 
     if (month == 1) {
       year -= 1;
@@ -109,22 +131,28 @@ class CalendarGrid extends StatelessWidget {
         } else {
           dayWidgets.add(Expanded(
             child: Center(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: dayNumber == day ? textGradient : null,
-                  borderRadius: const BorderRadius.all(Radius.circular(5)),
-                ),
-                padding: const EdgeInsets.all(6),
-                child: Column(
-                  children: [
-                    Text(
-                      dayNumber.toString(),
-                      style: smallBodyStyle,
-                    ),
-                    DayEvents(
-                      eventCount: 3,
-                    ),
-                  ],
+              child: SizedBox(
+                width: 35,
+                height: 35,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: dayNumber == day ? textGradient : null,
+                    borderRadius: const BorderRadius.all(Radius.circular(5)),
+                  ),
+                  padding: const EdgeInsets.all(6),
+                  child: Column(
+                    children: [
+                      Text(
+                        dayNumber.toString(),
+                        style: smallBodyStyle,
+                      ),
+                      DayEvents(
+                        eventCount: eventsThisMonth
+                            .where((event) => event.startTime.day == dayNumber)
+                            .length,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -137,7 +165,7 @@ class CalendarGrid extends StatelessWidget {
     }
 
     return Padding(
-      padding: const EdgeInsets.all(30.0),
+      padding: const EdgeInsets.only(left: 30, right: 30, top: 30),
       child: Column(
         children: [
           dayLabelRow,
@@ -185,9 +213,9 @@ class EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: lightGrey,
-        borderRadius: const BorderRadius.all(Radius.circular(10)),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: Row(children: [
         Container(
@@ -207,64 +235,124 @@ class EventCard extends StatelessWidget {
           ),
         ),
         Expanded(
-          flex: 2,
+          flex: 3,
           child: Padding(
             padding: const EdgeInsets.only(left: 12.0),
             child: Column(children: [
               Row(
                 children: [
-                  Text("Title", style: bodyStyle, textAlign: TextAlign.left),
+                  Text(event.title,
+                      style: bodyStyle, textAlign: TextAlign.left),
                 ],
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Row(
                 children: [
-                  Icon(Icons.place, size: 20, color: textColor),
-                  SizedBox(width: 5),
-                  Text("Location", style: bodyStyle),
+                  const Icon(Icons.place, size: 16, color: textColor),
+                  const SizedBox(width: 5),
+                  Text(event.location, style: smallBodyStyle),
                 ],
               )
             ]),
           ),
         ),
         Expanded(
-          flex: 1,
+          flex: 2,
           child: Text(
-            "Start time",
-            style: bodyStyle,
+            textAlign: TextAlign.right,
+            TimeOfDay.fromDateTime(event.startTime).format(context) +
+                ' - ' +
+                TimeOfDay.fromDateTime(event.endTime).format(context),
+            style: smallBodyStyle,
           ),
         ),
+        SizedBox(width: 10),
         Container(
           width: 15,
           height: 70,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: lighterGrey,
-            borderRadius: const BorderRadius.only(
+            borderRadius: BorderRadius.only(
                 topRight: Radius.circular(10),
                 bottomRight: Radius.circular(10)),
           ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.circle,
-                size: 4,
-                color: textColor,
-              ),
-              Icon(
-                Icons.circle,
-                size: 4,
-                color: textColor,
-              ),
-              Icon(
-                Icons.circle,
-                size: 4,
-                color: textColor,
-              ),
-            ],
-          ),
+          child: event.description == ''
+              ? null
+              : const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.circle,
+                      size: 4,
+                      color: textColor,
+                    ),
+                    Icon(
+                      Icons.circle,
+                      size: 4,
+                      color: textColor,
+                    ),
+                    Icon(
+                      Icons.circle,
+                      size: 4,
+                      color: textColor,
+                    ),
+                  ],
+                ),
         )
       ]),
+    );
+  }
+}
+
+class DayEventsList extends StatelessWidget {
+  const DayEventsList({super.key, required this.events, required this.day});
+
+  final List<Event> events;
+  final int day;
+
+  @override
+  Widget build(BuildContext context) {
+    List<Event> eventsThisDay = events.where((event) {
+      return event.startTime.day == day;
+    }).toList();
+
+    eventsThisDay.sort((a, b) {
+      return a.startTime.compareTo(b.startTime);
+    });
+
+    List<TimeOfDay> displayedTimes = [];
+
+    List<Widget> eventCards = [];
+
+    for (Event event in eventsThisDay) {
+      if (!displayedTimes.contains(TimeOfDay.fromDateTime(event.startTime))) {
+        displayedTimes.add(TimeOfDay.fromDateTime(event.startTime));
+        eventCards.add(
+          Padding(
+            padding: const EdgeInsets.only(top: 20, bottom: 10),
+            child: Row(children: [
+              const SizedBox(width: 10),
+              Text(
+                TimeOfDay.fromDateTime(event.startTime).format(context),
+                style: boldBodyStyle,
+                textAlign: TextAlign.left,
+              ),
+            ]),
+          ),
+        );
+      } else {
+        eventCards.add(const SizedBox(height: 10));
+      }
+      eventCards.add(EventCard(event: event));
+      eventCards.add(const SizedBox(height: 20));
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: eventCards.length,
+      itemBuilder: (context, index) {
+        return eventCards[index];
+      },
     );
   }
 }
