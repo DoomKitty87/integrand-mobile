@@ -125,6 +125,13 @@ const TextStyle smallBodyStyle = TextStyle(
   decoration: TextDecoration.none,
 );
 
+TextStyle smallBodyStyleSubdued = TextStyle(
+  color: textColor.withOpacity(0.5),
+  fontSize: 12,
+  fontWeight: FontWeight.normal,
+  fontFamily: "Inter",
+  decoration: TextDecoration.none,
+);
 
 const TextStyle boldSmallBodyStyle = TextStyle(
   color: textColor,
@@ -248,3 +255,20 @@ Map<String, String> periodNameToIndicator = {
   "Lunch": "L",
   "": "PASS"
 };
+
+List<String> months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December"
+];
+
+List<String> daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
