@@ -11,6 +11,8 @@ class Calendar extends StatefulWidget {
 }
 
 class _CalendarState extends State<Calendar> {
+  int selectedDay = DateTime.now().day;
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -22,10 +24,17 @@ class _CalendarState extends State<Calendar> {
             Row(children: [
               Expanded(child: Center(child: MonthDisplay())),
             ]),
-            CalendarGrid(events: events),
+            CalendarGrid(
+                events: events,
+                selectDayCallback: (day) {
+                  setState(() {
+                    selectedDay = day;
+                  });
+                },
+                day: selectedDay),
             Padding(
               padding: const EdgeInsets.only(left: 30, right: 30),
-              child: DayEventsList(events: events, day: DateTime.now().day),
+              child: DayEventsList(events: events, day: selectedDay),
             ),
           ]);
         } else if (snapshot.hasError) {
@@ -59,15 +68,20 @@ class MonthDisplay extends StatelessWidget {
 }
 
 class CalendarGrid extends StatelessWidget {
-  const CalendarGrid({super.key, required this.events});
+  const CalendarGrid(
+      {super.key,
+      required this.events,
+      required this.selectDayCallback,
+      required this.day});
 
   final List<Event> events;
+  final Function(int) selectDayCallback;
+  final int day;
 
   @override
   Widget build(BuildContext context) {
     int month = DateTime.now().month;
     int year = DateTime.now().year;
-    int day = DateTime.now().day;
     int daysInMonth = DateUtils.getDaysInMonth(year, month);
     int offset = DateTime(year, month, 1).weekday % 7;
 
@@ -131,27 +145,33 @@ class CalendarGrid extends StatelessWidget {
         } else {
           dayWidgets.add(Expanded(
             child: Center(
-              child: SizedBox(
-                width: 35,
-                height: 35,
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: dayNumber == day ? textGradient : null,
-                    borderRadius: const BorderRadius.all(Radius.circular(5)),
-                  ),
-                  padding: const EdgeInsets.all(6),
-                  child: Column(
-                    children: [
-                      Text(
-                        dayNumber.toString(),
-                        style: smallBodyStyle,
-                      ),
-                      DayEvents(
-                        eventCount: eventsThisMonth
-                            .where((event) => event.startTime.day == dayNumber)
-                            .length,
-                      ),
-                    ],
+              child: GestureDetector(
+                onTap: () {
+                  selectDayCallback(dayNumber);
+                },
+                child: SizedBox(
+                  width: 35,
+                  height: 35,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: dayNumber == day ? textGradient : null,
+                      borderRadius: const BorderRadius.all(Radius.circular(5)),
+                    ),
+                    padding: const EdgeInsets.all(6),
+                    child: Column(
+                      children: [
+                        Text(
+                          dayNumber.toString(),
+                          style: smallBodyStyle,
+                        ),
+                        DayEvents(
+                          eventCount: eventsThisMonth
+                              .where(
+                                  (event) => event.startTime.day == dayNumber)
+                              .length,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
