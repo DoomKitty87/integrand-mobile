@@ -276,7 +276,7 @@ class NewsArticle {
     title = json['Title'];
     if (json['Image'] != "") {
       try {
-        image = Image.network("https://integrand.app/cdn/${json['Image']}", fit: BoxFit.cover);
+        image = Image.network("https://integrand.app/cdn/${json['Image']}", fit: BoxFit.contain);
       }
       on NetworkImageLoadException {
         image = null;

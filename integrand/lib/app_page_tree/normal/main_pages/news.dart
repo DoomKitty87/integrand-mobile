@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:integrand/consts.dart';
 import 'package:integrand/backend/data_classes.dart';
 import 'package:integrand/backend/database_interactions.dart';
@@ -234,12 +236,29 @@ class ArticleListItem extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(5)),
           ));
     } else {
-      image = Container(
+      image = SizedBox(
         height: 100,
         width: 150,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(5),
-          child: newsArticle.image,
+        child: Stack(
+          children: [
+            Positioned(
+              height: 100,
+              width: 150,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(5),
+                child: ImageFiltered(
+                  imageFilter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                  child: Stack(
+                    children: [
+                      Image(
+                        image: newsArticle.image!.image, fit: BoxFit.cover,
+                      ),
+                    ],
+                  )
+                ),
+              ),
+            ),
+          ],
         ),
       );
     }
@@ -402,10 +421,20 @@ class ArticleFullscreenImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 200,
-      width: 200,
+      width: 380,
+      color: Colors.black,
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: newsArticle.image!.image,
+          fit: BoxFit.cover,
+        ),
+      ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
-        child: newsArticle.image,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: newsArticle.image,
+        ),
       ),
     );
   }
@@ -419,6 +448,7 @@ class ArticleFullscreenText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           newsArticle.title,
