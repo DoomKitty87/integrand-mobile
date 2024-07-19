@@ -37,6 +37,7 @@ void main() {
       child: MaterialApp(
         title: appName,
         theme: ThemeData(fontFamily: 'Inter'),
+        debugShowCheckedModeBanner: false,
         home: const DefaultTextStyle(
           style: TextStyle(
               fontFamily: 'Inter',
@@ -222,16 +223,16 @@ class CenterPage extends StatelessWidget {
         ),
         Expanded(
           child: PageView.builder(
-              itemCount: innerPages.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                return innerPages[index];
-              },
-              controller: innerPageController,
-              onPageChanged: (value) => {
-                    Provider.of<AppData>(context, listen: false)
-                        .changePage(AppPage.values[value])
-                  }),
+            itemCount: innerPages.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return innerPages[index];
+            },
+            controller: innerPageController,
+            onPageChanged: (value) => {
+              Provider.of<AppData>(context, listen: false).changePage(AppPage.values[value])
+            }
+          ),
         ),
         PageSelectBar(pageController: innerPageController),
         const SizedBox(

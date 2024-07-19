@@ -3,12 +3,15 @@ import 'package:integrand/backend/data_classes.dart';
 
 const String appName = "Integrand";
 
-const Color backgroundColor = Color.fromRGBO(13, 13, 13, 1); //HSVO(0, 0, 5, 1)
-const Color backgroundColorSecondary = Color.fromRGBO(10, 1, 24, 1);
+const Color backgroundColor = Color.fromRGBO(5, 5, 5, 1); //HSVO(0, 0, 2, 1)
+const Color primaryColor = Color.fromRGBO(10, 10, 10, 1);
+const Color highlightColor = Color.fromRGBO(22, 22, 22, 1);
+const Color backgroundColorSecondary = Color.fromRGBO(5, 5, 5, 1);
 const Color textColor = Color.fromRGBO(224, 224, 224, 1);
 const Color textColorSecondary = Color.fromRGBO(112, 112, 112, 1);
 const Color darkGrey = Color.fromRGBO(14, 14, 14, 1);
 const Color lightGrey = Color.fromRGBO(26, 27, 33, 1);
+const Color lightGreyTransparent = Color.fromRGBO(217, 217, 217, 0.02);
 const Color lighterGrey = Color.fromRGBO(45, 47, 57, 1);
 const Color lightestGrey = Color.fromRGBO(85, 87, 97, 1);
 const Color blueGradient = Color.fromRGBO(5, 62, 148, 1);
@@ -122,6 +125,15 @@ const TextStyle smallBodyStyle = TextStyle(
   decoration: TextDecoration.none,
 );
 
+
+const TextStyle boldSmallBodyStyle = TextStyle(
+  color: textColor,
+  fontSize: 12,
+  fontWeight: FontWeight.bold,
+  fontFamily: "Inter",
+  decoration: TextDecoration.none,
+);
+
 const TextStyle errorStyle = TextStyle(
   color: errorColor,
   fontSize: 12,
@@ -141,6 +153,14 @@ const TextStyle barStyle = TextStyle(
 const TextStyle barStyleSelected = TextStyle(
   color: textColor,
   fontSize: 12,
+  fontWeight: FontWeight.bold,
+  fontFamily: "Inter",
+  decoration: TextDecoration.none,
+);
+
+const TextStyle newsDateStyle = TextStyle(
+  color: textColor,
+  fontSize: 10,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
   decoration: TextDecoration.none,

@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:integrand/app_page_tree/normal/main_pages/news.dart';
 
 import '../helpers/time_of_day_helpers.dart';
 
@@ -185,4 +188,106 @@ class StudentData {
   String lockerCombo = '';
   String counselor = '';
   String photo = '';
+}
+
+class School {
+  int id = 0;
+  String name = '';
+  String district = '';
+
+  School();
+
+  // Decode json object into School object
+  School.fromJson(Map<String, dynamic> json) {
+    id = json['ID'];
+    name = json['SchoolName'];
+    district = json['DistrictName'];
+  }
+}
+
+class Event {
+  int id = 0;
+  String title = '';
+  String description = '';
+  DateTime startDate = DateTime.now();
+  DateTime endDate = DateTime.now();
+  String location = '';
+
+  Event();
+
+  Event.fromJson(Map<String, dynamic> json) {
+    id = json['ID'];
+    title = json['Title'];
+    description = json['Description'];
+    startDate = DateTime.parse(json['StartDate']);
+    endDate = DateTime.parse(json['EndDate']);
+    TimeOfDay startTime = TimeOfDay.fromDateTime(json['StartTime']);
+    TimeOfDay endTime = TimeOfDay.fromDateTime(json['EndTime']);
+    startDate = DateTime(
+      startDate.year,
+      startDate.month,
+      startDate.day,
+      startTime.hour,
+      startTime.minute,
+    );
+    endDate = DateTime(
+      endDate.year,
+      endDate.month,
+      endDate.day,
+      endTime.hour,
+      endTime.minute,
+    );
+    location = json['Location'];
+  }
+}
+
+TimeOfDay timeOfDayFromJson(String time) {
+  List<String> timeParts = time.split(':');
+  return TimeOfDay(
+    hour: int.parse(timeParts[0]),
+    minute: int.parse(timeParts[1]),
+  );
+}
+
+class NewsArticle {
+  int id = 0;
+  String title = 'Welcome To Integrand!';
+  Image? image;
+  DateTime releaseDate = DateTime.now();
+  String content = 'Integrand is a new app that is designed to help students keep track of their grades, assignments, and more! We hope you enjoy using our app!';
+
+  bool sameReleaseDateAs(NewsArticle other) {
+    return releaseDate.year == other.releaseDate.year &&
+        releaseDate.month == other.releaseDate.month &&
+        releaseDate.day == other.releaseDate.day;
+  }
+
+  String getDateString({bool includeYear = false}) {
+    if (includeYear) {
+      return '${weekdayToName(releaseDate.weekday)}, ${monthToName(releaseDate.month)} ${numberWithSuffix(releaseDate.day)} ${releaseDate.year}';
+    }
+    return '${weekdayToName(releaseDate.weekday)}, ${monthToName(releaseDate.month)} ${numberWithSuffix(releaseDate.day)}';
+  }
+
+  NewsArticle();
+
+  NewsArticle.fromJson(Map<String, dynamic> json) {
+    id = json['ID'];
+    title = json['Title'];
+    if (json['Image'] != "") {
+      image = Image.network("https://integrand.app/cdn/${json['Image']}", fit: BoxFit.cover);
+    }
+    releaseDate = DateTime.fromMillisecondsSinceEpoch(json['EpochTime']);
+    content = json['Content'];
+  }
+
+  int compareTo(NewsArticle other) {
+    // check for date
+    if (releaseDate.isBefore(other.releaseDate)) {
+      return -1;
+    } else if (releaseDate.isAfter(other.releaseDate)) {
+      return 1;
+    }
+    return 0;
+  }
 }
