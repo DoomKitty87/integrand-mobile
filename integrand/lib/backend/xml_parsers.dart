@@ -174,6 +174,31 @@ GradebookData parseGradebook(http.Response response) {
     for (XmlElement assignment in assignments) {
       Assignment a = Assignment();
 
+      // Check if element has attributes
+      if (assignment.attributes
+          .where((attribute) => attribute.name.local == 'Measure')
+          .isEmpty) {
+        continue;
+      }
+
+      if (assignment.attributes
+          .where((attribute) => attribute.name.local == 'Score')
+          .isEmpty) {
+        continue;
+      }
+
+      if (assignment.attributes
+          .where((attribute) => attribute.name.local == 'ScoreType')
+          .isEmpty) {
+        continue;
+      }
+
+      if (assignment.attributes
+          .where((attribute) => attribute.name.local == 'Points')
+          .isEmpty) {
+        continue;
+      }
+
       a.title = assignment.attributes
           .firstWhere((attribute) => attribute.name.local == 'Measure')
           .value;
