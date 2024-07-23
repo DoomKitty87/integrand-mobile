@@ -267,6 +267,10 @@ class NewsArticle {
         image = null;
       }
     }
+    else
+    {
+      image = null;
+    }
     releaseDate = DateTime.fromMillisecondsSinceEpoch(json['EpochTime']);
     content = json['Content'];
   }
