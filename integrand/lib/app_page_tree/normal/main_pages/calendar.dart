@@ -24,24 +24,38 @@ class _CalendarState extends State<Calendar> {
             Row(children: [
               Expanded(
                 child: IconButton(
-                  icon:
-                      const Icon(Icons.arrow_back, color: textColor, size: 20),
+                  icon: const Icon(
+                    Icons.arrow_back, 
+                    color: textColor, 
+                    size: 20,
+                  ),
                   onPressed: () {
                     setState(() {
                       if (selectedTime.month == 1) {
                         selectedTime = DateTime(
-                            selectedTime.year - 1, 12, selectedTime.day);
-                      } else {
-                        selectedTime = DateTime(selectedTime.year,
-                            selectedTime.month - 1, selectedTime.day);
+                          selectedTime.year - 1, 
+                          12, 
+                          selectedTime.day
+                        );
+                      } 
+                      else {
+                        selectedTime = DateTime(
+                          selectedTime.year, 
+                          selectedTime.month - 1, 
+                          selectedTime.day
+                        );
                       }
                     });
                   },
                 ),
               ),
               Expanded(
-                  child:
-                      Center(child: MonthDisplay(currentTime: selectedTime))),
+                child: Center(
+                  child: MonthDisplay(
+                    currentTime: selectedTime
+                  )
+                ))
+              ,
               Expanded(
                 child: IconButton(
                   icon: const Icon(Icons.arrow_forward,
@@ -49,40 +63,47 @@ class _CalendarState extends State<Calendar> {
                   onPressed: () {
                     setState(() {
                       if (selectedTime.month == 12) {
-                        selectedTime = DateTime(
-                            selectedTime.year + 1, 1, selectedTime.day);
+                        selectedTime = DateTime(selectedTime.year + 1, 1, selectedTime.day);
                       } else {
-                        selectedTime = DateTime(selectedTime.year,
-                            selectedTime.month + 1, selectedTime.day);
+                        selectedTime = DateTime(selectedTime.year, selectedTime.month + 1, selectedTime.day);
                       }
                     });
                   },
                 ),
               ),
             ]),
-            CalendarGrid(
+            SizedBox(
+              height: 285,
+              child: CalendarGrid(
                 events: events,
                 selectDayCallback: (day) {
                   setState(() {
                     selectedTime = DateTime(
-                        selectedTime.year,
-                        selectedTime.month,
-                        day,
-                        selectedTime.hour,
-                        selectedTime.minute);
+                      selectedTime.year,
+                      selectedTime.month,
+                      day,
+                      selectedTime.hour,
+                      selectedTime.minute
+                    );
                   });
                 },
-                currentTime: selectedTime),
+                currentTime: selectedTime
+              ),
+            ),
             Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30),
-              child: DayEventsList(events: events, currentTime: selectedTime),
+              padding: const EdgeInsets.only(left: 30, right: 30, top: 10),
+              child: DayEventsList(events: 
+                eventsThisMonth(events, selectedTime),
+              currentTime: selectedTime),
             ),
           ]);
-        } else if (snapshot.hasError) {
+        } 
+        else if (snapshot.hasError) {
           return const Center(
             child: Text("Error loading events"),
           );
-        } else {
+        } 
+        else {
           return const Center(
             child: CircularProgressIndicator(),
           );
@@ -90,6 +111,13 @@ class _CalendarState extends State<Calendar> {
       },
     );
   }
+}
+
+List<Event> eventsThisMonth(List<Event> events, DateTime currentTime) {
+  return events.where((event) {
+    return event.startTime.month == currentTime.month &&
+        event.startTime.year == currentTime.year;
+  }).toList();
 }
 
 class MonthDisplay extends StatelessWidget {
@@ -223,12 +251,20 @@ class CalendarGrid extends StatelessWidget {
         }
       }
 
-      weekRows.add(Row(children: dayWidgets));
-      weekRows.add(const SizedBox(height: 10));
+      weekRows.add(
+        Row(
+          children: dayWidgets
+        )
+      );
+      weekRows.add(
+        const SizedBox(
+          height: 5,
+        )
+      );
     }
 
     return Padding(
-      padding: const EdgeInsets.only(left: 30, right: 30, top: 30),
+      padding: const EdgeInsets.only(left: 30, right: 30),
       child: Column(
         children: [
           dayLabelRow,
@@ -284,12 +320,12 @@ class EventCard extends StatelessWidget {
         Container(
           width: 70,
           height: 70,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: purpleGradient,
             borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
           ),
-          child: Center(
+          child: const Center(
             child: Icon(
               Icons.food_bank,
               color: textColor,

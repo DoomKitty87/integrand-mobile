@@ -333,12 +333,13 @@ class PageSelectBar extends StatelessWidget {
 }
 
 class PageSelectIcon extends StatelessWidget {
-  const PageSelectIcon(
-      {super.key,
-      required this.page,
-      required this.text,
-      required this.icon,
-      required this.pageController});
+  const PageSelectIcon({
+    super.key,
+    required this.page,
+    required this.text,
+    required this.icon,
+    required this.pageController
+  });
 
   final AppPage page;
   final String text;
@@ -350,37 +351,36 @@ class PageSelectIcon extends StatelessWidget {
     return Consumer<AppData>(
       builder: (context, appData, child) {
         return TextButton(
-            style: ButtonStyle(
-              overlayColor: WidgetStateProperty.all<Color>(Colors.transparent),
-              splashFactory: NoSplash.splashFactory,
-              shape: WidgetStateProperty.all<ContinuousRectangleBorder>(
-                const ContinuousRectangleBorder(),
-              ),
+          style: ButtonStyle(
+            overlayColor: WidgetStateProperty.all<Color>(Colors.transparent),
+            splashFactory: NoSplash.splashFactory,
+            shape: WidgetStateProperty.all<ContinuousRectangleBorder>(
+              const ContinuousRectangleBorder(),
             ),
-            onPressed: () {
-              pageController.animateToPage(AppData.indexFromPage(page),
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOut);
-            },
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  icon,
-                  size: 25,
-                  color:
-                      appData.currentPage == page ? barColorSelected : barColor,
-                ),
-                const SizedBox(
-                  height: 2,
-                ),
-                Text(
-                  text,
-                  style:
-                      appData.currentPage == page ? barStyleSelected : barStyle,
-                ),
-              ],
-            ));
+          ),
+          onPressed: () {
+            pageController.animateToPage(AppData.indexFromPage(page),
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut);
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 25,
+                color: appData.currentPage == page ? barColorSelected : barColor,
+              ),
+              const SizedBox(
+                height: 2,
+              ),
+              Text(
+                text,
+                style: appData.currentPage == page ? barStyleSelected : barStyle,
+              ),
+            ],
+          )
+        );
       },
     );
   }

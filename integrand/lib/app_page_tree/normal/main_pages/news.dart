@@ -237,24 +237,17 @@ class ArticleListItem extends StatelessWidget {
           ));
     } else {
       image = SizedBox(
-        height: 100,
+        height: 84,
         width: 150,
         child: Stack(
           children: [
             Positioned(
-              height: 100,
+              height: 84,
               width: 150,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
-                child: ImageFiltered(
-                  imageFilter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                  child: Stack(
-                    children: [
-                      Image(
-                        image: newsArticle.image!.image, fit: BoxFit.cover,
-                      ),
-                    ],
-                  )
+                child: Image(
+                  image: newsArticle.image!.image, fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -346,19 +339,33 @@ class ArticleFullscreenPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: primaryColor,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            ArticleFullscreenPageHeader(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 16.0,
+              right: 16.0,
+            ),
+            child: ArticleFullscreenPageHeader(
               newsArticle: newsArticle,
               exitArticleView: () {
-                pageController.animateToPage(0, duration: const Duration(milliseconds: 250), curve: Curves.easeInOut);
+                pageController.animateToPage(
+                  0, 
+                  duration: const Duration(
+                    milliseconds: 250
+                  ),
+                  curve: Curves.easeInOut
+                );
               },
             ),
-            ArticleFullscreenPageContent(newsArticle: newsArticle),
-          ],
-        ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ArticleFullscreenPageContent(newsArticle: newsArticle),
+            ),
+          ), 
+        ],
       ),
     );
   }
@@ -380,7 +387,10 @@ class ArticleFullscreenPageHeader extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: textColor,
+                ),
                 onPressed: exitArticleView,
               ),
             ],
@@ -403,9 +413,11 @@ class ArticleFullscreenPageContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return ListView(
+      physics: const BouncingScrollPhysics(),
       children: [
         ArticleFullscreenImage(newsArticle: newsArticle),
+        const SizedBox(height: 30),
         ArticleFullscreenText(newsArticle: newsArticle),
       ],
     );
@@ -419,21 +431,26 @@ class ArticleFullscreenImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 200,
-      width: 380,
-      color: Colors.black,
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: newsArticle.image!.image,
-          fit: BoxFit.cover,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(5),
+      child: Container(
+        height: 216,
+        width: 384,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: newsArticle.image!.image,
+            fit: BoxFit.cover,
+          ),
         ),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(5),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: newsArticle.image,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5),
+          child: Container(
+            color: Colors.black.withOpacity(0.3),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+              child: newsArticle.image,
+            ),
+          ),
         ),
       ),
     );
@@ -454,12 +471,13 @@ class ArticleFullscreenText extends StatelessWidget {
           newsArticle.title,
           style: mediumTitleStyle,
         ),
-        SizedBox(height: 15),
+        SizedBox(height: 30),
         Text(
           newsArticle.content,
           style: smallBodyStyle,
           textAlign: TextAlign.left,
         ),
+        SizedBox(height: 30),
       ],
     );
   }
