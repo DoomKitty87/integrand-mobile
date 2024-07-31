@@ -15,6 +15,7 @@ class Course {
 
 class ScheduleData {
   List<Course> courses = [];
+  bool error = false;
 
   Course? getCourseByPeriod(String period) {
     for (var course in courses) {
@@ -62,6 +63,7 @@ class CourseGrading {
 
 class GradebookData {
   List<CourseGrading> courses = [];
+  bool error = false;
 }
 
 class GPAData {
@@ -72,6 +74,8 @@ class GPAData {
   int weightedRank = 0;
 
   int totalStudents = 0;
+
+  bool error = false;
 }
 
 class BellPeriod {
@@ -100,6 +104,7 @@ class BellPeriod {
 
 class BellSchedule {
   List<BellPeriod> periods = [];
+  bool error = false;
 
   BellSchedule();
   BellSchedule.withValues({required this.periods});
@@ -172,6 +177,7 @@ class CourseEntry {
 
 class CourseHistory {
   List<CourseEntry> courses = [];
+  bool error = false;
 }
 
 class StudentVueWebData {
@@ -188,6 +194,7 @@ class StudentData {
   String lockerCombo = '';
   String counselor = '';
   String photo = '';
+  bool error = false;
 }
 
 class School {

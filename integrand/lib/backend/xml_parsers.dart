@@ -22,6 +22,12 @@ StudentData parseStudent(http.Response response) {
 
   XmlDocument document = XmlDocument.parse(body);
 
+  if (document.findAllElements('FormattedName').isEmpty) {
+    StudentData data = StudentData();
+    data.error = true;
+    return data;
+  }
+
   XmlElement name = document.findAllElements('FormattedName').first;
   XmlElement grade = document.findAllElements('Grade').first;
   XmlElement studentId = document.findAllElements('PermID').first;

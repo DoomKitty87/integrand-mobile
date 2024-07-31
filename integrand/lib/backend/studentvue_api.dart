@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:integrand/app_page_tree/normal/main_pages/gradebook.dart';
 
 import 'xml_parsers.dart';
 import 'data_classes.dart';
@@ -211,7 +212,21 @@ class StudentVueAPI with ChangeNotifier {
 
     int currentPeriod = getCurrentReportingPeriod(response);
 
+    if (currentPeriod == -1) {
+      GradebookData data = GradebookData();
+      data.error = true;
+      initializedGrades = true;
+      return data;
+    }
+
     response = await gradebookPeriod(currentPeriod);
+
+    if (response.statusCode != 200) {
+      GradebookData data = GradebookData();
+      data.error = true;
+      initializedGrades = true;
+      return data;
+    }
 
     gradebookData = parseGradebook(response);
 
@@ -223,6 +238,13 @@ class StudentVueAPI with ChangeNotifier {
   Future<ScheduleData> updateSchedule() async {
     http.Response response = await schedule();
 
+    if (response.statusCode != 200) {
+      ScheduleData data = ScheduleData();
+      data.error = true;
+      initializedSchedule = true;
+      return data;
+    }
+
     scheduleData = parseSchedule(response);
 
     initializedSchedule = true;
@@ -232,6 +254,13 @@ class StudentVueAPI with ChangeNotifier {
 
   Future<StudentData> updateStudent() async {
     http.Response response = await student();
+
+    if (response.statusCode != 200) {
+      StudentData data = StudentData();
+      data.error = true;
+      initializedStudent = true;
+      return data;
+    }
 
     studentData = parseStudent(response);
 
@@ -314,17 +343,32 @@ class StudentVueAPI with ChangeNotifier {
       await Future.delayed(const Duration(milliseconds: 100));
     }
 
-    GPAData gpaData = updateGPA();
+    try {
+      GPAData gpaData = updateGPA();
+      this.gpaData = gpaData;
+    } catch (e) {
+      GPAData gpaData = GPAData();
+      gpaData.error = true;
+      this.gpaData = gpaData;
+    }
 
-    this.gpaData = gpaData;
+    try {
+      BellSchedule bellSchedule = updateCurrentBellSchedule();
+      this.bellSchedule = bellSchedule;
+    } catch (e) {
+      BellSchedule bellSchedule = BellSchedule();
+      bellSchedule.error = true;
+      this.bellSchedule = bellSchedule;
+    }
 
-    BellSchedule bellSchedule = updateCurrentBellSchedule();
-
-    this.bellSchedule = bellSchedule;
-
-    CourseHistory courseHistory = updateCourseHistory();
-
-    this.courseHistory = courseHistory;
+    try {
+      CourseHistory courseHistory = updateCourseHistory();
+      this.courseHistory = courseHistory;
+    } catch (e) {
+      CourseHistory courseHistory = CourseHistory();
+      courseHistory.error = true;
+      this.courseHistory = courseHistory;
+    }
   }
 
   Future<void> requestCourseHistory() async {
