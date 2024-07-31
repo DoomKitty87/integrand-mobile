@@ -14,18 +14,29 @@ class Gradebook extends StatefulWidget {
 class _GradebookState extends State<Gradebook> {
   @override
   Widget build(BuildContext context) {
-    return const Column(
-      children: [
-        Padding(
-          padding: EdgeInsets.only(left: 20.0, right: 20.0),
-          child: GPADisplay(),
-        ),
-        SizedBox(
-          height: 75.0,
-        ),
-        GradebookDisplay(),
-      ],
-    );
+    return Consumer<StudentVueAPI>(builder: (context, value, child) {
+      if (value.gradebookData.error || value.gpaData.error) {
+        return const Center(
+          child: Text(
+            "No gradebook data available.",
+            style: bodyStyle,
+          ),
+        );
+      }
+
+      return const Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(left: 20.0, right: 20.0),
+            child: GPADisplay(),
+          ),
+          SizedBox(
+            height: 75.0,
+          ),
+          GradebookDisplay(),
+        ],
+      );
+    });
   }
 }
 

@@ -136,6 +136,11 @@ GradebookData parseGradebook(http.Response response) {
 
   GradebookData data = GradebookData();
 
+  if (courses.isEmpty) {
+    data.error = true;
+    return data;
+  }
+
   for (XmlElement course in courses) {
     CourseGrading courseGrading = CourseGrading();
 

@@ -55,6 +55,20 @@ class _ScheduleState extends State<Schedule> {
       // TODO: Uncomment this when school starts lmao
       // BellSchedule schedule = value.bellSchedule;
 
+      if (value.bellSchedule.error) {
+        return const Padding(
+          padding: EdgeInsets.all(20.0),
+          child: Center(
+            child: Text(
+              "No schedule data available.",
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            ),
+          ),
+        );
+      }
+
       BellSchedule schedule = testASchedule;
       if (schedule.isOutsideSchoolHours(TimeOfDay.fromDateTime(_currentTime))) {
         return const Padding(

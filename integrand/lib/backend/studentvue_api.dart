@@ -489,6 +489,11 @@ class StudentVueAPI with ChangeNotifier {
 
     BellSchedule data = BellSchedule();
 
+    if (beginnings.isEmpty || ends.isEmpty || periods.isEmpty) {
+      data.error = true;
+      return data;
+    }
+
     for (int i = 0; i < beginnings.length; i++) {
       BellPeriod period = BellPeriod();
 
