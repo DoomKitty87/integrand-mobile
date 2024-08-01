@@ -22,11 +22,11 @@ const Color barColor = textColorSecondary;
 const Color barColorSelected = textColor;
 
 const List<Color> eventTypeColors = [
-  Color.fromRGBO(255, 0, 0, 1),
-  Color.fromRGBO(0, 255, 0, 1),
-  Color.fromRGBO(0, 0, 255, 1),
-  Color.fromRGBO(255, 255, 0, 1),
-  Color.fromRGBO(255, 0, 255, 1),
+  Color(0x8E7DBEFF),
+  Color(0xFFC857FF),
+  Color(0x61E786FF),
+  Color(0xF03A47FF),
+  Color(0x2B56A1FF),
 ];
 
 const List<String> eventTypeNames = [
@@ -39,7 +39,7 @@ const List<String> eventTypeNames = [
 
 const List<IconData> eventTypeIcons = [
   Icons.school,
-  Icons.home,
+  Icons.apartment,
   Icons.group,
   Icons.palette,
   Icons.sports_soccer,
