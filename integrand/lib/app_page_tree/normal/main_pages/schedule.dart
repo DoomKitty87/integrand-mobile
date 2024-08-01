@@ -52,10 +52,9 @@ class _ScheduleState extends State<Schedule> {
   @override
   Widget build(BuildContext context) {
     return Consumer<StudentVueAPI>(builder: (context, value, child) {
-      // TODO: Uncomment this when school starts lmao
-      // BellSchedule schedule = value.bellSchedule;
+      BellSchedule schedule = value.bellSchedule;
 
-      if (value.bellSchedule.error) {
+      if (schedule.error) {
         return const Padding(
           padding: EdgeInsets.all(20.0),
           child: Center(
@@ -69,7 +68,6 @@ class _ScheduleState extends State<Schedule> {
         );
       }
 
-      BellSchedule schedule = testASchedule;
       if (schedule.isOutsideSchoolHours(TimeOfDay.fromDateTime(_currentTime))) {
         return const Padding(
           padding: EdgeInsets.all(20.0),

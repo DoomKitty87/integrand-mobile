@@ -9,8 +9,20 @@ class Course {
   String courseTitle = '';
   String teacher = '';
   String teacherEmail = '';
+  // Room contains 'Room' and room number
   String room = '';
   String period = '';
+
+  Course();
+  Course.withValues(
+    {
+      required this.courseTitle,
+      required this.teacher,
+      required this.teacherEmail,
+      required this.room,
+      required this.period
+    }
+  );
 }
 
 class ScheduleData {
@@ -24,6 +36,69 @@ class ScheduleData {
       }
     }
     return null;
+  }
+
+  ScheduleData();
+
+  ScheduleData.testData() {
+    courses = [
+      Course.withValues(
+        courseTitle: 'AP Calculus BC',
+        teacher: 'Mr. Smith',
+        teacherEmail: 'email@student.pps.net',
+        room: 'Room 123',
+        period: '1'
+      ),
+      Course.withValues(
+        courseTitle: 'AP Physics C',
+        teacher: 'Mr. Johnson',
+        teacherEmail: 'email@student.pps.net',
+        room: 'Room 456',
+        period: '2'
+      ),
+      Course.withValues(
+        courseTitle: 'AP Computer Science A',
+        teacher: 'Mr. Doe',
+        teacherEmail: 'email@student.pps.net',
+        room: 'Room 789',
+        period: '3'
+      ),
+      Course.withValues(
+        courseTitle: 'AP English Literature',
+        teacher: 'Ms. Smith',
+        teacherEmail: 'email@student.pps.net',
+        room: 'Room 101',
+        period: '4'
+      ),
+      Course.withValues(
+        courseTitle: 'AP US History',
+        teacher: 'Mr. Johnson',
+        teacherEmail: 'email@student.pps.net',
+        room: 'Room 202',
+        period: '5'
+      ),
+      Course.withValues(
+        courseTitle: 'AP Chemistry',
+        teacher: 'Mr. Doe',
+        teacherEmail: 'email@student.pps.net',
+        room: 'Room 303',
+        period: '6'
+      ),
+      Course.withValues(
+        courseTitle: 'AP Spanish',
+        teacher: 'Ms. Smith',
+        teacherEmail: 'email@student.pps.net',
+        room: 'Room 404',
+        period: '7'
+      ),
+      Course.withValues(
+        courseTitle: 'AP Art History',
+        teacher: 'Mr. Johnson',
+        teacherEmail: 'email@student.pps.net',
+        room: 'Room 505',
+        period: '8'
+      ),
+    ];
   }
 }
 
@@ -39,10 +114,31 @@ class Assignment {
     title: 'Default',
     weight: 1.0,
   );
+
+  Assignment();
+
+  Assignment.withValues(
+    {
+      required this.title,
+      required this.score,
+      required this.total,
+      required this.type,
+    }
+  );
+
+  Assignment.testData(
+    {
+      this.title = 'Test Assignment',
+      this.score = 90.0,
+      this.total = 100.0,
+    }
+  );
 }
 
 class AssignmentType {
+  // eg. summative, formative, etc.
   String title = '';
+  // weighted value of the assignment
   double weight = 0.0;
 
   double points = 0.0;
@@ -59,11 +155,69 @@ class CourseGrading {
   double grade = 0.0;
   List<AssignmentType> assignmentTypes = [];
   List<Assignment> assignments = [];
+
+  CourseGrading();
+
+  CourseGrading.testData() {
+    courseTitle = 'AP Calculus BC';
+    grade = 95.0;
+    assignmentTypes = [
+      AssignmentType(
+        title: 'Summative',
+        weight: 0.6,
+      ),
+      AssignmentType(
+        title: 'Formative',
+        weight: 0.4,
+      ),
+    ];
+    assignments = [
+      Assignment.withValues(
+        title: 'Test 1',
+        score: 90.0,
+        total: 100.0,
+        type: assignmentTypes[0],
+      ),
+      Assignment.withValues(
+        title: 'Quiz 1',
+        score: 95.0,
+        total: 100.0,
+        type: assignmentTypes[1],
+      ),
+      Assignment.withValues(
+        title: 'Test 2',
+        score: 100.0,
+        total: 100.0,
+        type: assignmentTypes[0],
+      ),
+      Assignment.withValues(
+        title: 'Quiz 2',
+        score: 85.0,
+        total: 100.0,
+        type: assignmentTypes[1],
+      ),
+    ];
+  }
 }
 
 class GradebookData {
   List<CourseGrading> courses = [];
   bool error = false;
+
+  GradebookData();
+
+  GradebookData.testData() {
+    courses = [
+      CourseGrading.testData(),
+      CourseGrading.testData(),
+      CourseGrading.testData(),
+      CourseGrading.testData(),
+      CourseGrading.testData(),
+      CourseGrading.testData(),
+      CourseGrading.testData(),
+      CourseGrading.testData(),
+    ];
+  }
 }
 
 class GPAData {
@@ -76,6 +230,18 @@ class GPAData {
   int totalStudents = 0;
 
   bool error = false;
+
+  GPAData();
+
+  GPAData.testData() {
+    unweightedGPA = 4.0;
+    weightedGPA = 4.2;
+
+    unweightedRank = 1;
+    weightedRank = 1;
+
+    totalStudents = 100;
+  }
 }
 
 class BellPeriod {
@@ -108,6 +274,67 @@ class BellSchedule {
 
   BellSchedule();
   BellSchedule.withValues({required this.periods});
+  BellSchedule.testDataA() {
+    periods = [
+      BellPeriod.withValues(
+        periodName: "1",
+        startTime: const TimeOfDay(hour: 8, minute: 30),
+        endTime: const TimeOfDay(hour: 10, minute: 2)
+      ),
+      BellPeriod.withValues(
+        periodName: "2",
+        startTime: const TimeOfDay(hour: 10, minute: 9),
+        endTime: const TimeOfDay(hour: 11, minute: 41)
+      ),
+      BellPeriod.withValues(
+        periodName: "Lunch",
+        startTime: const TimeOfDay(hour: 11, minute: 41),
+        endTime: const TimeOfDay(hour: 12, minute: 14)
+      ),
+      BellPeriod.withValues(
+        periodName: "3",
+        startTime: const TimeOfDay(hour: 12, minute: 19),
+        endTime: const TimeOfDay(hour: 13, minute: 51)
+      ),
+      BellPeriod.withValues(
+        periodName: "4",
+        startTime: const TimeOfDay(hour: 13, minute: 58),
+        endTime: const TimeOfDay(hour: 15, minute: 30)
+      ),
+    ];
+  }
+
+  BellSchedule.testDataB() {
+    periods = [
+      BellPeriod.withValues(
+        periodName: "5",
+        startTime: const TimeOfDay(hour: 8, minute: 30),
+        endTime: const TimeOfDay(hour: 10, minute: 2)
+      ),
+      BellPeriod.withValues(
+        periodName: "6",
+        startTime: const TimeOfDay(hour: 10, minute: 9),
+        endTime: const TimeOfDay(hour: 11, minute: 41)
+      ),
+      BellPeriod.withValues(
+        periodName: "Lunch",
+        startTime: const TimeOfDay(hour: 11, minute: 41),
+        endTime: const TimeOfDay(hour: 12, minute: 14)
+      ),
+      BellPeriod.withValues(
+        periodName: "7",
+        startTime: const TimeOfDay(hour: 12, minute: 19),
+        endTime: const TimeOfDay(hour: 13, minute: 51)
+      ),
+      BellPeriod.withValues(
+        periodName: "8",
+        startTime: const TimeOfDay(hour: 13, minute: 58),
+        endTime: const TimeOfDay(hour: 15, minute: 30)
+      ),
+    ];
+  }
+
+
 
   BellPeriod? getCurrentPeriod(TimeOfDay now) {
     for (var period in periods) {

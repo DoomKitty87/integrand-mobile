@@ -22,6 +22,7 @@ class StudentVueAPI with ChangeNotifier {
   bool initializedCourseHistory = false;
   bool initializedBellSchedule = false;
 
+  // Updated upon initalize
   ScheduleData scheduleData = ScheduleData();
   GradebookData gradebookData = GradebookData();
   StudentData studentData = StudentData();
@@ -29,7 +30,7 @@ class StudentVueAPI with ChangeNotifier {
   GPAData gpaData = GPAData();
   BellSchedule bellSchedule = BellSchedule();
   CourseHistory courseHistory = CourseHistory();
-
+  // ========================
   String currentCookies = '';
 
   StudentVueWebData currentWebData = StudentVueWebData();
@@ -56,6 +57,19 @@ class StudentVueAPI with ChangeNotifier {
     }
 
     ready = true;
+
+    // TODO: Change this before production
+    bool USE_TEST_DATA = true;
+    if (USE_TEST_DATA) {
+      scheduleData = ScheduleData.testData();
+      gradebookData = GradebookData.testData();
+      // studentData = StudentData(); profile still seems to work
+      gpaData = GPAData.testData();
+      bellSchedule = BellSchedule.testDataA();
+      courseHistory = CourseHistory();
+    }
+
+
 
     notifyListeners();
   }
