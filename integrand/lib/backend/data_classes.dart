@@ -219,6 +219,7 @@ class Event {
   DateTime startTime = DateTime.now();
   DateTime endTime = DateTime.now();
   String location = '';
+  int type = 0;
 
   Event();
 
@@ -229,6 +230,7 @@ class Event {
     startTime = DateTime.fromMillisecondsSinceEpoch(json['StartTime'] * 1000);
     endTime = DateTime.fromMillisecondsSinceEpoch(json['EndTime'] * 1000);
     location = json['Location'];
+    type = json['Type'];
   }
 }
 
@@ -273,9 +275,7 @@ class NewsArticle {
       } on NetworkImageLoadException {
         image = null;
       }
-    }
-    else
-    {
+    } else {
       image = null;
     }
     releaseDate = DateTime.fromMillisecondsSinceEpoch(json['EpochTime']);

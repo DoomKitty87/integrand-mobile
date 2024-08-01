@@ -21,6 +21,30 @@ const Color errorColor = Color.fromRGBO(255, 0, 0, 1);
 const Color barColor = textColorSecondary;
 const Color barColorSelected = textColor;
 
+const List<Color> eventTypeColors = [
+  Color.fromRGBO(255, 0, 0, 1),
+  Color.fromRGBO(0, 255, 0, 1),
+  Color.fromRGBO(0, 0, 255, 1),
+  Color.fromRGBO(255, 255, 0, 1),
+  Color.fromRGBO(255, 0, 255, 1),
+];
+
+const List<String> eventTypeNames = [
+  "School",
+  "Campus",
+  "Clubs",
+  "Arts",
+  "Sports",
+];
+
+const List<IconData> eventTypeIcons = [
+  Icons.school,
+  Icons.home,
+  Icons.group,
+  Icons.palette,
+  Icons.sports_soccer,
+];
+
 class GradientBackground extends StatelessWidget {
   const GradientBackground({super.key, required this.child});
 

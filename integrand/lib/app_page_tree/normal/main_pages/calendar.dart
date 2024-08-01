@@ -25,37 +25,26 @@ class _CalendarState extends State<Calendar> {
               Expanded(
                 child: IconButton(
                   icon: const Icon(
-                    Icons.arrow_back, 
-                    color: textColor, 
+                    Icons.arrow_back,
+                    color: textColor,
                     size: 20,
                   ),
                   onPressed: () {
                     setState(() {
                       if (selectedTime.month == 1) {
                         selectedTime = DateTime(
-                          selectedTime.year - 1, 
-                          12, 
-                          selectedTime.day
-                        );
-                      } 
-                      else {
-                        selectedTime = DateTime(
-                          selectedTime.year, 
-                          selectedTime.month - 1, 
-                          selectedTime.day
-                        );
+                            selectedTime.year - 1, 12, selectedTime.day);
+                      } else {
+                        selectedTime = DateTime(selectedTime.year,
+                            selectedTime.month - 1, selectedTime.day);
                       }
                     });
                   },
                 ),
               ),
               Expanded(
-                child: Center(
-                  child: MonthDisplay(
-                    currentTime: selectedTime
-                  )
-                ))
-              ,
+                  child:
+                      Center(child: MonthDisplay(currentTime: selectedTime))),
               Expanded(
                 child: IconButton(
                   icon: const Icon(Icons.arrow_forward,
@@ -63,9 +52,11 @@ class _CalendarState extends State<Calendar> {
                   onPressed: () {
                     setState(() {
                       if (selectedTime.month == 12) {
-                        selectedTime = DateTime(selectedTime.year + 1, 1, selectedTime.day);
+                        selectedTime = DateTime(
+                            selectedTime.year + 1, 1, selectedTime.day);
                       } else {
-                        selectedTime = DateTime(selectedTime.year, selectedTime.month + 1, selectedTime.day);
+                        selectedTime = DateTime(selectedTime.year,
+                            selectedTime.month + 1, selectedTime.day);
                       }
                     });
                   },
@@ -75,35 +66,31 @@ class _CalendarState extends State<Calendar> {
             SizedBox(
               height: 285,
               child: CalendarGrid(
-                events: events,
-                selectDayCallback: (day) {
-                  setState(() {
-                    selectedTime = DateTime(
-                      selectedTime.year,
-                      selectedTime.month,
-                      day,
-                      selectedTime.hour,
-                      selectedTime.minute
-                    );
-                  });
-                },
-                currentTime: selectedTime
-              ),
+                  events: events,
+                  selectDayCallback: (day) {
+                    setState(() {
+                      selectedTime = DateTime(
+                          selectedTime.year,
+                          selectedTime.month,
+                          day,
+                          selectedTime.hour,
+                          selectedTime.minute);
+                    });
+                  },
+                  currentTime: selectedTime),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 30, right: 30, top: 10),
-              child: DayEventsList(events: 
-                eventsThisMonth(events, selectedTime),
-              currentTime: selectedTime),
+              child: DayEventsList(
+                  events: eventsThisMonth(events, selectedTime),
+                  currentTime: selectedTime),
             ),
           ]);
-        } 
-        else if (snapshot.hasError) {
+        } else if (snapshot.hasError) {
           return const Center(
             child: Text("Error loading events"),
           );
-        } 
-        else {
+        } else {
           return const Center(
             child: CircularProgressIndicator(),
           );
@@ -236,10 +223,10 @@ class CalendarGrid extends StatelessWidget {
                           style: smallBodyStyle,
                         ),
                         DayEvents(
-                          eventCount: eventsThisMonth
+                          events: eventsThisMonth
                               .where(
                                   (event) => event.startTime.day == dayNumber)
-                              .length,
+                              .toList(),
                         ),
                       ],
                     ),
@@ -251,16 +238,10 @@ class CalendarGrid extends StatelessWidget {
         }
       }
 
-      weekRows.add(
-        Row(
-          children: dayWidgets
-        )
-      );
-      weekRows.add(
-        const SizedBox(
-          height: 5,
-        )
-      );
+      weekRows.add(Row(children: dayWidgets));
+      weekRows.add(const SizedBox(
+        height: 5,
+      ));
     }
 
     return Padding(
@@ -276,24 +257,29 @@ class CalendarGrid extends StatelessWidget {
 }
 
 class DayEvents extends StatelessWidget {
-  const DayEvents({super.key, required this.eventCount});
+  const DayEvents({super.key, required this.events});
 
-  final int eventCount;
+  final List<Event> events;
 
   @override
   Widget build(BuildContext context) {
     List<Widget> icons = [];
-    if (eventCount <= 3) {
-      for (int i = 0; i < eventCount; i++) {
+    if (events.length <= 3) {
+      for (int i = 0; i < events.length; i++) {
         icons.add(Padding(
           padding: const EdgeInsets.only(top: 2, right: 1, left: 1),
-          child: const Icon(Icons.circle, size: 5, color: textColor),
+          child: Icon(eventTypeIcons[events[i].type],
+              size: 5, color: eventTypeColors[events[i].type]),
         ));
       }
     } else {
-      icons.add(const Icon(Icons.circle, size: 5, color: textColor));
-      icons.add(const Icon(Icons.circle, size: 5, color: textColor));
-      icons.add(const Icon(Icons.add, size: 5, color: textColor));
+      for (int i = 0; i < 3; i++) {
+        icons.add(Padding(
+          padding: const EdgeInsets.only(top: 2, right: 1, left: 1),
+          child: Icon(eventTypeIcons[events[i].type],
+              size: 5, color: eventTypeColors[events[i].type]),
+        ));
+      }
     }
 
     return Row(
@@ -320,14 +306,14 @@ class EventCard extends StatelessWidget {
         Container(
           width: 70,
           height: 70,
-          decoration: const BoxDecoration(
-            color: purpleGradient,
+          decoration: BoxDecoration(
+            color: eventTypeColors[event.type],
             borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
           ),
-          child: const Center(
+          child: Center(
             child: Icon(
-              Icons.food_bank,
+              eventTypeIcons[event.type],
               color: textColor,
               size: 50,
             ),
