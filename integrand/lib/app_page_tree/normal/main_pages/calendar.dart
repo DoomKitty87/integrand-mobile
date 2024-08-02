@@ -12,6 +12,7 @@ class Calendar extends StatefulWidget {
 
 class _CalendarState extends State<Calendar> {
   DateTime selectedTime = DateTime.now();
+  int filter = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +68,7 @@ class _CalendarState extends State<Calendar> {
               height: 285,
               child: CalendarGrid(
                   events: events,
+                  filter: filter,
                   selectDayCallback: (day) {
                     setState(() {
                       selectedTime = DateTime(
@@ -79,11 +81,26 @@ class _CalendarState extends State<Calendar> {
                   },
                   currentTime: selectedTime),
             ),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              FilterBar(
+                filter: filter,
+                filterCallback: (int newFilter) {
+                  setState(() {
+                    if (filter == newFilter) {
+                      filter = -1;
+                    } else {
+                      filter = newFilter;
+                    }
+                  });
+                },
+              ),
+            ]),
             Padding(
               padding: const EdgeInsets.only(left: 30, right: 30, top: 10),
               child: DayEventsList(
                   events: eventsThisMonth(events, selectedTime),
-                  currentTime: selectedTime),
+                  currentTime: selectedTime,
+                  filter: filter),
             ),
           ]);
         } else if (snapshot.hasError) {
@@ -105,6 +122,53 @@ List<Event> eventsThisMonth(List<Event> events, DateTime currentTime) {
     return event.startTime.month == currentTime.month &&
         event.startTime.year == currentTime.year;
   }).toList();
+}
+
+class FilterBar extends StatelessWidget {
+  const FilterBar(
+      {super.key, required this.filter, required this.filterCallback});
+
+  final int filter;
+  final Function(int) filterCallback;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 30, right: 30, top: 10),
+      child: Row(
+        children: List.generate(eventTypeNames.length, (index) {
+          return GestureDetector(
+            onTap: () {
+              filterCallback(index);
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: filter == index ? null : lightGrey,
+                gradient: filter == index ? textGradient : null,
+                borderRadius: const BorderRadius.all(Radius.circular(5)),
+              ),
+              margin: const EdgeInsets.all(3),
+              padding: const EdgeInsets.all(5),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.circle,
+                    size: 10,
+                    color: eventTypeColors[index],
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    eventTypeNames[index],
+                    style: smallBodyStyle,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
 }
 
 class MonthDisplay extends StatelessWidget {
@@ -129,11 +193,13 @@ class CalendarGrid extends StatelessWidget {
       {super.key,
       required this.events,
       required this.selectDayCallback,
-      required this.currentTime});
+      required this.currentTime,
+      required this.filter});
 
   final List<Event> events;
   final Function(int) selectDayCallback;
   final DateTime currentTime;
+  final int filter;
 
   @override
   Widget build(BuildContext context) {
@@ -146,6 +212,12 @@ class CalendarGrid extends StatelessWidget {
     List<Event> eventsThisMonth = events.where((event) {
       return event.startTime.month == month;
     }).toList();
+
+    if (filter != -1) {
+      eventsThisMonth = eventsThisMonth.where((event) {
+        return event.type == filter;
+      }).toList();
+    }
 
     if (month == 1) {
       year -= 1;
@@ -264,6 +336,10 @@ class DayEvents extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Widget> icons = [];
+    // Sort events by type
+    events.sort((a, b) {
+      return a.type.compareTo(b.type);
+    });
     if (events.length <= 3) {
       for (int i = 0; i < events.length; i++) {
         icons.add(Padding(
@@ -391,16 +467,26 @@ class EventCard extends StatelessWidget {
 
 class DayEventsList extends StatelessWidget {
   const DayEventsList(
-      {super.key, required this.events, required this.currentTime});
+      {super.key,
+      required this.events,
+      required this.currentTime,
+      required this.filter});
 
   final List<Event> events;
   final DateTime currentTime;
+  final int filter;
 
   @override
   Widget build(BuildContext context) {
     List<Event> eventsThisDay = events.where((event) {
       return event.startTime.day == currentTime.day;
     }).toList();
+
+    if (filter != -1) {
+      eventsThisDay = eventsThisDay.where((event) {
+        return event.type == filter;
+      }).toList();
+    }
 
     eventsThisDay.sort((a, b) {
       return a.startTime.compareTo(b.startTime);
