@@ -219,7 +219,6 @@ class DayOfWeekText extends StatelessWidget {
   }
 }
 
-// TODO: Turn this into purely how much time is left in class, passing, lunch, flex, etc.
 class TimeLeftLarge extends StatelessWidget {
   const TimeLeftLarge(
       {super.key, required this.currentDateTime, required this.bellSchedule});
@@ -245,9 +244,7 @@ class TimeLeftLarge extends StatelessWidget {
         secondsLeft = 0;
         minutesLeft++;
       }
-      // TODO: Make this support switching to hour:minute format when there's more than an hour left
-      output =
-          "$minutesLeft:${secondsLeft > 9 ? secondsLeft : '0$secondsLeft'}";
+      output = "$minutesLeft:${secondsLeft > 9 ? secondsLeft : '0$secondsLeft'}";
     } else {
       output = TimeOfDay.fromDateTime(currentDateTime).format(context);
       //.replaceAll("AM", "a.m.")

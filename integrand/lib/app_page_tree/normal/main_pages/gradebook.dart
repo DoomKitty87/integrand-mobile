@@ -177,8 +177,16 @@ class _GradebookDisplayState extends State<GradebookDisplay> {
 
       for (var course in value.gradebookData.courses) {
         RegExp getTitle = RegExp(r" [(](.*?)[)]");
-        String title = course.courseTitle.replaceFirst(
-            getTitle.firstMatch(course.courseTitle)!.group(0).toString(), '');
+        String title;
+
+        if (getTitle.firstMatch(course.courseTitle) != null) {
+          title = course.courseTitle.replaceFirst(getTitle.firstMatch(course.courseTitle)!.group(0).toString(), '');
+        }
+        else {
+          title = course.courseTitle;
+        }
+
+
 
         double grade = course.grade;
 
