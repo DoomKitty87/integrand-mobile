@@ -15,14 +15,11 @@ class Course {
 
   Course();
   Course.withValues(
-    {
-      required this.courseTitle,
+      {required this.courseTitle,
       required this.teacher,
       required this.teacherEmail,
       required this.room,
-      required this.period
-    }
-  );
+      required this.period});
 }
 
 class ScheduleData {
@@ -43,61 +40,53 @@ class ScheduleData {
   ScheduleData.testData() {
     courses = [
       Course.withValues(
-        courseTitle: 'AP Calculus BC',
-        teacher: 'Mr. Smith',
-        teacherEmail: 'email@student.pps.net',
-        room: 'Room 123',
-        period: '1'
-      ),
+          courseTitle: 'AP Calculus BC',
+          teacher: 'Mr. Smith',
+          teacherEmail: 'email@student.pps.net',
+          room: 'Room 123',
+          period: '1'),
       Course.withValues(
-        courseTitle: 'AP Physics C',
-        teacher: 'Mr. Johnson',
-        teacherEmail: 'email@student.pps.net',
-        room: 'Room 456',
-        period: '2'
-      ),
+          courseTitle: 'AP Physics C',
+          teacher: 'Mr. Johnson',
+          teacherEmail: 'email@student.pps.net',
+          room: 'Room 456',
+          period: '2'),
       Course.withValues(
-        courseTitle: 'AP Computer Science A',
-        teacher: 'Mr. Doe',
-        teacherEmail: 'email@student.pps.net',
-        room: 'Room 789',
-        period: '3'
-      ),
+          courseTitle: 'AP Computer Science A',
+          teacher: 'Mr. Doe',
+          teacherEmail: 'email@student.pps.net',
+          room: 'Room 789',
+          period: '3'),
       Course.withValues(
-        courseTitle: 'AP English Literature',
-        teacher: 'Ms. Smith',
-        teacherEmail: 'email@student.pps.net',
-        room: 'Room 101',
-        period: '4'
-      ),
+          courseTitle: 'AP English Literature',
+          teacher: 'Ms. Smith',
+          teacherEmail: 'email@student.pps.net',
+          room: 'Room 101',
+          period: '4'),
       Course.withValues(
-        courseTitle: 'AP US History',
-        teacher: 'Mr. Johnson',
-        teacherEmail: 'email@student.pps.net',
-        room: 'Room 202',
-        period: '5'
-      ),
+          courseTitle: 'AP US History',
+          teacher: 'Mr. Johnson',
+          teacherEmail: 'email@student.pps.net',
+          room: 'Room 202',
+          period: '5'),
       Course.withValues(
-        courseTitle: 'AP Chemistry',
-        teacher: 'Mr. Doe',
-        teacherEmail: 'email@student.pps.net',
-        room: 'Room 303',
-        period: '6'
-      ),
+          courseTitle: 'AP Chemistry',
+          teacher: 'Mr. Doe',
+          teacherEmail: 'email@student.pps.net',
+          room: 'Room 303',
+          period: '6'),
       Course.withValues(
-        courseTitle: 'AP Spanish',
-        teacher: 'Ms. Smith',
-        teacherEmail: 'email@student.pps.net',
-        room: 'Room 404',
-        period: '7'
-      ),
+          courseTitle: 'AP Spanish',
+          teacher: 'Ms. Smith',
+          teacherEmail: 'email@student.pps.net',
+          room: 'Room 404',
+          period: '7'),
       Course.withValues(
-        courseTitle: 'AP Art History',
-        teacher: 'Mr. Johnson',
-        teacherEmail: 'email@student.pps.net',
-        room: 'Room 505',
-        period: '8'
-      ),
+          courseTitle: 'AP Art History',
+          teacher: 'Mr. Johnson',
+          teacherEmail: 'email@student.pps.net',
+          room: 'Room 505',
+          period: '8'),
     ];
   }
 }
@@ -117,22 +106,18 @@ class Assignment {
 
   Assignment();
 
-  Assignment.withValues(
-    {
-      required this.title,
-      required this.score,
-      required this.total,
-      required this.type,
-    }
-  );
+  Assignment.withValues({
+    required this.title,
+    required this.score,
+    required this.total,
+    required this.type,
+  });
 
-  Assignment.testData(
-    {
-      this.title = 'Test Assignment',
-      this.score = 90.0,
-      this.total = 100.0,
-    }
-  );
+  Assignment.testData({
+    this.title = 'Test Assignment',
+    this.score = 90.0,
+    this.total = 100.0,
+  });
 }
 
 class AssignmentType {
@@ -160,7 +145,7 @@ class CourseGrading {
 
   CourseGrading.testData() {
     courseTitle = 'AP Calculus BC';
-    grade = 95.0;
+    grade = 3.8;
     assignmentTypes = [
       AssignmentType(
         title: 'Summative',
@@ -277,64 +262,52 @@ class BellSchedule {
   BellSchedule.testDataA() {
     periods = [
       BellPeriod.withValues(
-        periodName: "1",
-        startTime: const TimeOfDay(hour: 8, minute: 30),
-        endTime: const TimeOfDay(hour: 10, minute: 2)
-      ),
+          periodName: "1",
+          startTime: const TimeOfDay(hour: 8, minute: 30),
+          endTime: const TimeOfDay(hour: 10, minute: 2)),
       BellPeriod.withValues(
-        periodName: "2",
-        startTime: const TimeOfDay(hour: 10, minute: 9),
-        endTime: const TimeOfDay(hour: 11, minute: 41)
-      ),
+          periodName: "2",
+          startTime: const TimeOfDay(hour: 10, minute: 9),
+          endTime: const TimeOfDay(hour: 11, minute: 41)),
       BellPeriod.withValues(
-        periodName: "Lunch",
-        startTime: const TimeOfDay(hour: 11, minute: 41),
-        endTime: const TimeOfDay(hour: 12, minute: 14)
-      ),
+          periodName: "Lunch",
+          startTime: const TimeOfDay(hour: 11, minute: 41),
+          endTime: const TimeOfDay(hour: 12, minute: 14)),
       BellPeriod.withValues(
-        periodName: "3",
-        startTime: const TimeOfDay(hour: 12, minute: 19),
-        endTime: const TimeOfDay(hour: 13, minute: 51)
-      ),
+          periodName: "3",
+          startTime: const TimeOfDay(hour: 12, minute: 19),
+          endTime: const TimeOfDay(hour: 13, minute: 51)),
       BellPeriod.withValues(
-        periodName: "4",
-        startTime: const TimeOfDay(hour: 13, minute: 58),
-        endTime: const TimeOfDay(hour: 15, minute: 30)
-      ),
+          periodName: "4",
+          startTime: const TimeOfDay(hour: 13, minute: 58),
+          endTime: const TimeOfDay(hour: 15, minute: 30)),
     ];
   }
 
   BellSchedule.testDataB() {
     periods = [
       BellPeriod.withValues(
-        periodName: "5",
-        startTime: const TimeOfDay(hour: 8, minute: 30),
-        endTime: const TimeOfDay(hour: 10, minute: 2)
-      ),
+          periodName: "5",
+          startTime: const TimeOfDay(hour: 8, minute: 30),
+          endTime: const TimeOfDay(hour: 10, minute: 2)),
       BellPeriod.withValues(
-        periodName: "6",
-        startTime: const TimeOfDay(hour: 10, minute: 9),
-        endTime: const TimeOfDay(hour: 11, minute: 41)
-      ),
+          periodName: "6",
+          startTime: const TimeOfDay(hour: 10, minute: 9),
+          endTime: const TimeOfDay(hour: 11, minute: 41)),
       BellPeriod.withValues(
-        periodName: "Lunch",
-        startTime: const TimeOfDay(hour: 11, minute: 41),
-        endTime: const TimeOfDay(hour: 12, minute: 14)
-      ),
+          periodName: "Lunch",
+          startTime: const TimeOfDay(hour: 11, minute: 41),
+          endTime: const TimeOfDay(hour: 12, minute: 14)),
       BellPeriod.withValues(
-        periodName: "7",
-        startTime: const TimeOfDay(hour: 12, minute: 19),
-        endTime: const TimeOfDay(hour: 13, minute: 51)
-      ),
+          periodName: "7",
+          startTime: const TimeOfDay(hour: 12, minute: 19),
+          endTime: const TimeOfDay(hour: 13, minute: 51)),
       BellPeriod.withValues(
-        periodName: "8",
-        startTime: const TimeOfDay(hour: 13, minute: 58),
-        endTime: const TimeOfDay(hour: 15, minute: 30)
-      ),
+          periodName: "8",
+          startTime: const TimeOfDay(hour: 13, minute: 58),
+          endTime: const TimeOfDay(hour: 15, minute: 30)),
     ];
   }
-
-
 
   BellPeriod? getCurrentPeriod(TimeOfDay now) {
     for (var period in periods) {
