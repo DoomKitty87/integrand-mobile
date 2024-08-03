@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/rendering.dart';
 import 'package:integrand/consts.dart';
 
 class Settings extends StatefulWidget {
-  const Settings({super.key, required this.pageController});
+  const Settings({super.key, required this.inheritedController});
 
-  final PageController pageController;
+  final PageController inheritedController;
 
   @override
   State<Settings> createState() => _SettingsState();
@@ -13,27 +13,58 @@ class Settings extends StatefulWidget {
 
 class _SettingsState extends State<Settings> {
   
-  PageController settingPageController = PageController(
+  PageController settingsController = PageController(
     initialPage: 0,
   );
 
-  
+  int subpagePageIndex = 0;
+  bool isSubpage = false;
+  String subpageTitle = '';
+
+
+  void goToSubpage(int subpageIndex, String subpageName) {
+    setState(() {
+      subpagePageIndex = subpageIndex;
+      isSubpage = true;
+      subpageTitle = subpageName;
+      settingsController.animateToPage(
+        1,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut
+      );
+    });
+  }
+
+  void goToMainPage() {
+    setState(() {
+      isSubpage = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 20, right: 20),
-          child: SettingTopBar(settings: widget),
+        SettingTopBar(
+          inheritedController: widget.inheritedController,
+          settingsController: settingsController,
+          goToMainPageFunction: goToMainPage,
+          isSubpage: isSubpage,
+          subpageTitle: subpageTitle,
         ),
         const SizedBox(
-          height: 20,
+          height: 50,
         ),
         Expanded(
           child: PageView(
-            controller: settingPageController,
+            controller: settingsController,
             children: [
-              SettingsMain(),
+              SettingsMain(
+                parentSetState: goToSubpage,
+              ),
+              SettingsSubpages(
+                subpagePageIndex: subpagePageIndex,
+              ),
             ],
           ),
         ),
@@ -45,56 +76,100 @@ class _SettingsState extends State<Settings> {
 class SettingTopBar extends StatelessWidget {
   const SettingTopBar({
     super.key,
-    required this.settings,
+    required this.inheritedController,
+    required this.settingsController,
+    required this.goToMainPageFunction,
+    required this.isSubpage,
+    required this.subpageTitle,
   });
 
-  final Settings settings;
+  final PageController inheritedController;
+  final PageController settingsController;
+  final Function goToMainPageFunction;
+  final bool isSubpage;
+  final String subpageTitle;
+
+  String getTitle() {
+    if (isSubpage) {
+      return subpageTitle;
+    } else {
+      return 'Settings';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.centerLeft,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            IconButton(
-              icon: const Icon(
-                Icons.arrow_back_ios,
-                size: 25,
-                color: textColor,
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: 20,
+        right: 20,
+      ),
+      child: Stack(
+        alignment: Alignment.centerLeft,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  size: 25,
+                  color: textColor,
+                ),
+                onPressed: () {
+                  if (isSubpage) {
+                    settingsController.animateToPage(
+                      0,
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeInOut
+                    );
+                    goToMainPageFunction();
+                  } else {
+                    inheritedController.animateToPage(
+                      1,
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeInOut
+                    );
+                  }
+                },
               ),
-              onPressed: () {
-                settings.pageController.animateToPage(
-                  1,
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOut
-                );
-              },
-            ),
-          ]
-        ),
-        const Center(
-          child: Text(
-            'Settings',
-            style: boldBodyStyle,
+            ]
           ),
-        )
-      ]
+          Center(
+            child: Text(
+              getTitle(),
+              style: boldBodyStyle,
+            ),
+          )
+        ]
+      ),
     );
   }
 }
 
 class SettingsMain extends StatelessWidget {
-  const SettingsMain({super.key});
+  const SettingsMain({super.key, required this.parentSetState});
+
+  final Function(int, String) parentSetState;
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: const [
+    return Column(
+      children: [
         SettingListItem(
-          title: 'Account', 
-          pageIndex: 0,
+          parentSetState: parentSetState,
+          title: 'Legal', 
+          subpagePageIndex: 0,
+          textAndIconColor: textColor,
+        ),
+        SettingListItem(
+          parentSetState: parentSetState,
+          title: 'Logout', 
+          subpagePageIndex: 1,
+          textAndIconColor: Colors.red,
+          includeBottomBorder: true,
+          useIcons: true,
+          icon: Icon(Icons.logout_rounded),
         ),
       ],
     );
@@ -102,32 +177,139 @@ class SettingsMain extends StatelessWidget {
 }
 
 class SettingListItem extends StatelessWidget {
-  const SettingListItem({super.key, required this.title, required this.pageIndex, this.textAndIconColor = textColor, this.useIcons = false, this.icon = const Icon(Icons.dangerous)});
+  const SettingListItem({super.key, required this.parentSetState, required this.title, required this.subpagePageIndex, this.textAndIconColor = textColor, this.includeBottomBorder = false, this.useIcons = false, this.icon = const Icon(Icons.dangerous)});
+
+  final Function(int, String) parentSetState;
 
   final String title;
-  final int pageIndex;
+  final int subpagePageIndex;
   final Color textAndIconColor;
   final bool useIcons;
   final Icon icon;
+  final bool includeBottomBorder;
+
+  final double padding = 10;
+  final double height = 50;
+
+  Border getBorder() {
+    if (includeBottomBorder) {
+      return const Border(
+        top: BorderSide(
+          color: lightGrey,
+          width: 1
+        ),
+        bottom: BorderSide(
+          color: lightGrey,
+          width: 1
+        )
+      );
+    } else {
+      return const Border(
+        top: BorderSide(
+          color: lightGrey,
+          width: 1
+        )
+      );
+    }
+  }
+
+  Widget getIcon() {
+    if (useIcons) {
+      return Icon(
+        icon.icon,
+        color: textAndIconColor,
+      );
+    } else {
+      return const SizedBox();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    
     return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          top: BorderSide(
-            color: lightGrey,
-            width: 1
-          )
-        )
+      decoration: BoxDecoration(
+        border: getBorder(),
       ),
       child: SizedBox(
-        height: 50,
-        child: Text(
-          title,
-          style: bodyStyle,
-        ),
+        height: height,
+        child: TextButton(
+          onPressed: () {
+            parentSetState(subpagePageIndex, title);
+          },
+          style: TextButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
+            ),
+          ),
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: padding,
+              right: padding,
+            ),
+            child: Row(
+              children: [
+                Text(
+                  title,
+                  style: bodyStyle.copyWith(
+                    color: textAndIconColor
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                getIcon(),
+              ],
+            ),
+          ),
+        )
       ),
+    );
+  }
+}
+
+class SettingsSubpages extends StatelessWidget {
+  const SettingsSubpages({super.key, required this.subpagePageIndex});
+
+  final int subpagePageIndex;
+
+  @override
+  Widget build(BuildContext context) {
+  switch (subpagePageIndex) {
+    case 0:
+      return const Legal();
+    case 1:
+      return const Logout();
+    default:
+      return const Placeholder();
+    }
+  }
+}
+
+class Legal extends StatelessWidget {
+  const Legal({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text(
+        'Legal',
+        style: bodyStyle,
+      )
+    );
+  }
+}
+
+class Logout extends StatelessWidget {
+  const Logout({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text(
+        'Logout',
+        style: bodyStyle,
+      )
     );
   }
 }

@@ -181,7 +181,7 @@ class _MainState extends State<Main> {
     List<Widget> pages = [
       Profile(pageController: pageController),
       CenterPage(pageController: pageController),
-      Settings(pageController: pageController),
+      Settings(inheritedController: pageController),
     ];
 
     return GradientBackground(
@@ -244,8 +244,7 @@ class CenterPage extends StatelessWidget {
 }
 
 class TopLevelPageSelectBar extends StatelessWidget {
-  const TopLevelPageSelectBar(
-      {super.key, required this.topLevelPageController});
+  const TopLevelPageSelectBar({super.key, required this.topLevelPageController});
 
   final PageController topLevelPageController;
 
@@ -276,8 +275,9 @@ class TopLevelPageSelectBar extends StatelessWidget {
             ),
             onPressed: () {
               topLevelPageController.animateToPage(2,
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOut);
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeInOut
+              );
             },
           ),
         ],
