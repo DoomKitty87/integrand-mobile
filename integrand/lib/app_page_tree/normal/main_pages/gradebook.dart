@@ -13,7 +13,7 @@ class Gradebook extends StatefulWidget {
 }
 
 class _GradebookState extends State<Gradebook> {
-  CourseGrading currentCourse = CourseGrading();
+  double realCourseGrade = 0;
   CourseGrading virtualCourse = CourseGrading();
 
   @override
@@ -30,66 +30,68 @@ class _GradebookState extends State<Gradebook> {
 
       PageController controller = PageController();
 
-      return PageView(controller: controller, children: [
-        Column(
+      return PageView(
+          controller: controller,
+          physics: const NeverScrollableScrollPhysics(),
           children: [
-            const Padding(
-              padding: EdgeInsets.only(left: 20.0, right: 20.0),
-              child: GPADisplay(),
+            Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: GPADisplay(),
+                ),
+                const SizedBox(
+                  height: 75.0,
+                ),
+                GradebookDisplay(selectedCourse: (CourseGrading course) {
+                  setState(() {
+                    virtualCourse = course;
+                    realCourseGrade = course.grade;
+                  });
+                  controller.animateToPage(1,
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeInOut);
+                }),
+              ],
             ),
-            const SizedBox(
-              height: 75.0,
-            ),
-            GradebookDisplay(selectedCourse: (CourseGrading course) {
-              currentCourse = course;
-              virtualCourse = course;
-              controller.animateToPage(1,
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOut);
-            }),
-          ],
-        ),
-        Column(children: [
-          ClassHeaderBar(
-            classTitle: currentCourse.courseTitle,
-            exitCallback: () {
-              controller.animateToPage(0,
-                  duration: const Duration(milliseconds: 250),
-                  curve: Curves.easeInOut);
-            },
-          ),
-          const SizedBox(
-            height: 30.0,
-          ),
-          ClassGradeDisplay(course: currentCourse, virtualized: virtualCourse),
-          const SizedBox(
-            height: 40.0,
-          ),
-          Expanded(
-            child: ClassGradeCalculator(
-              course: currentCourse,
-              virtualized: virtualCourse,
-              updateCallback: (CourseGrading course) {
-                setState(() {
-                  virtualCourse = course;
-                });
-              },
-            ),
-          ),
-        ])
-      ]);
+            Column(children: [
+              ClassHeaderBar(
+                classTitle: virtualCourse.courseTitle,
+                exitCallback: () {
+                  controller.animateToPage(0,
+                      duration: const Duration(milliseconds: 250),
+                      curve: Curves.easeInOut);
+                },
+              ),
+              const SizedBox(
+                height: 30.0,
+              ),
+              ClassGradeDisplay(
+                  course: realCourseGrade, virtualized: virtualCourse.grade),
+              const SizedBox(
+                height: 40.0,
+              ),
+              Expanded(
+                child: ClassGradeCalculator(
+                  virtualized: virtualCourse,
+                  updateCallback: (CourseGrading course) {
+                    setState(() {
+                      virtualCourse = course;
+                      virtualCourse.calculateGrade();
+                    });
+                  },
+                ),
+              ),
+            ])
+          ]);
     });
   }
 }
 
 class ClassGradeCalculator extends StatefulWidget {
   const ClassGradeCalculator(
-      {super.key,
-      required this.course,
-      required this.virtualized,
-      required this.updateCallback});
+      {super.key, required this.virtualized, required this.updateCallback});
 
-  final CourseGrading course;
   final CourseGrading virtualized;
   final Function(CourseGrading) updateCallback;
 
@@ -102,6 +104,19 @@ class _ClassGradeCalculatorState extends State<ClassGradeCalculator> {
 
   @override
   Widget build(BuildContext context) {
+    if (orderByGrade) {
+      widget.virtualized.assignments.sort((a, b) {
+        double aGrade = a.score / a.total * 4;
+        double bGrade = b.score / b.total * 4;
+
+        return aGrade.compareTo(bGrade);
+      });
+    } else {
+      widget.virtualized.assignments.sort((b, a) {
+        return a.impact.compareTo(b.impact);
+      });
+    }
+
     return Column(children: [
       Row(mainAxisAlignment: MainAxisAlignment.center, children: [
         GestureDetector(
@@ -153,11 +168,10 @@ class _ClassGradeCalculatorState extends State<ClassGradeCalculator> {
         child: ListView(
           children: [
             for (int assignment = 0;
-                assignment < widget.course.assignments.length;
+                assignment < widget.virtualized.assignments.length;
                 assignment++)
               AssignmentDisplay(
                 assignment: assignment,
-                course: widget.course,
                 virtualized: widget.virtualized,
                 updateCallback: widget.updateCallback,
                 orderByGrade: orderByGrade,
@@ -173,13 +187,11 @@ class AssignmentDisplay extends StatefulWidget {
   const AssignmentDisplay(
       {super.key,
       required this.assignment,
-      required this.course,
       required this.virtualized,
       required this.updateCallback,
       required this.orderByGrade});
 
   final int assignment;
-  final CourseGrading course;
   final CourseGrading virtualized;
   final Function(CourseGrading) updateCallback;
   final bool orderByGrade;
@@ -209,7 +221,6 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    Assignment assignment = widget.course.assignments[widget.assignment];
     Assignment virtualAssignment =
         widget.virtualized.assignments[widget.assignment];
 
@@ -237,21 +248,22 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
                   Expanded(
                     flex: 4,
                     child: Text(
-                      assignment.title,
+                      virtualAssignment.title,
                       style: bodyStyle,
                     ),
                   ),
                   Expanded(
                     flex: 1,
                     child: Text(
-                      scoreToMark(assignment.score, assignment.total),
+                      scoreToMark(
+                          virtualAssignment.score, virtualAssignment.total),
                       style: bodyStyle,
                     ),
                   ),
                   Expanded(
                     flex: 1,
                     child: Text(
-                      (assignment.score / assignment.total * 4)
+                      (virtualAssignment.score / virtualAssignment.total * 4)
                           .toStringAsFixed(2),
                       style: bodyStyle,
                     ),
@@ -283,7 +295,7 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
                         inactiveColor: lightGrey,
                         activeColor: purpleGradient,
                         thumbColor: textColor,
-                        value: assignment.score,
+                        value: virtualAssignment.score,
                         onChanged: (value) {
                           setState(() {
                             virtualAssignment.score = value;
@@ -291,7 +303,7 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
                           });
                         },
                         min: 0,
-                        max: assignment.total,
+                        max: virtualAssignment.total,
                       ),
                     ),
                   ),
@@ -304,14 +316,14 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text("Type: \n${assignment.type.title}",
+              Text("Type: \n${virtualAssignment.type.title}",
                   style: smallBodyStyle, textAlign: TextAlign.center),
               Text(
-                  "Virtual Grade: \n${(assignment.score / assignment.total * 4).toStringAsFixed(2)}",
+                  "Virtual Grade: \n${(virtualAssignment.score / virtualAssignment.total * 4).toStringAsFixed(2)}",
                   style: smallBodyStyle,
                   textAlign: TextAlign.center),
               Text(
-                  "Weight: \n${(assignment.type.weight * 100).toStringAsFixed(0)}%",
+                  "Weight: \n${(virtualAssignment.type.weight * 100).toStringAsFixed(0)}%",
                   style: smallBodyStyle,
                   textAlign: TextAlign.center),
             ],
@@ -326,23 +338,21 @@ class ClassGradeDisplay extends StatelessWidget {
   const ClassGradeDisplay(
       {super.key, required this.course, required this.virtualized});
 
-  final CourseGrading course;
-  final CourseGrading virtualized;
+  final double course;
+  final double virtualized;
 
   @override
   Widget build(BuildContext context) {
     return Column(children: [
       Text(
-        virtualized.courseTitle != ""
-            ? ("${virtualized.grade.toStringAsFixed(2)}*")
-            : course.grade.toStringAsFixed(2),
+        virtualized.toStringAsFixed(2),
         style: titleStyle,
       ),
       const SizedBox(
         height: 10.0,
       ),
       Text(
-        "Default: ${course.grade.toStringAsFixed(2)}",
+        "Default: ${course.toStringAsFixed(2)}",
         style: bodyStyle,
       ),
     ]);

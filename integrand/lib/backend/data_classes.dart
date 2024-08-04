@@ -104,6 +104,8 @@ class Assignment {
     weight: 1.0,
   );
 
+  double get impact => totalPoints * type.weight;
+
   Assignment();
 
   Assignment.withValues({
@@ -111,6 +113,8 @@ class Assignment {
     required this.score,
     required this.total,
     required this.type,
+    required this.points,
+    required this.totalPoints,
   });
 
   Assignment.testData({
@@ -141,6 +145,20 @@ class CourseGrading {
   List<AssignmentType> assignmentTypes = [];
   List<Assignment> assignments = [];
 
+  void calculateGrade() {
+    double totalPoints = 0.0;
+    double totalTotalPoints = 0.0;
+
+    for (var assignment in assignments) {
+      double percent = assignment.score / assignment.total;
+
+      totalPoints += assignment.totalPoints * assignment.type.weight * percent;
+      totalTotalPoints += assignment.totalPoints * assignment.type.weight;
+    }
+
+    grade = totalPoints / totalTotalPoints * 4.0;
+  }
+
   CourseGrading();
 
   CourseGrading.testData() {
@@ -161,24 +179,32 @@ class CourseGrading {
         title: 'Test 1',
         score: 90.0,
         total: 100.0,
+        points: 90.0,
+        totalPoints: 100.0,
         type: assignmentTypes[0],
       ),
       Assignment.withValues(
         title: 'Quiz 1',
         score: 95.0,
         total: 100.0,
+        points: 95.0,
+        totalPoints: 100.0,
         type: assignmentTypes[1],
       ),
       Assignment.withValues(
         title: 'Test 2',
         score: 100.0,
         total: 100.0,
+        points: 100.0,
+        totalPoints: 100.0,
         type: assignmentTypes[0],
       ),
       Assignment.withValues(
         title: 'Quiz 2',
         score: 85.0,
         total: 100.0,
+        points: 85.0,
+        totalPoints: 100.0,
         type: assignmentTypes[1],
       ),
     ];
