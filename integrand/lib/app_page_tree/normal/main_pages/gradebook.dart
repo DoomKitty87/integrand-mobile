@@ -86,6 +86,23 @@ class _GradebookState extends State<Gradebook> {
   }
 }
 
+class Recommendation {
+  final double percent;
+  final double courseGradeIfZero;
+  final double courseGradeIfMax;
+  final String title;
+  final String courseTitle;
+  final double classGradeMaxImprovement;
+
+  Recommendation(
+      {required this.percent,
+      required this.courseGradeIfZero,
+      required this.courseGradeIfMax,
+      required this.title,
+      required this.courseTitle,
+      required this.classGradeMaxImprovement});
+}
+
 class RecommendationsDisplay extends StatelessWidget {
   const RecommendationsDisplay({super.key, required this.courses});
 
@@ -93,7 +110,7 @@ class RecommendationsDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> recommendations = [];
+    final List<Recommendation> recommendations = [];
 
     for (var course in courses) {
       double totalTotalPoints = 0;
@@ -115,48 +132,64 @@ class RecommendationsDisplay extends StatelessWidget {
 
           double percent = assignment.score / assignment.total;
 
-          recommendations.add(Padding(
-            padding: const EdgeInsets.only(
-                left: 20.0, right: 20.0, top: 8.0, bottom: 8.0),
-            child: SizedBox(
-                height: 40,
-                child: Stack(
-                    alignment: AlignmentDirectional.centerStart,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: (percent * 100).toInt(),
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                gradient: textGradient,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 100 - (percent * 100).toInt(),
-                            child: Container(color: lighterGrey),
-                          )
-                        ],
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(courseGradeIfZero.toStringAsFixed(2),
-                                style: boldSmallBodyStyle),
-                            Text("${assignment.title} - ${course.courseTitle}",
-                                style: smallBodyStyle),
-                            Text(courseGradeIfMax.toStringAsFixed(2),
-                                style: boldSmallBodyStyle),
-                          ],
-                        ),
-                      )
-                    ])),
-          ));
+          recommendations.add(Recommendation(
+              percent: percent,
+              courseGradeIfZero: courseGradeIfZero,
+              courseGradeIfMax: courseGradeIfMax,
+              title: assignment.title,
+              courseTitle: course.courseTitle,
+              classGradeMaxImprovement: classGradeMaxImprovement));
         }
       }
+    }
+
+    recommendations.sort((a, b) {
+      return a.classGradeMaxImprovement.compareTo(b.classGradeMaxImprovement);
+    });
+
+    List<Widget> recommendationsWidgets = [];
+
+    for (var recommendation in recommendations) {
+      recommendationsWidgets.add(Padding(
+        padding: const EdgeInsets.only(
+            left: 20.0, right: 20.0, top: 8.0, bottom: 8.0),
+        child: SizedBox(
+            height: 40,
+            child:
+                Stack(alignment: AlignmentDirectional.centerStart, children: [
+              Row(
+                children: [
+                  Expanded(
+                    flex: (recommendation.percent * 100).toInt(),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        gradient: textGradient,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 100 - (recommendation.percent * 100).toInt(),
+                    child: Container(color: lighterGrey),
+                  )
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(recommendation.courseGradeIfZero.toStringAsFixed(2),
+                        style: boldSmallBodyStyle),
+                    Text(
+                        "${recommendation.title} - ${recommendation.courseTitle}",
+                        style: smallBodyStyle),
+                    Text(recommendation.courseGradeIfMax.toStringAsFixed(2),
+                        style: boldSmallBodyStyle),
+                  ],
+                ),
+              )
+            ])),
+      ));
     }
 
     return Padding(
@@ -172,7 +205,7 @@ class RecommendationsDisplay extends StatelessWidget {
                 padding: EdgeInsets.only(left: 16.0, top: 8.0),
                 child: Text("Suggested Retakes", style: boldBodyStyle),
               ),
-              Expanded(child: ListView(children: recommendations)),
+              Expanded(child: ListView(children: recommendationsWidgets)),
             ],
           )),
     );
