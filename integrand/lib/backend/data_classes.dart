@@ -145,6 +145,32 @@ class CourseGrading {
   List<AssignmentType> assignmentTypes = [];
   List<Assignment> assignments = [];
 
+  CourseGrading clone() {
+    CourseGrading newCourse = CourseGrading();
+    newCourse.courseTitle = courseTitle;
+    newCourse.grade = grade;
+    newCourse.assignmentTypes = List.empty(growable: true);
+    newCourse.assignments = List.empty(growable: true);
+    for (var type in assignmentTypes) {
+      newCourse.assignmentTypes.add(AssignmentType(
+        title: type.title,
+        weight: type.weight,
+      ));
+    }
+    for (var assignment in assignments) {
+      newCourse.assignments.add(Assignment.withValues(
+        title: assignment.title,
+        score: assignment.score,
+        total: assignment.total,
+        points: assignment.points,
+        totalPoints: assignment.totalPoints,
+        type: newCourse.assignmentTypes
+            .firstWhere((element) => element.title == assignment.type.title),
+      ));
+    }
+    return newCourse;
+  }
+
   void calculateGrade() {
     double totalPoints = 0.0;
     double totalTotalPoints = 0.0;
@@ -163,7 +189,7 @@ class CourseGrading {
 
   CourseGrading.testData() {
     courseTitle = 'AP Calculus BC';
-    grade = 3.8;
+    grade = 3.72;
     assignmentTypes = [
       AssignmentType(
         title: 'Summative',

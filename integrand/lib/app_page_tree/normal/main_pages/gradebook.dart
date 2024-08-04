@@ -40,13 +40,11 @@ class _GradebookState extends State<Gradebook> {
                   padding: EdgeInsets.only(left: 20.0, right: 20.0),
                   child: GPADisplay(),
                 ),
-                const SizedBox(
-                  height: 75.0,
-                ),
+                RecommendationsDisplay(courses: value.gradebookData.courses),
                 GradebookDisplay(selectedCourse: (CourseGrading course) {
                   setState(() {
-                    virtualCourse = course;
-                    realCourseGrade = course.grade;
+                    virtualCourse = course.clone();
+                    realCourseGrade = virtualCourse.grade;
                   });
                   controller.animateToPage(1,
                       duration: const Duration(milliseconds: 250),
@@ -85,6 +83,99 @@ class _GradebookState extends State<Gradebook> {
             ])
           ]);
     });
+  }
+}
+
+class RecommendationsDisplay extends StatelessWidget {
+  const RecommendationsDisplay({super.key, required this.courses});
+
+  final List<CourseGrading> courses;
+
+  @override
+  Widget build(BuildContext context) {
+    final List<Widget> recommendations = [];
+
+    for (var course in courses) {
+      double totalTotalPoints = 0;
+      for (var assignment in course.assignments) {
+        totalTotalPoints += assignment.totalPoints * assignment.type.weight;
+      }
+      for (var assignment in course.assignments) {
+        double maxImprovement = assignment.totalPoints - assignment.points;
+        double classGradeMaxImprovement =
+            maxImprovement / totalTotalPoints * 4.0 * assignment.type.weight;
+
+        if (classGradeMaxImprovement >= 0.1) {
+          double courseGradeIfZero = course.grade -
+              assignment.points /
+                  totalTotalPoints *
+                  4.0 *
+                  assignment.type.weight;
+          double courseGradeIfMax = course.grade + classGradeMaxImprovement;
+
+          double percent = assignment.score / assignment.total;
+
+          recommendations.add(Padding(
+            padding: const EdgeInsets.only(
+                left: 20.0, right: 20.0, top: 8.0, bottom: 8.0),
+            child: SizedBox(
+                height: 40,
+                child: Stack(
+                    alignment: AlignmentDirectional.centerStart,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            flex: (percent * 100).toInt(),
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                gradient: textGradient,
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 100 - (percent * 100).toInt(),
+                            child: Container(color: lighterGrey),
+                          )
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(courseGradeIfZero.toStringAsFixed(2),
+                                style: boldSmallBodyStyle),
+                            Text("${assignment.title} - ${course.courseTitle}",
+                                style: smallBodyStyle),
+                            Text(courseGradeIfMax.toStringAsFixed(2),
+                                style: boldSmallBodyStyle),
+                          ],
+                        ),
+                      )
+                    ])),
+          ));
+        }
+      }
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10), color: lightGrey),
+          height: 200,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(left: 16.0, top: 8.0),
+                child: Text("Suggested Retakes", style: boldBodyStyle),
+              ),
+              Expanded(child: ListView(children: recommendations)),
+            ],
+          )),
+    );
   }
 }
 
@@ -469,62 +560,22 @@ class GradebookDisplay extends StatefulWidget {
 }
 
 class _GradebookDisplayState extends State<GradebookDisplay> {
-  final List<TableRow> children = [];
+  final List<Widget> children = [];
 
   @override
   Widget build(BuildContext context) {
     return Consumer<StudentVueAPI>(builder: (context, value, child) {
       children.clear();
 
-      TableRow border = TableRow(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 20.0),
-            child: Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: textColor,
-                    width: 0.1,
-                  ),
-                ),
-              ),
-              child: const SizedBox(
-                height: 0.01,
-              ),
+      final Widget border = Padding(
+        padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+        child: Container(
+          decoration: const BoxDecoration(
+            border: Border(
+              bottom: BorderSide(color: textColor, width: 0.1),
             ),
           ),
-          Container(
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: textColor,
-                  width: 0.1,
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(right: 20.0),
-            child: Container(
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: textColor,
-                    width: 0.1,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      );
-
-      const EdgeInsets textPadding = EdgeInsets.only(
-        top: 16,
-        bottom: 16,
-        left: 25.0,
-        right: 25.0,
+        ),
       );
 
       children.add(border);
@@ -544,48 +595,39 @@ class _GradebookDisplayState extends State<GradebookDisplay> {
 
         if (grade > 10) grade /= 25;
 
-        children.add(TableRow(
-          children: [
-            GestureDetector(
-              onTap: () {
-                widget.selectedCourse(course);
-              },
-              child: Padding(
-                padding: textPadding,
-                child: Text(title, style: bodyStyle),
-              ),
+        children.add(GestureDetector(
+          onTap: () {
+            widget.selectedCourse(course);
+          },
+          child: Padding(
+            padding: const EdgeInsets.only(
+                left: 30.0, right: 30.0, top: 16.0, bottom: 16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Text(title, style: bodyStyle),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text(parseGradeToLetter(grade), style: bodyStyle),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text(grade.toStringAsFixed(2),
+                      style: bodyStyle, textAlign: TextAlign.right),
+                ),
+              ],
             ),
-            GestureDetector(
-              onTap: () {
-                widget.selectedCourse(course);
-              },
-              child: Padding(
-                padding: textPadding,
-                child: Text(parseGradeToLetter(grade), style: bodyStyle),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                widget.selectedCourse(course);
-              },
-              child: Padding(
-                padding: textPadding,
-                child: Text(grade.toStringAsFixed(2),
-                    style: bodyStyle, textAlign: TextAlign.right),
-              ),
-            ),
-          ],
+          ),
         ));
         children.add(border);
       }
 
-      return Table(
-        children: children,
-        columnWidths: const {
-          0: FlexColumnWidth(3),
-          1: FlexColumnWidth(0.5),
-          2: FlexColumnWidth(1),
-        },
+      return Expanded(
+        child: ListView(
+          children: children,
+        ),
       );
     });
   }
