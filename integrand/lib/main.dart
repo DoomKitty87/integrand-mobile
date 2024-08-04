@@ -7,7 +7,7 @@ import 'package:integrand/app_page_tree/normal/main_pages/news.dart';
 import 'package:integrand/app_page_tree/normal/main_pages/transit.dart';
 import 'package:integrand/app_page_tree/normal/main_pages/calendar.dart';
 import 'package:integrand/app_page_tree/normal/profile.dart';
-import 'package:integrand/app_page_tree/normal/settings.dart';
+import 'package:integrand/app_page_tree/normal/settings/settings.dart';
 import 'package:integrand/app_page_tree/intake/intake_primary.dart';
 import 'package:integrand/app_page_tree/intake/intake_credentials.dart';
 import 'package:integrand/consts.dart';
@@ -36,7 +36,12 @@ void main() {
       ],
       child: MaterialApp(
         title: appName,
-        theme: ThemeData(fontFamily: 'Inter'),
+        theme: ThemeData(
+          fontFamily: 'Inter', 
+          brightness: Brightness.dark,
+          primaryColor: primaryColor,
+          scaffoldBackgroundColor: backgroundColor,
+        ),
         debugShowCheckedModeBanner: false,
         home: const DefaultTextStyle(
           style: TextStyle(
@@ -88,6 +93,11 @@ class AppData extends ChangeNotifier {
   void setIntake(bool intake) {
     _isIntake = intake;
     notifyListeners();
+  }
+
+  void logout() {
+    DataStorage.clearData();
+    setIntake(true);
   }
 
   void update() {

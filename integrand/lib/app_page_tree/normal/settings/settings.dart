@@ -1,6 +1,10 @@
+import 'dart:io';
+import 'package:integrand/main.dart';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:integrand/consts.dart';
+import 'package:provider/provider.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key, required this.inheritedController});
@@ -162,14 +166,69 @@ class SettingsMain extends StatelessWidget {
           subpagePageIndex: 0,
           textAndIconColor: textColor,
         ),
-        SettingListItem(
-          parentSetState: parentSetState,
+        SettingListItemButton(
           title: 'Logout', 
-          subpagePageIndex: 1,
           textAndIconColor: Colors.red,
           includeBottomBorder: true,
           useIcons: true,
           icon: Icon(Icons.logout_rounded),
+          onPressed: () {
+            if (!Platform.isIOS) {
+              showCupertinoDialog(
+                context: context, 
+                barrierDismissible: false,
+                builder: (context) {
+                  return CupertinoAlertDialog(
+                    title: const Text('Logout'),
+                    content: const Text('Are you sure you want to logout?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Provider.of<AppData>(context, listen: false).logout();
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Yes'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('No'),
+                      ),
+                    ],
+                  );
+                }
+              );
+            }
+            else {
+              showDialog(
+                context: context, 
+                barrierDismissible: false,
+                builder: (context) {
+                  return AlertDialog(
+                    backgroundColor: highlightColor,
+                    title: const Text('Logout'),
+                    content: const Text('Are you sure you want to logout?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Provider.of<AppData>(context, listen: false).logout();
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Yes'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('No'),
+                      ),
+                    ],
+                  );
+                }
+              );
+            }
+          },
         ),
       ],
     );
@@ -268,6 +327,97 @@ class SettingListItem extends StatelessWidget {
   }
 }
 
+class SettingListItemButton extends StatelessWidget {
+  const SettingListItemButton({super.key, required this.onPressed, required this.title, this.textAndIconColor = textColor, this.includeBottomBorder = false, this.useIcons = false, this.icon = const Icon(Icons.dangerous)});
+
+  final Function() onPressed;
+
+  final String title;
+  final Color textAndIconColor;
+  final bool useIcons;
+  final Icon icon;
+  final bool includeBottomBorder;
+
+  final double padding = 10;
+  final double height = 50;
+
+  Border getBorder() {
+    if (includeBottomBorder) {
+      return const Border(
+        top: BorderSide(
+          color: lightGrey,
+          width: 1
+        ),
+        bottom: BorderSide(
+          color: lightGrey,
+          width: 1
+        )
+      );
+    } else {
+      return const Border(
+        top: BorderSide(
+          color: lightGrey,
+          width: 1
+        )
+      );
+    }
+  }
+
+  Widget getIcon() {
+    if (useIcons) {
+      return Icon(
+        icon.icon,
+        color: textAndIconColor,
+      );
+    } else {
+      return const SizedBox();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    
+    return Container(
+      decoration: BoxDecoration(
+        border: getBorder(),
+      ),
+      child: SizedBox(
+        height: height,
+        child: TextButton(
+          onPressed: () {
+            onPressed();
+          },
+          style: TextButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
+            ),
+          ),
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: padding,
+              right: padding,
+            ),
+            child: Row(
+              children: [
+                Text(
+                  title,
+                  style: bodyStyle.copyWith(
+                    color: textAndIconColor
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                getIcon(),
+              ],
+            ),
+          ),
+        )
+      ),
+    );
+  }
+}
+
 class SettingsSubpages extends StatelessWidget {
   const SettingsSubpages({super.key, required this.subpagePageIndex});
 
@@ -278,8 +428,6 @@ class SettingsSubpages extends StatelessWidget {
   switch (subpagePageIndex) {
     case 0:
       return const Legal();
-    case 1:
-      return const Logout();
     default:
       return const Placeholder();
     }
@@ -300,16 +448,3 @@ class Legal extends StatelessWidget {
   }
 }
 
-class Logout extends StatelessWidget {
-  const Logout({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'Logout',
-        style: bodyStyle,
-      )
-    );
-  }
-}
