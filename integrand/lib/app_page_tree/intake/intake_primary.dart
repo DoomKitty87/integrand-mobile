@@ -39,7 +39,7 @@ class _IntakePrimary extends State<IntakePrimary> {
               child: Padding(
                 padding: const EdgeInsets.only(
                     left: 30.0, right: 30.0, bottom: 30.0),
-                child: TextButton(
+                child: OutlinedButton(
                     style: buttonStyle,
                     onPressed: () => {
                           Provider.of<AppData>(context, listen: false)

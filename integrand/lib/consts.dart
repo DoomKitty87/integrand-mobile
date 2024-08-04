@@ -198,6 +198,12 @@ const TextStyle newsDateStyle = TextStyle(
 );
 
 ButtonStyle buttonStyle = ButtonStyle(
+  side: const WidgetStatePropertyAll(
+    BorderSide(
+      color: lighterGrey,
+      width: 1,
+    ),
+  ),
   backgroundColor: const WidgetStatePropertyAll(darkGrey),
   fixedSize: const WidgetStatePropertyAll(Size(5000, 50)),
   shape: WidgetStatePropertyAll(

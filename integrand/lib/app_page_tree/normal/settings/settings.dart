@@ -173,7 +173,7 @@ class SettingsMain extends StatelessWidget {
           useIcons: true,
           icon: Icon(Icons.logout_rounded),
           onPressed: () {
-            if (!Platform.isIOS) {
+            if (Platform.isIOS) {
               showCupertinoDialog(
                 context: context, 
                 barrierDismissible: false,
