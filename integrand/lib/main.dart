@@ -37,7 +37,7 @@ void main() {
       child: MaterialApp(
         title: appName,
         theme: ThemeData(
-          fontFamily: 'Inter', 
+          fontFamily: 'Inter',
           brightness: Brightness.dark,
           primaryColor: primaryColor,
           scaffoldBackgroundColor: backgroundColor,
@@ -49,10 +49,9 @@ void main() {
               color: textColor,
               decoration: TextDecoration.none),
           child: MediaQuery.withNoTextScaling(
-            // ignored because it lets hot reload work
-            // ignore: prefer_const_constructors
-            child: App()
-          ),
+              // ignored because it lets hot reload work
+              // ignore: prefer_const_constructors
+              child: App()),
         ), // --------------------------------------------
       ),
     ),
@@ -194,7 +193,14 @@ class _MainState extends State<Main> {
 
     List<Widget> pages = [
       Profile(pageController: pageController),
-      CenterPage(pageController: pageController),
+      Consumer<AppData>(
+        builder: (context, appData, child) {
+          return CenterPage(
+            pageController: pageController,
+            startIndex: AppData.indexFromPage(appData.currentPage),
+          );
+        },
+      ),
       Settings(inheritedController: pageController),
     ];
 
@@ -205,20 +211,19 @@ class _MainState extends State<Main> {
         itemBuilder: (context, index) {
           return pages[index];
         },
+        onPageChanged: (value) {},
         controller: pageController,
       ),
     );
   }
 }
 
-class CenterPage extends StatelessWidget {
-  CenterPage({super.key, required this.pageController});
+class CenterPage extends StatefulWidget {
+  CenterPage(
+      {super.key, required this.pageController, required this.startIndex});
 
   final PageController pageController;
-
-  final PageController innerPageController = PageController(
-    initialPage: 2,
-  );
+  final int startIndex;
 
   final List<Widget> innerPages = [
     const Transit(),
@@ -229,24 +234,33 @@ class CenterPage extends StatelessWidget {
   ];
 
   @override
+  State<CenterPage> createState() => _CenterPageState();
+}
+
+class _CenterPageState extends State<CenterPage> {
+  @override
   Widget build(BuildContext context) {
+    PageController innerPageController = PageController(
+      initialPage: widget.startIndex,
+    );
+
     return Column(
       children: [
         TopLevelPageSelectBar(
-          topLevelPageController: pageController,
+          topLevelPageController: widget.pageController,
         ),
         Expanded(
           child: PageView.builder(
-            itemCount: innerPages.length,
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              return innerPages[index];
-            },
-            controller: innerPageController,
-            onPageChanged: (value) => {
-              Provider.of<AppData>(context, listen: false).changePage(AppPage.values[value])
-            }
-          ),
+              itemCount: widget.innerPages.length,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (context, index) {
+                return widget.innerPages[index];
+              },
+              controller: innerPageController,
+              onPageChanged: (value) => {
+                    Provider.of<AppData>(context, listen: false)
+                        .changePage(AppPage.values[value])
+                  }),
         ),
         PageSelectBar(pageController: innerPageController),
         const SizedBox(
@@ -258,7 +272,8 @@ class CenterPage extends StatelessWidget {
 }
 
 class TopLevelPageSelectBar extends StatelessWidget {
-  const TopLevelPageSelectBar({super.key, required this.topLevelPageController});
+  const TopLevelPageSelectBar(
+      {super.key, required this.topLevelPageController});
 
   final PageController topLevelPageController;
 
@@ -289,9 +304,8 @@ class TopLevelPageSelectBar extends StatelessWidget {
             ),
             onPressed: () {
               topLevelPageController.animateToPage(2,
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut
-              );
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut);
             },
           ),
         ],
@@ -347,13 +361,12 @@ class PageSelectBar extends StatelessWidget {
 }
 
 class PageSelectIcon extends StatelessWidget {
-  const PageSelectIcon({
-    super.key,
-    required this.page,
-    required this.text,
-    required this.icon,
-    required this.pageController
-  });
+  const PageSelectIcon(
+      {super.key,
+      required this.page,
+      required this.text,
+      required this.icon,
+      required this.pageController});
 
   final AppPage page;
   final String text;
@@ -365,36 +378,37 @@ class PageSelectIcon extends StatelessWidget {
     return Consumer<AppData>(
       builder: (context, appData, child) {
         return TextButton(
-          style: ButtonStyle(
-            overlayColor: WidgetStateProperty.all<Color>(Colors.transparent),
-            splashFactory: NoSplash.splashFactory,
-            shape: WidgetStateProperty.all<ContinuousRectangleBorder>(
-              const ContinuousRectangleBorder(),
+            style: ButtonStyle(
+              overlayColor: WidgetStateProperty.all<Color>(Colors.transparent),
+              splashFactory: NoSplash.splashFactory,
+              shape: WidgetStateProperty.all<ContinuousRectangleBorder>(
+                const ContinuousRectangleBorder(),
+              ),
             ),
-          ),
-          onPressed: () {
-            pageController.animateToPage(AppData.indexFromPage(page),
-                duration: const Duration(milliseconds: 250),
-                curve: Curves.easeInOut);
-          },
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                icon,
-                size: 25,
-                color: appData.currentPage == page ? barColorSelected : barColor,
-              ),
-              const SizedBox(
-                height: 2,
-              ),
-              Text(
-                text,
-                style: appData.currentPage == page ? barStyleSelected : barStyle,
-              ),
-            ],
-          )
-        );
+            onPressed: () {
+              pageController.animateToPage(AppData.indexFromPage(page),
+                  duration: const Duration(milliseconds: 250),
+                  curve: Curves.easeInOut);
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  size: 25,
+                  color:
+                      appData.currentPage == page ? barColorSelected : barColor,
+                ),
+                const SizedBox(
+                  height: 2,
+                ),
+                Text(
+                  text,
+                  style:
+                      appData.currentPage == page ? barStyleSelected : barStyle,
+                ),
+              ],
+            ));
       },
     );
   }
