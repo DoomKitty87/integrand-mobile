@@ -139,12 +139,40 @@ class ArticleList extends StatelessWidget {
 class ArticleSearchBar extends StatelessWidget {
   const ArticleSearchBar({super.key});
 
-  final double height = 50;
+  final double height = 36;
   final EdgeInsets padding = const EdgeInsets.only(left: 20, right: 20);
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: lightGrey,
+          borderRadius: BorderRadius.circular(6),
+        ),
+        child: SizedBox(
+          height: height,
+          child: Material(
+            color: Colors.transparent,
+            child: TextField(
+              style: smallBodyStyle,
+              textAlignVertical: TextAlignVertical.center,
+              textAlign: TextAlign.left,
+              decoration: InputDecoration(
+                helperStyle: smallBodyStyle,
+                hintText: "Search for articles",
+                hintStyle: smallBodyStyle,
+                suffixIcon: const Icon(Icons.search),
+                border: InputBorder.none,
+                contentPadding: padding,
+              ),
+              
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
