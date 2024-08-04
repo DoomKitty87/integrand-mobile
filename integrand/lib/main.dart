@@ -43,12 +43,16 @@ void main() {
           scaffoldBackgroundColor: backgroundColor,
         ),
         debugShowCheckedModeBanner: false,
-        home: const DefaultTextStyle(
-          style: TextStyle(
+        home: DefaultTextStyle(
+          style: const TextStyle(
               fontFamily: 'Inter',
               color: textColor,
               decoration: TextDecoration.none),
-          child: App(),
+          child: MediaQuery.withNoTextScaling(
+            // ignored because it lets hot reload work
+            // ignore: prefer_const_constructors
+            child: App()
+          ),
         ), // --------------------------------------------
       ),
     ),
