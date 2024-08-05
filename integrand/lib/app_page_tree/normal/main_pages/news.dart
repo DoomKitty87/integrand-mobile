@@ -92,8 +92,10 @@ class ArticleList extends StatelessWidget {
     // Sort articles by release date and release time, with most recent first
     newsArticles.sort((a, b) => b.compareTo(a));
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const ArticleSearchBar(),
+        SizedBox(height: 20),
         Expanded(
           child: ListView.builder(
             itemCount: articleCount,
@@ -139,7 +141,7 @@ class ArticleList extends StatelessWidget {
 class ArticleSearchBar extends StatelessWidget {
   const ArticleSearchBar({super.key});
 
-  final double height = 36;
+  final double height = 30;
   final EdgeInsets padding = const EdgeInsets.only(left: 20, right: 20);
 
   @override
@@ -147,27 +149,31 @@ class ArticleSearchBar extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Container(
+        height: height,
         decoration: BoxDecoration(
           color: lightGrey,
           borderRadius: BorderRadius.circular(6),
         ),
-        child: SizedBox(
-          height: height,
-          child: Material(
-            color: Colors.transparent,
+        child: Material(
+          color: Colors.transparent,
+          child: Center(
+            // TODO: This is very bad, when there's a better solution, replace this padding nonsense
             child: TextField(
+              maxLines: 1,
               style: smallBodyStyle,
-              textAlignVertical: TextAlignVertical.center,
-              textAlign: TextAlign.left,
-              decoration: InputDecoration(
-                helperStyle: smallBodyStyle,
+              onChanged: (value) {
+                print("Search for articles: $value");
+              },
+              decoration: const InputDecoration(
+                contentPadding: EdgeInsets.symmetric(vertical: 10.5), // just a magic number to center it
                 hintText: "Search for articles",
                 hintStyle: smallBodyStyle,
-                suffixIcon: const Icon(Icons.search),
+                prefixIcon: Icon(
+                  Icons.search,
+                  size: 16, 
+                ),
                 border: InputBorder.none,
-                contentPadding: padding,
               ),
-              
             ),
           ),
         ),
