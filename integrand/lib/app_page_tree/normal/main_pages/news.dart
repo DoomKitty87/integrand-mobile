@@ -157,7 +157,7 @@ class ArticleSearchBar extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: Center(
-            // TODO: This is very bad, when there's a better solution, replace this padding nonsense
+            // TODO: This is bad, when there's a better solution, replace this padding nonsense
             child: TextField(
               maxLines: 1,
               style: smallBodyStyle,
@@ -178,6 +178,38 @@ class ArticleSearchBar extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class ArticleSearchResultsList extends StatelessWidget {
+  const ArticleSearchResultsList({super.key, required this.searchResults});
+
+  final List<NewsArticle> searchResults;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: searchResults.length,
+      itemBuilder: (context, index) {
+        ArticleSearchResult(
+          newsArticle: searchResults[index],
+        );
+      },
+    );
+  }
+}
+
+class ArticleSearchResult extends StatelessWidget {
+  const ArticleSearchResult({super.key, required this.newsArticle});
+
+  final NewsArticle newsArticle;
+  final double height = 40;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      // TODO: Finish this
     );
   }
 }
@@ -212,7 +244,7 @@ class ArticleListItemContainer extends StatelessWidget {
           const SizedBox(height: 20),
           ArticleListItem(
             newsArticle: newsArticle,
-            onTapCallback: (NewsArticle newsArticle) {
+            onPressedCallback: (NewsArticle newsArticle) {
               enterArticleView(newsArticle);
               pageController.animateToPage(1, duration: const Duration(milliseconds: 250), curve: Curves.easeInOut);
             },
@@ -224,7 +256,7 @@ class ArticleListItemContainer extends StatelessWidget {
         children: [
           ArticleListItem(
             newsArticle: newsArticle,
-            onTapCallback: (NewsArticle newsArticle) {
+            onPressedCallback: (NewsArticle newsArticle) {
               enterArticleView(newsArticle);
               pageController.animateToPage(1, duration: const Duration(milliseconds: 250), curve: Curves.easeInOut);
             },
@@ -251,11 +283,11 @@ class ArticleListItemDate extends StatelessWidget {
 }
 
 class ArticleListItem extends StatelessWidget {
-  const ArticleListItem({super.key, required this.newsArticle, required this.onTapCallback});
+  const ArticleListItem({super.key, required this.newsArticle, required this.onPressedCallback});
 
   final NewsArticle newsArticle;
   final double height = 170;
-  final void Function(NewsArticle newsArticle) onTapCallback;
+  final void Function(NewsArticle newsArticle) onPressedCallback;
 
   @override
   Widget build(BuildContext context) {
@@ -290,9 +322,9 @@ class ArticleListItem extends StatelessWidget {
       );
     }
 
-    return GestureDetector(
-      onTap: () {
-        onTapCallback(newsArticle);
+    return TextButton(
+      onPressed: () {
+        onPressedCallback(newsArticle);
         print("Tapped on article ${newsArticle.title}");
       },
       child: Container(
