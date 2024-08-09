@@ -17,9 +17,8 @@ class News extends StatefulWidget {
 class _NewsState extends State<News> {
   // TODO: move this into consts later or implement backend
   List<NewsArticle> _newsArticles = [];
-
+  List<NewsArticle> _searchResults = [];
   int _articleCount = 0;
-
   NewsArticle _currentArticle = NewsArticle();
 
   void enterArticleView(NewsArticle article) {
@@ -28,11 +27,36 @@ class _NewsState extends State<News> {
     });
   }
 
+  void searchArticles(String query) {
+    setState(() {
+      _searchResults = getArticlesTitleMatching(query);
+      print("*************************\nSearch results: $_searchResults\nquery: $query\n*************************");
+    });
+    if (listAndSearchResultController.page == 0) {
+      listAndSearchResultController.animateToPage(1, duration: const Duration(milliseconds: 250), curve: Curves.easeInOut);
+    }
+  }
+
+  List<NewsArticle> getArticlesTitleMatching(String query) {
+    List<NewsArticle> searchResults = [];
+    for (NewsArticle article in _newsArticles) {
+      if (article.title.toLowerCase().contains(query.toLowerCase())) {
+        searchResults.add(article);
+      }
+    }
+    return searchResults;
+  }
+
+  PageController mainToFullscreenController = PageController(
+    initialPage: 0,
+  );
+
+  PageController listAndSearchResultController = PageController(
+    initialPage: 0,
+  );
+
   @override
   Widget build(BuildContext context) {
-    PageController pageController = PageController(
-      initialPage: 0,
-    );
 
     // Fetch articles from backend
     return FutureBuilder<List<NewsArticle>>(
@@ -44,17 +68,20 @@ class _NewsState extends State<News> {
 
           return PageView(
             physics: const NeverScrollableScrollPhysics(),
-            controller: pageController,
+            controller: mainToFullscreenController,
             children: [
-              ArticleList(
+              NewsMainPage(
                 newsArticles: _newsArticles,
+                searchResults: _searchResults,
                 articleCount: _articleCount,
                 enterArticleView: enterArticleView,
-                pageController: pageController,
+                searchArticles: searchArticles,
+                mainToFullscreenController: mainToFullscreenController,
+                listAndSearchResultController: listAndSearchResultController,
               ),
               ArticleFullscreenPage(
                 newsArticle: _currentArticle,
-                pageController: pageController,
+                mainToFullscreenController: mainToFullscreenController,
               ),
             ],
           );
@@ -78,14 +105,17 @@ class _NewsState extends State<News> {
 
 // Main News Page ========================================
 
-class ArticleList extends StatelessWidget {
-  const ArticleList(
-      {super.key, required this.newsArticles, required this.articleCount, required this.enterArticleView, required this.pageController});
+class NewsMainPage extends StatelessWidget {
+  const NewsMainPage(
+      {super.key, required this.newsArticles, required this.searchResults, required this.articleCount, required this.enterArticleView, required this.searchArticles, required this.mainToFullscreenController, required this.listAndSearchResultController});
 
   final List<NewsArticle> newsArticles;
+  final List<NewsArticle> searchResults;
   final int articleCount;
   final void Function(NewsArticle newsArticle) enterArticleView;
-  final PageController pageController;
+  final void Function(String) searchArticles;
+  final PageController mainToFullscreenController;
+  final PageController listAndSearchResultController;
 
   @override
   Widget build(BuildContext context) {
@@ -94,44 +124,27 @@ class ArticleList extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const ArticleSearchBar(),
+        ArticleSearchBar(
+          onSearchCallback: searchArticles,
+        ),
         SizedBox(height: 20),
         Expanded(
-          child: ListView.builder(
-            itemCount: articleCount,
-            itemBuilder: (context, index) {
-              // If the current article is the first article, show the date
-              if (index == 0) {
-                return ArticleListItemContainer(
-                  newsArticle: newsArticles[index],
-                  hasDate: true,
-                  enterArticleView: enterArticleView,
-                  ignoreDateSpacing: true,
-                  pageController: pageController,
-                );
-              }
-              // If the current article is not the first article, check if the date is different from the previous article
-              // If the date is different, show the date
-              if (!newsArticles[index]
-                  .sameReleaseDateAs(newsArticles[index - 1])) {
-                return ArticleListItemContainer(
-                  newsArticle: newsArticles[index],
-                  hasDate: true,
-                  enterArticleView: enterArticleView,
-                  pageController: pageController,
-                );
-              }
-              // If the date is the same, don't show the date
-              else {
-                return ArticleListItemContainer(
-                  newsArticle: newsArticles[index],
-                  hasDate: false,
-                  enterArticleView: enterArticleView,
-                  pageController: pageController,
-                );
-              }
-            },
-          ),
+          child: PageView(
+            physics: const BouncingScrollPhysics(),
+            controller: listAndSearchResultController,
+            children: [
+              ArticleList(
+                articleCount: articleCount,
+                newsArticles: newsArticles,
+                enterArticleView: enterArticleView,
+                pageController: mainToFullscreenController,
+              ),
+              ArticleSearchResultsList(
+                searchResults: searchResults,
+                onPressedCallback: enterArticleView,
+              ),
+            ],
+          )
         ),
       ],
     );
@@ -139,10 +152,11 @@ class ArticleList extends StatelessWidget {
 }
 
 class ArticleSearchBar extends StatelessWidget {
-  const ArticleSearchBar({super.key});
+  const ArticleSearchBar({super.key, required this.onSearchCallback});
 
   final double height = 30;
   final EdgeInsets padding = const EdgeInsets.only(left: 20, right: 20);
+  final void Function(String) onSearchCallback;
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +176,7 @@ class ArticleSearchBar extends StatelessWidget {
               maxLines: 1,
               style: smallBodyStyle,
               onChanged: (value) {
-                print("Search for articles: $value");
+                onSearchCallback(value);
               },
               decoration: const InputDecoration(
                 contentPadding: EdgeInsets.symmetric(vertical: 10.5), // just a magic number to center it
@@ -182,9 +196,22 @@ class ArticleSearchBar extends StatelessWidget {
   }
 }
 
-class ArticleSearchResultsList extends StatelessWidget {
-  const ArticleSearchResultsList({super.key, required this.searchResults});
+class Border extends StatelessWidget {
+  const Border({super.key});
 
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 1,
+      color: lightGrey,
+    );
+  }
+}
+
+class ArticleSearchResultsList extends StatelessWidget {
+  const ArticleSearchResultsList({super.key, required this.searchResults, required this.onPressedCallback});
+
+  final void Function(NewsArticle newsArticle) onPressedCallback;
   final List<NewsArticle> searchResults;
 
   @override
@@ -192,8 +219,10 @@ class ArticleSearchResultsList extends StatelessWidget {
     return ListView.builder(
       itemCount: searchResults.length,
       itemBuilder: (context, index) {
+        print("========================================\nBuilding search result\nIndex: ${index}\nTitle: ${searchResults[index].title}\n========================================");
         ArticleSearchResult(
           newsArticle: searchResults[index],
+          onPressedCallback: onPressedCallback,
         );
       },
     );
@@ -201,15 +230,92 @@ class ArticleSearchResultsList extends StatelessWidget {
 }
 
 class ArticleSearchResult extends StatelessWidget {
-  const ArticleSearchResult({super.key, required this.newsArticle});
+  const ArticleSearchResult({super.key, required this.newsArticle, required this.onPressedCallback});
 
+  final void Function(NewsArticle newsArticle) onPressedCallback;
   final NewsArticle newsArticle;
   final double height = 40;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // TODO: Finish this
+    return TextButton(
+      onPressed: () {
+        onPressedCallback(newsArticle);
+        print("Tapped on article ${newsArticle.title}");
+      },
+      child: Column(
+        children: [
+          Border(),
+          SizedBox(
+            height: height,
+            child: Padding(
+              padding: EdgeInsets.only(left: 20, right: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    newsArticle.title,
+                    style: smallBodyStyle,
+                  ),
+                  Text(
+                    newsArticle.getDateString(),
+                    style: smallBodyStyle,
+                  ),
+                ],
+              ),
+            )
+          ),
+          Border(),
+        ],
+      )
+    );
+  }
+}
+
+class ArticleList extends StatelessWidget {
+  const ArticleList({super.key, required this.articleCount, required this.newsArticles, required this.enterArticleView, required this.pageController});
+
+  final int articleCount;
+  final List<NewsArticle> newsArticles;
+  final void Function(NewsArticle newsArticle) enterArticleView;
+  final PageController pageController;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: articleCount,
+      itemBuilder: (context, index) {
+        // If the current article is the first article, show the date
+        if (index == 0) {
+          return ArticleListItemContainer(
+            newsArticle: newsArticles[index],
+            hasDate: true,
+            enterArticleView: enterArticleView,
+            ignoreDateSpacing: true,
+            pageController: pageController,
+          );
+        }
+        // If the current article is not the first article, check if the date is different from the previous article
+        // If the date is different, show the date
+        if (!newsArticles[index]
+            .sameReleaseDateAs(newsArticles[index - 1])) {
+          return ArticleListItemContainer(
+            newsArticle: newsArticles[index],
+            hasDate: true,
+            enterArticleView: enterArticleView,
+            pageController: pageController,
+          );
+        }
+        // If the date is the same, don't show the date
+        else {
+          return ArticleListItemContainer(
+            newsArticle: newsArticles[index],
+            hasDate: false,
+            enterArticleView: enterArticleView,
+            pageController: pageController,
+          );
+        }
+      },
     );
   }
 }
@@ -396,10 +502,10 @@ class ArticleListItem extends StatelessWidget {
 // News Article Fullscreen ===============================
 
 class ArticleFullscreenPage extends StatelessWidget {
-  const ArticleFullscreenPage({super.key, required this.newsArticle, required this.pageController});
+  const ArticleFullscreenPage({super.key, required this.newsArticle, required this.mainToFullscreenController});
 
   final NewsArticle newsArticle;
-  final PageController pageController;
+  final PageController mainToFullscreenController;
 
   @override
   Widget build(BuildContext context) {
@@ -415,7 +521,7 @@ class ArticleFullscreenPage extends StatelessWidget {
             child: ArticleFullscreenPageHeader(
               newsArticle: newsArticle,
               exitArticleView: () {
-                pageController.animateToPage(
+                mainToFullscreenController.animateToPage(
                   0, 
                   duration: const Duration(
                     milliseconds: 250
