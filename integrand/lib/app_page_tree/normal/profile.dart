@@ -25,8 +25,8 @@ class _ProfileState extends State<Profile> {
           child: Stack(alignment: Alignment.centerRight, children: [
             Row(mainAxisAlignment: MainAxisAlignment.end, children: [
               IconButton(
-                icon: const Icon(
-                  Icons.arrow_forward_ios,
+                icon: Icon(
+                  Icons.arrow_forward_ios_rounded,
                   size: 25,
                   color: textColor,
                 ),

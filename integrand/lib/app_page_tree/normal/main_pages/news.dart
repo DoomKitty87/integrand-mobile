@@ -223,7 +223,7 @@ class ArticleSearchBar extends StatelessWidget {
                   height: height,
                   child: IconButton(
                     padding: EdgeInsets.all(0),
-                    icon: const Icon(Icons.arrow_back),
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded),
                     onPressed: () {
                       searchFieldController.clear();
                       onSearchCancel();
@@ -673,7 +673,7 @@ class ArticleFullscreenPageHeader extends StatelessWidget {
             children: [
               IconButton(
                 icon: const Icon(
-                  Icons.arrow_back,
+                  Icons.arrow_back_ios_new_rounded,
                   color: textColor,
                 ),
                 onPressed: exitArticleView,
