@@ -149,7 +149,7 @@ class ScheduleTimeIndicators extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            TimeLeftLarge(
+            TimeLarge(
               currentDateTime: currentTime,
               bellSchedule: bellSchedule,
             ),
@@ -185,11 +185,11 @@ class ScheduleTimeIndicators extends StatelessWidget {
         ),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text(
-            removeAMPM(startTime.format(context)),
+            startTime.format(context),
             style: smallBodyStyle,
           ),
           Text(
-            removeAMPM(endTime.format(context)),
+            endTime.format(context),
             style: smallBodyStyle,
           ),
         ])
@@ -219,25 +219,19 @@ class DayOfWeekText extends StatelessWidget {
   }
 }
 
-class TimeLeftLarge extends StatelessWidget {
-  const TimeLeftLarge(
-      {super.key, required this.currentDateTime, required this.bellSchedule});
+class TimeLarge extends StatelessWidget {
+  const TimeLarge({super.key, required this.currentDateTime, required this.bellSchedule});
 
   final DateTime currentDateTime;
   final BellSchedule bellSchedule;
 
-  // NOTE: 12 hour vs 24 hours is based on device settings, could this become a toggle in the app settings?
   @override
   Widget build(BuildContext context) {
     String output;
 
-    var info =
-        bellSchedule.isPassingPeriod(TimeOfDay.fromDateTime(currentDateTime));
-    if (info.$1) {
-      int minutesLeft = differenceMinutesTimeOfDay(
-              info.$3!.startTime, TimeOfDay.fromDateTime(currentDateTime)) -
-          1;
-
+    var info = bellSchedule.isPassingPeriod(TimeOfDay.fromDateTime(currentDateTime));
+    if (info.$1) { // if passing period
+      int minutesLeft = differenceMinutesTimeOfDay(info.$3!.startTime, TimeOfDay.fromDateTime(currentDateTime)) - 1;
       int secondsLeft = 60 - currentDateTime.second;
 
       if (secondsLeft == 60) {
@@ -245,12 +239,10 @@ class TimeLeftLarge extends StatelessWidget {
         minutesLeft++;
       }
       output = "$minutesLeft:${secondsLeft > 9 ? secondsLeft : '0$secondsLeft'}";
-    } else {
+    } 
+    else {
       output = TimeOfDay.fromDateTime(currentDateTime).format(context);
-      //.replaceAll("AM", "a.m.")
-      //.replaceAll("PM", "p.m.");
     }
-
     return Text(
       output,
       style: titleStyle,
@@ -304,7 +296,7 @@ class MinutesLeftText extends StatelessWidget {
           textString += "$hours hours ";
         }
       }
-      if (minutesLeft > 0) {
+      if (minutesLeft >= 0) {
         if (hours > 0) textString += "and ";
         if (minutesLeft == 1) {
           textString += "1 minute ";
@@ -436,18 +428,9 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
       // Border element
       // ignore: avoid_unnecessary_containers
       Container border = Container(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-          child: Container(
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: textColor,
-                  width: 0.1,
-                ),
-              ),
-            ),
-          ),
+        child: const Padding(
+          padding: EdgeInsets.only(left: 20.0, right: 20.0),
+          child: BorderLine(),
         ),
       );
       textChildren.add(border);
@@ -525,7 +508,7 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                           SizedBox(
                             width: 80.0,
                             child: Text(
-                              removeAMPM(period.startTime.format(context)),
+                              period.startTime.format(context),
                               style: textStyle,
                               textAlign: TextAlign.right,
                             ),
@@ -533,7 +516,7 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                           SizedBox(
                             width: 80.0,
                             child: Text(
-                              removeAMPM(period.endTime.format(context)),
+                              period.endTime.format(context),
                               style: textStyle,
                               textAlign: TextAlign.right,
                             ),
@@ -631,46 +614,53 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
         );
         textChildren.add(nextPeriodText);
 
-        bool isCurrent = false;
-
         if (widget.bellSchedule
             .isPassingPeriod(TimeOfDay.fromDateTime(widget.currentTime))
             .$1) {
           if (i < widget.bellSchedule.periods.length - 1) {
             // Check if the passing period is between the current period and the next period
-            if (isBetweenTimeOfDayInclusive(
+            if (
+                isBetweenTimeOfDayInclusive(
                 widget.bellSchedule.periods[i].endTime,
                 widget.bellSchedule.periods[i + 1].startTime,
-                TimeOfDay.fromDateTime(widget.currentTime))) {
-              isCurrent = true;
+                TimeOfDay.fromDateTime(widget.currentTime))
+              )
+            {
+              border = Container(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: Container(
+                    height: 3,
+                    decoration: const BoxDecoration(
+                      gradient: textGradient,
+                    ),
+                  ),
+                ),
+              );
+            }
+            else {
+              border = Container(
+                child: const Padding(
+                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: BorderLine(),
+                ),
+              );
             }
           }
         }
 
-        border = Container(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: Container(
-              height: isCurrent ? 5.0 : 0.1,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(5.0),
+        if (i != widget.bellSchedule.periods.length - 1) {
+          textChildren.add(border);
+        } else { // Prevents the final border line from lighting up
+          border = Container(
+                child: const Padding(
+                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: BorderLine(),
                 ),
-                gradient: textGradient,
-                border: !isCurrent
-                    ? const Border(
-                        bottom: BorderSide(
-                          color: textColor,
-                          width: 0.1,
-                        ),
-                      )
-                    : null,
-              ),
-            ),
-          ),
-        );
+              );
 
-        textChildren.add(border);
+          textChildren.add(border); // Adds a border line between each period
+        }
         i++;
       }
 

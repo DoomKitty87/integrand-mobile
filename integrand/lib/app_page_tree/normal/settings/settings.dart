@@ -61,6 +61,7 @@ class _SettingsState extends State<Settings> {
         ),
         Expanded(
           child: PageView(
+            physics: const NeverScrollableScrollPhysics(),
             controller: settingsController,
             children: [
               SettingsMain(
@@ -116,7 +117,7 @@ class SettingTopBar extends StatelessWidget {
             children: [
               IconButton(
                 icon: const Icon(
-                  Icons.arrow_back_ios,
+                  Icons.arrow_back_ios_new_rounded,
                   size: 25,
                   color: textColor,
                 ),

@@ -21,6 +21,18 @@ const Color errorColor = Color.fromRGBO(255, 0, 0, 1);
 const Color barColor = textColorSecondary;
 const Color barColorSelected = textColor;
 
+class BorderLine extends StatelessWidget {
+  const BorderLine({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 1,
+      color: lightGrey,
+    );
+  }
+}
+
 const List<Color> eventTypeColors = [
   Color(0x8E7DBEFF),
   Color(0xFFC857FF),

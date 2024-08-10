@@ -53,7 +53,7 @@ String weekdayToName(int dateTimeWeekday) {
   return daysOfWeek[dateTimeWeekday - 1];
 }
 
-String monthToName(int dateTimeMonth) {
+String monthToName(int dateTimeMonth, {bool short = false}) {
   List<String> months = const [
     "January",
     "February",
@@ -68,7 +68,26 @@ String monthToName(int dateTimeMonth) {
     "November",
     "December"
   ];
-  return months[dateTimeMonth - 1];
+  List<String> shortMonths = const [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec"
+  ];
+  if (short) {
+    return shortMonths[dateTimeMonth - 1];
+  }
+  else {
+    return months[dateTimeMonth - 1];
+  }
 }
 
 String numberWithSuffix(int number) {
