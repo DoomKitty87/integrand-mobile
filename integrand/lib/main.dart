@@ -13,6 +13,7 @@ import 'package:integrand/app_page_tree/intake/intake_credentials.dart';
 import 'package:integrand/consts.dart';
 import 'package:integrand/backend/data_storage.dart';
 import 'package:integrand/app_page_tree/loading_page.dart';
+import 'package:integrand/backend/transit_api.dart';
 
 enum AppPage {
   transit,
@@ -33,6 +34,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (context) => AppData()),
         ChangeNotifierProvider(create: (context) => StudentVueAPI()),
+        ChangeNotifierProvider(create: (context) => TransitAPI(), lazy: false),
       ],
       child: MaterialApp(
         title: appName,
