@@ -271,18 +271,6 @@ class ArticleSearchBar extends StatelessWidget {
   }
 }
 
-class Border extends StatelessWidget {
-  const Border({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 1,
-      color: lightGrey,
-    );
-  }
-}
-
 class ArticleSearchResultsList extends StatelessWidget {
   const ArticleSearchResultsList({
     super.key,
@@ -338,7 +326,7 @@ class ArticleSearchResult extends StatelessWidget {
         },
         child: Column(
           children: [
-            Border(),
+            BorderLine(),
             SizedBox(
               height: height - 2,
               child: Padding(
@@ -358,7 +346,7 @@ class ArticleSearchResult extends StatelessWidget {
                 ),
               ),
             ),
-            Border(),
+            BorderLine(),
           ],
         ),
       ),
@@ -549,10 +537,7 @@ class ArticleListItem extends StatelessWidget {
           color: lightGreyTransparent,
           child: Column(
             children: [
-              Container(
-                color: lightGrey,
-                height: 1,
-              ),
+              const BorderLine(),
               SizedBox(
                 height: height,
                 // TODO: Add lr padding here
@@ -601,10 +586,7 @@ class ArticleListItem extends StatelessWidget {
                   ),
                 ),
               ),
-              Container(
-                color: lightGrey,
-                height: 1,
-              ),
+              BorderLine(),
             ],
           ),
         ),

@@ -206,6 +206,7 @@ class _MainState extends State<Main> {
 
     return GradientBackground(
       child: PageView.builder(
+        physics: const ClampingScrollPhysics(),
         itemCount: pages.length,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
@@ -251,16 +252,18 @@ class _CenterPageState extends State<CenterPage> {
         ),
         Expanded(
           child: PageView.builder(
-              itemCount: widget.innerPages.length,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (context, index) {
-                return widget.innerPages[index];
-              },
-              controller: innerPageController,
-              onPageChanged: (value) => {
-                    Provider.of<AppData>(context, listen: false)
-                        .changePage(AppPage.values[value])
-                  }),
+            physics: const ClampingScrollPhysics(),
+            itemCount: widget.innerPages.length,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (context, index) {
+              return widget.innerPages[index];
+            },
+            controller: innerPageController,
+            onPageChanged: (value) => {
+              Provider.of<AppData>(context, listen: false)
+                    .changePage(AppPage.values[value])
+            },
+          ),
         ),
         PageSelectBar(pageController: innerPageController),
         const SizedBox(

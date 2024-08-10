@@ -61,6 +61,7 @@ class _SettingsState extends State<Settings> {
         ),
         Expanded(
           child: PageView(
+            physics: const NeverScrollableScrollPhysics(),
             controller: settingsController,
             children: [
               SettingsMain(

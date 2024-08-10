@@ -304,7 +304,7 @@ class MinutesLeftText extends StatelessWidget {
           textString += "$hours hours ";
         }
       }
-      if (minutesLeft > 0) {
+      if (minutesLeft >= 0) {
         if (hours > 0) textString += "and ";
         if (minutesLeft == 1) {
           textString += "1 minute ";
@@ -436,18 +436,9 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
       // Border element
       // ignore: avoid_unnecessary_containers
       Container border = Container(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-          child: Container(
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: textColor,
-                  width: 0.1,
-                ),
-              ),
-            ),
-          ),
+        child: const Padding(
+          padding: EdgeInsets.only(left: 20.0, right: 20.0),
+          child: BorderLine(),
         ),
       );
       textChildren.add(border);
@@ -638,37 +629,36 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
             .$1) {
           if (i < widget.bellSchedule.periods.length - 1) {
             // Check if the passing period is between the current period and the next period
-            if (isBetweenTimeOfDayInclusive(
+            if (
+                isBetweenTimeOfDayInclusive(
                 widget.bellSchedule.periods[i].endTime,
                 widget.bellSchedule.periods[i + 1].startTime,
-                TimeOfDay.fromDateTime(widget.currentTime))) {
+                TimeOfDay.fromDateTime(widget.currentTime))
+              ) 
+            {
               isCurrent = true;
+              border = Container(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: Container(
+                    height: 3,
+                    decoration: const BoxDecoration(
+                      gradient: textGradient,
+                    ),
+                  ),
+                ),
+              );
+            }
+            else {
+              border = Container(
+                child: const Padding(
+                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: BorderLine(),
+                ),
+              );
             }
           }
         }
-
-        border = Container(
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: Container(
-              height: isCurrent ? 5.0 : 0.1,
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(5.0),
-                ),
-                gradient: textGradient,
-                border: !isCurrent
-                    ? const Border(
-                        bottom: BorderSide(
-                          color: textColor,
-                          width: 0.1,
-                        ),
-                      )
-                    : null,
-              ),
-            ),
-          ),
-        );
 
         textChildren.add(border);
         i++;
