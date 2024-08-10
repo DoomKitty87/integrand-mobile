@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:integrand/consts.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:integrand/backend/data_classes.dart';
 import 'package:integrand/backend/database_interactions.dart';
 
@@ -15,7 +16,6 @@ class News extends StatefulWidget {
 }
 
 class _NewsState extends State<News> {
-  // TODO: move this into consts later or implement backend
   List<NewsArticle> _newsArticles = [];
   List<NewsArticle> _searchResults = [];
   int _articleCount = 0;
@@ -25,16 +25,37 @@ class _NewsState extends State<News> {
     setState(() {
       _currentArticle = article;
     });
+    mainToFullscreenController.animateToPage(
+      1,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void cancelSearch() {
+    listAndSearchResultController.animateToPage(
+      0,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+    );
+    setState(() {
+      _searchResults = [];
+    });
   }
 
   void searchArticles(String query) {
+    if (listAndSearchResultController.page == 0) {
+      listAndSearchResultController.animateToPage(
+        1,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+      );
+    }
     setState(() {
       _searchResults = getArticlesTitleMatching(query);
-      print("*************************\nSearch results: $_searchResults\nquery: $query\n*************************");
+      print(
+          "*************************\nCalled setState\nSearch results: $_searchResults\nquery: $query\n*************************");
     });
-    if (listAndSearchResultController.page == 0) {
-      listAndSearchResultController.animateToPage(1, duration: const Duration(milliseconds: 250), curve: Curves.easeInOut);
-    }
   }
 
   List<NewsArticle> getArticlesTitleMatching(String query) {
@@ -57,7 +78,6 @@ class _NewsState extends State<News> {
 
   @override
   Widget build(BuildContext context) {
-
     // Fetch articles from backend
     return FutureBuilder<List<NewsArticle>>(
       future: fetchNews(4),
@@ -75,7 +95,8 @@ class _NewsState extends State<News> {
                 searchResults: _searchResults,
                 articleCount: _articleCount,
                 enterArticleView: enterArticleView,
-                searchArticles: searchArticles,
+                searchForArticles: searchArticles,
+                searchCancelled: cancelSearch,
                 mainToFullscreenController: mainToFullscreenController,
                 listAndSearchResultController: listAndSearchResultController,
               ),
@@ -85,13 +106,11 @@ class _NewsState extends State<News> {
               ),
             ],
           );
-        } 
-        else if (snapshot.hasError) {
+        } else if (snapshot.hasError) {
           return const Center(
             child: Text('Error loading news'),
           );
-        } 
-        else {
+        } else {
           return const Center(
             child: CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(purpleGradient),
@@ -106,14 +125,24 @@ class _NewsState extends State<News> {
 // Main News Page ========================================
 
 class NewsMainPage extends StatelessWidget {
-  const NewsMainPage(
-      {super.key, required this.newsArticles, required this.searchResults, required this.articleCount, required this.enterArticleView, required this.searchArticles, required this.mainToFullscreenController, required this.listAndSearchResultController});
+  const NewsMainPage({
+    super.key,
+    required this.newsArticles,
+    required this.searchResults,
+    required this.articleCount,
+    required this.enterArticleView,
+    required this.searchForArticles,
+    required this.searchCancelled,
+    required this.mainToFullscreenController,
+    required this.listAndSearchResultController,
+  });
 
   final List<NewsArticle> newsArticles;
   final List<NewsArticle> searchResults;
   final int articleCount;
   final void Function(NewsArticle newsArticle) enterArticleView;
-  final void Function(String) searchArticles;
+  final void Function(String) searchForArticles;
+  final void Function() searchCancelled;
   final PageController mainToFullscreenController;
   final PageController listAndSearchResultController;
 
@@ -125,72 +154,93 @@ class NewsMainPage extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         ArticleSearchBar(
-          onSearchCallback: searchArticles,
+          onSearchCallback: searchForArticles,
+          onSearchCancel: searchCancelled,
+          showCancelButton: listAndSearchResultController.page == 1,
         ),
         SizedBox(height: 20),
         Expanded(
-          child: PageView(
-            physics: const BouncingScrollPhysics(),
-            controller: listAndSearchResultController,
-            children: [
-              ArticleList(
-                articleCount: articleCount,
-                newsArticles: newsArticles,
-                enterArticleView: enterArticleView,
-                pageController: mainToFullscreenController,
-              ),
-              ArticleSearchResultsList(
-                searchResults: searchResults,
-                onPressedCallback: enterArticleView,
-              ),
-            ],
-          )
-        ),
+            child: PageView(
+          physics: const BouncingScrollPhysics(),
+          controller: listAndSearchResultController,
+          children: [
+            ArticleList(
+              articleCount: articleCount,
+              newsArticles: newsArticles,
+              enterArticleView: enterArticleView,
+              pageController: mainToFullscreenController,
+            ),
+            ArticleSearchResultsList(
+              searchResults: searchResults,
+              onPressedCallback: enterArticleView,
+            ),
+          ],
+        )),
       ],
     );
   }
 }
 
 class ArticleSearchBar extends StatelessWidget {
-  const ArticleSearchBar({super.key, required this.onSearchCallback});
+  const ArticleSearchBar({
+    super.key,
+    required this.onSearchCallback,
+    required this.onSearchCancel,
+    required this.showCancelButton,
+  });
 
   final double height = 30;
   final EdgeInsets padding = const EdgeInsets.only(left: 20, right: 20);
   final void Function(String) onSearchCallback;
+  final void Function() onSearchCancel;
+  final bool showCancelButton;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(12.0),
-      child: Container(
-        height: height,
-        decoration: BoxDecoration(
-          color: lightGrey,
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: Center(
-            // TODO: This is bad, when there's a better solution, replace this padding nonsense
-            child: TextField(
-              maxLines: 1,
-              style: smallBodyStyle,
-              onChanged: (value) {
-                onSearchCallback(value);
-              },
-              decoration: const InputDecoration(
-                contentPadding: EdgeInsets.symmetric(vertical: 10.5), // just a magic number to center it
-                hintText: "Search for articles",
-                hintStyle: smallBodyStyle,
-                prefixIcon: Icon(
-                  Icons.search,
-                  size: 16, 
+      child: Row(
+        children: [
+          showCancelButton
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: onSearchCancel,
+                )
+              : Container(),
+          Expanded(
+            child: Container(
+              height: height,
+              decoration: BoxDecoration(
+                color: lightGrey,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Material(
+                color: Colors.transparent,
+                child: Center(
+                  // TODO: This is bad, when there's a better solution, replace this padding nonsense
+                  child: TextField(
+                    maxLines: 1,
+                    style: smallBodyStyle,
+                    onChanged: (value) {
+                      onSearchCallback(value);
+                    },
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: 10.5), // just a magic number to center it
+                      hintText: "Search for articles",
+                      hintStyle: smallBodyStyle,
+                      prefixIcon: Icon(
+                        Icons.search,
+                        size: 16,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                  ),
                 ),
-                border: InputBorder.none,
               ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -209,7 +259,10 @@ class Border extends StatelessWidget {
 }
 
 class ArticleSearchResultsList extends StatelessWidget {
-  const ArticleSearchResultsList({super.key, required this.searchResults, required this.onPressedCallback});
+  const ArticleSearchResultsList(
+      {super.key,
+      required this.searchResults,
+      required this.onPressedCallback});
 
   final void Function(NewsArticle newsArticle) onPressedCallback;
   final List<NewsArticle> searchResults;
@@ -219,8 +272,7 @@ class ArticleSearchResultsList extends StatelessWidget {
     return ListView.builder(
       itemCount: searchResults.length,
       itemBuilder: (context, index) {
-        print("========================================\nBuilding search result\nIndex: ${index}\nTitle: ${searchResults[index].title}\n========================================");
-        ArticleSearchResult(
+        return ArticleSearchResult(
           newsArticle: searchResults[index],
           onPressedCallback: onPressedCallback,
         );
@@ -230,7 +282,8 @@ class ArticleSearchResultsList extends StatelessWidget {
 }
 
 class ArticleSearchResult extends StatelessWidget {
-  const ArticleSearchResult({super.key, required this.newsArticle, required this.onPressedCallback});
+  const ArticleSearchResult(
+      {super.key, required this.newsArticle, required this.onPressedCallback});
 
   final void Function(NewsArticle newsArticle) onPressedCallback;
   final NewsArticle newsArticle;
@@ -239,41 +292,44 @@ class ArticleSearchResult extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextButton(
-      onPressed: () {
-        onPressedCallback(newsArticle);
-        print("Tapped on article ${newsArticle.title}");
-      },
-      child: Column(
-        children: [
-          Border(),
-          SizedBox(
-            height: height,
-            child: Padding(
-              padding: EdgeInsets.only(left: 20, right: 20),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    newsArticle.title,
-                    style: smallBodyStyle,
+        onPressed: () {
+          onPressedCallback(newsArticle);
+          print("Tapped on article ${newsArticle.title}");
+        },
+        child: Column(
+          children: [
+            Border(),
+            SizedBox(
+                height: height,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 20, right: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        newsArticle.title,
+                        style: smallBodyStyle,
+                      ),
+                      Text(
+                        newsArticle.getDateString(),
+                        style: smallBodyStyle,
+                      ),
+                    ],
                   ),
-                  Text(
-                    newsArticle.getDateString(),
-                    style: smallBodyStyle,
-                  ),
-                ],
-              ),
-            )
-          ),
-          Border(),
-        ],
-      )
-    );
+                )),
+            Border(),
+          ],
+        ));
   }
 }
 
 class ArticleList extends StatelessWidget {
-  const ArticleList({super.key, required this.articleCount, required this.newsArticles, required this.enterArticleView, required this.pageController});
+  const ArticleList(
+      {super.key,
+      required this.articleCount,
+      required this.newsArticles,
+      required this.enterArticleView,
+      required this.pageController});
 
   final int articleCount;
   final List<NewsArticle> newsArticles;
@@ -297,8 +353,7 @@ class ArticleList extends StatelessWidget {
         }
         // If the current article is not the first article, check if the date is different from the previous article
         // If the date is different, show the date
-        if (!newsArticles[index]
-            .sameReleaseDateAs(newsArticles[index - 1])) {
+        if (!newsArticles[index].sameReleaseDateAs(newsArticles[index - 1])) {
           return ArticleListItemContainer(
             newsArticle: newsArticles[index],
             hasDate: true,
@@ -321,7 +376,13 @@ class ArticleList extends StatelessWidget {
 }
 
 class ArticleListItemContainer extends StatelessWidget {
-  const ArticleListItemContainer({super.key, required this.newsArticle, this.hasDate = false, this.ignoreDateSpacing = false, required this.enterArticleView, required this.pageController});
+  const ArticleListItemContainer(
+      {super.key,
+      required this.newsArticle,
+      this.hasDate = false,
+      this.ignoreDateSpacing = false,
+      required this.enterArticleView,
+      required this.pageController});
 
   final NewsArticle newsArticle;
   final bool hasDate;
@@ -335,8 +396,7 @@ class ArticleListItemContainer extends StatelessWidget {
     double spacing;
     if (ignoreDateSpacing) {
       spacing = 0;
-    }
-    else {
+    } else {
       spacing = dateSpacing;
     }
 
@@ -352,7 +412,6 @@ class ArticleListItemContainer extends StatelessWidget {
             newsArticle: newsArticle,
             onPressedCallback: (NewsArticle newsArticle) {
               enterArticleView(newsArticle);
-              pageController.animateToPage(1, duration: const Duration(milliseconds: 250), curve: Curves.easeInOut);
             },
           ),
         ],
@@ -364,7 +423,6 @@ class ArticleListItemContainer extends StatelessWidget {
             newsArticle: newsArticle,
             onPressedCallback: (NewsArticle newsArticle) {
               enterArticleView(newsArticle);
-              pageController.animateToPage(1, duration: const Duration(milliseconds: 250), curve: Curves.easeInOut);
             },
           ),
         ],
@@ -389,7 +447,8 @@ class ArticleListItemDate extends StatelessWidget {
 }
 
 class ArticleListItem extends StatelessWidget {
-  const ArticleListItem({super.key, required this.newsArticle, required this.onPressedCallback});
+  const ArticleListItem(
+      {super.key, required this.newsArticle, required this.onPressedCallback});
 
   final NewsArticle newsArticle;
   final double height = 170;
@@ -419,7 +478,8 @@ class ArticleListItem extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(5),
                 child: Image(
-                  image: newsArticle.image!.image, fit: BoxFit.cover,
+                  image: newsArticle.image!.image,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
@@ -502,7 +562,10 @@ class ArticleListItem extends StatelessWidget {
 // News Article Fullscreen ===============================
 
 class ArticleFullscreenPage extends StatelessWidget {
-  const ArticleFullscreenPage({super.key, required this.newsArticle, required this.mainToFullscreenController});
+  const ArticleFullscreenPage(
+      {super.key,
+      required this.newsArticle,
+      required this.mainToFullscreenController});
 
   final NewsArticle newsArticle;
   final PageController mainToFullscreenController;
@@ -521,13 +584,9 @@ class ArticleFullscreenPage extends StatelessWidget {
             child: ArticleFullscreenPageHeader(
               newsArticle: newsArticle,
               exitArticleView: () {
-                mainToFullscreenController.animateToPage(
-                  0, 
-                  duration: const Duration(
-                    milliseconds: 250
-                  ),
-                  curve: Curves.easeInOut
-                );
+                mainToFullscreenController.animateToPage(0,
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeInOut);
               },
             ),
           ),
@@ -536,7 +595,7 @@ class ArticleFullscreenPage extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: ArticleFullscreenPageContent(newsArticle: newsArticle),
             ),
-          ), 
+          ),
         ],
       ),
     );
@@ -544,7 +603,8 @@ class ArticleFullscreenPage extends StatelessWidget {
 }
 
 class ArticleFullscreenPageHeader extends StatelessWidget {
-  const ArticleFullscreenPageHeader({super.key, required this.newsArticle, required this.exitArticleView});
+  const ArticleFullscreenPageHeader(
+      {super.key, required this.newsArticle, required this.exitArticleView});
 
   final void Function() exitArticleView;
   final NewsArticle newsArticle;
