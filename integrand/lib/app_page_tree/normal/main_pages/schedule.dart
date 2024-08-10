@@ -614,8 +614,6 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
         );
         textChildren.add(nextPeriodText);
 
-        bool isCurrent = false;
-
         if (widget.bellSchedule
             .isPassingPeriod(TimeOfDay.fromDateTime(widget.currentTime))
             .$1) {
@@ -626,9 +624,8 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                 widget.bellSchedule.periods[i].endTime,
                 widget.bellSchedule.periods[i + 1].startTime,
                 TimeOfDay.fromDateTime(widget.currentTime))
-              ) 
+              )
             {
-              isCurrent = true;
               border = Container(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0, right: 20.0),
@@ -652,7 +649,18 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
           }
         }
 
-        textChildren.add(border);
+        if (i != widget.bellSchedule.periods.length - 1) {
+          textChildren.add(border);
+        } else { // Prevents the final border line from lighting up
+          border = Container(
+                child: const Padding(
+                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
+                  child: BorderLine(),
+                ),
+              );
+
+          textChildren.add(border); // Adds a border line between each period
+        }
         i++;
       }
 
