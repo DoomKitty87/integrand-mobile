@@ -149,7 +149,7 @@ class ScheduleTimeIndicators extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            TimeLeftLarge(
+            TimeLarge(
               currentDateTime: currentTime,
               bellSchedule: bellSchedule,
             ),
@@ -185,11 +185,11 @@ class ScheduleTimeIndicators extends StatelessWidget {
         ),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text(
-            removeAMPM(startTime.format(context)),
+            startTime.format(context),
             style: smallBodyStyle,
           ),
           Text(
-            removeAMPM(endTime.format(context)),
+            endTime.format(context),
             style: smallBodyStyle,
           ),
         ])
@@ -219,25 +219,19 @@ class DayOfWeekText extends StatelessWidget {
   }
 }
 
-class TimeLeftLarge extends StatelessWidget {
-  const TimeLeftLarge(
-      {super.key, required this.currentDateTime, required this.bellSchedule});
+class TimeLarge extends StatelessWidget {
+  const TimeLarge({super.key, required this.currentDateTime, required this.bellSchedule});
 
   final DateTime currentDateTime;
   final BellSchedule bellSchedule;
 
-  // NOTE: 12 hour vs 24 hours is based on device settings, could this become a toggle in the app settings?
   @override
   Widget build(BuildContext context) {
     String output;
 
-    var info =
-        bellSchedule.isPassingPeriod(TimeOfDay.fromDateTime(currentDateTime));
-    if (info.$1) {
-      int minutesLeft = differenceMinutesTimeOfDay(
-              info.$3!.startTime, TimeOfDay.fromDateTime(currentDateTime)) -
-          1;
-
+    var info = bellSchedule.isPassingPeriod(TimeOfDay.fromDateTime(currentDateTime));
+    if (info.$1) { // if passing period
+      int minutesLeft = differenceMinutesTimeOfDay(info.$3!.startTime, TimeOfDay.fromDateTime(currentDateTime)) - 1;
       int secondsLeft = 60 - currentDateTime.second;
 
       if (secondsLeft == 60) {
@@ -245,12 +239,10 @@ class TimeLeftLarge extends StatelessWidget {
         minutesLeft++;
       }
       output = "$minutesLeft:${secondsLeft > 9 ? secondsLeft : '0$secondsLeft'}";
-    } else {
+    } 
+    else {
       output = TimeOfDay.fromDateTime(currentDateTime).format(context);
-      //.replaceAll("AM", "a.m.")
-      //.replaceAll("PM", "p.m.");
     }
-
     return Text(
       output,
       style: titleStyle,
@@ -516,7 +508,7 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                           SizedBox(
                             width: 80.0,
                             child: Text(
-                              removeAMPM(period.startTime.format(context)),
+                              period.startTime.format(context),
                               style: textStyle,
                               textAlign: TextAlign.right,
                             ),
@@ -524,7 +516,7 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                           SizedBox(
                             width: 80.0,
                             child: Text(
-                              removeAMPM(period.endTime.format(context)),
+                              period.endTime.format(context),
                               style: textStyle,
                               textAlign: TextAlign.right,
                             ),
