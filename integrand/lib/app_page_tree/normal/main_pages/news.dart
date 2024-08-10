@@ -20,11 +20,14 @@ class _NewsState extends State<News> {
   List<NewsArticle> _searchResults = [];
   int _articleCount = 0;
   NewsArticle _currentArticle = NewsArticle();
+  bool _showCancelButton = false;
 
   void enterArticleView(NewsArticle article) {
     setState(() {
       _currentArticle = article;
+      _showCancelButton = false;
     });
+    searchFieldController.clear();
     mainToFullscreenController.animateToPage(
       1,
       duration: const Duration(milliseconds: 250),
@@ -38,7 +41,9 @@ class _NewsState extends State<News> {
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeInOut,
     );
+    FocusManager.instance.primaryFocus?.unfocus();
     setState(() {
+      _showCancelButton = false;
       _searchResults = [];
     });
   }
@@ -53,8 +58,8 @@ class _NewsState extends State<News> {
     }
     setState(() {
       _searchResults = getArticlesTitleMatching(query);
-      print(
-          "*************************\nCalled setState\nSearch results: $_searchResults\nquery: $query\n*************************");
+      _showCancelButton = true;
+      print("*************************\nCalled setState\nSearch results: $_searchResults\nquery: $query\n*************************");
     });
   }
 
@@ -75,6 +80,8 @@ class _NewsState extends State<News> {
   PageController listAndSearchResultController = PageController(
     initialPage: 0,
   );
+
+  TextEditingController searchFieldController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +106,8 @@ class _NewsState extends State<News> {
                 searchCancelled: cancelSearch,
                 mainToFullscreenController: mainToFullscreenController,
                 listAndSearchResultController: listAndSearchResultController,
+                showCancelButton: _showCancelButton,
+                searchFieldController: searchFieldController,
               ),
               ArticleFullscreenPage(
                 newsArticle: _currentArticle,
@@ -135,6 +144,8 @@ class NewsMainPage extends StatelessWidget {
     required this.searchCancelled,
     required this.mainToFullscreenController,
     required this.listAndSearchResultController,
+    required this.showCancelButton,
+    required this.searchFieldController,
   });
 
   final List<NewsArticle> newsArticles;
@@ -145,6 +156,8 @@ class NewsMainPage extends StatelessWidget {
   final void Function() searchCancelled;
   final PageController mainToFullscreenController;
   final PageController listAndSearchResultController;
+  final bool showCancelButton;
+  final TextEditingController searchFieldController;
 
   @override
   Widget build(BuildContext context) {
@@ -156,12 +169,13 @@ class NewsMainPage extends StatelessWidget {
         ArticleSearchBar(
           onSearchCallback: searchForArticles,
           onSearchCancel: searchCancelled,
-          showCancelButton: listAndSearchResultController.page == 1,
+          showCancelButton: showCancelButton,
+          searchFieldController: searchFieldController,
         ),
         SizedBox(height: 20),
         Expanded(
             child: PageView(
-          physics: const BouncingScrollPhysics(),
+          physics: const NeverScrollableScrollPhysics(),
           controller: listAndSearchResultController,
           children: [
             ArticleList(
@@ -187,6 +201,7 @@ class ArticleSearchBar extends StatelessWidget {
     required this.onSearchCallback,
     required this.onSearchCancel,
     required this.showCancelButton,
+    required this.searchFieldController,
   });
 
   final double height = 30;
@@ -195,6 +210,8 @@ class ArticleSearchBar extends StatelessWidget {
   final void Function() onSearchCancel;
   final bool showCancelButton;
 
+  final TextEditingController searchFieldController;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -202,9 +219,16 @@ class ArticleSearchBar extends StatelessWidget {
       child: Row(
         children: [
           showCancelButton
-              ? IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: onSearchCancel,
+              ? Container(
+                  height: height,
+                  child: IconButton(
+                    padding: EdgeInsets.all(0),
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      searchFieldController.clear();
+                      onSearchCancel();
+                    },
+                  ),
                 )
               : Container(),
           Expanded(
@@ -219,6 +243,7 @@ class ArticleSearchBar extends StatelessWidget {
                 child: Center(
                   // TODO: This is bad, when there's a better solution, replace this padding nonsense
                   child: TextField(
+                    controller: searchFieldController,
                     maxLines: 1,
                     style: smallBodyStyle,
                     onChanged: (value) {
@@ -259,10 +284,11 @@ class Border extends StatelessWidget {
 }
 
 class ArticleSearchResultsList extends StatelessWidget {
-  const ArticleSearchResultsList(
-      {super.key,
-      required this.searchResults,
-      required this.onPressedCallback});
+  const ArticleSearchResultsList({
+    super.key,
+    required this.searchResults,
+    required this.onPressedCallback,
+  });
 
   final void Function(NewsArticle newsArticle) onPressedCallback;
   final List<NewsArticle> searchResults;
@@ -282,8 +308,11 @@ class ArticleSearchResultsList extends StatelessWidget {
 }
 
 class ArticleSearchResult extends StatelessWidget {
-  const ArticleSearchResult(
-      {super.key, required this.newsArticle, required this.onPressedCallback});
+  const ArticleSearchResult({
+    super.key, 
+    required this.newsArticle, 
+    required this.onPressedCallback,
+  });
 
   final void Function(NewsArticle newsArticle) onPressedCallback;
   final NewsArticle newsArticle;
@@ -291,35 +320,49 @@ class ArticleSearchResult extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextButton(
+    return Container(
+      height: height,
+      child: TextButton(
+        style: ButtonStyle(
+          padding: WidgetStateProperty.all(EdgeInsets.zero),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
+            ),
+          ),
+        ),
         onPressed: () {
           onPressedCallback(newsArticle);
+          FocusManager.instance.primaryFocus?.unfocus();
           print("Tapped on article ${newsArticle.title}");
         },
         child: Column(
           children: [
             Border(),
             SizedBox(
-                height: height,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 20, right: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        newsArticle.title,
-                        style: smallBodyStyle,
-                      ),
-                      Text(
-                        newsArticle.getDateString(),
-                        style: smallBodyStyle,
-                      ),
-                    ],
-                  ),
-                )),
+              height: height - 2,
+              child: Padding(
+                padding: EdgeInsets.only(left: 20, right: 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      newsArticle.title,
+                      style: smallBodyStyle,
+                    ),
+                    Text(
+                      newsArticle.getShortDateString(),
+                      style: smallBodyStyleSubdued,
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Border(),
           ],
-        ));
+        ),
+      ),
+    );
   }
 }
 
@@ -488,72 +531,82 @@ class ArticleListItem extends StatelessWidget {
       );
     }
 
-    return TextButton(
-      onPressed: () {
-        onPressedCallback(newsArticle);
-        print("Tapped on article ${newsArticle.title}");
-      },
-      child: Container(
-        color: lightGreyTransparent,
-        child: Column(
-          children: [
-            Container(
-              color: lightGrey,
-              height: 1,
+    return Container(
+      child: TextButton(
+        style: ButtonStyle(
+          padding: WidgetStateProperty.all(EdgeInsets.zero),
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
             ),
-            SizedBox(
-              height: height,
-              // TODO: Add lr padding here
-              child: Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20),
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 1,
-                      child: Padding(
-                        padding: EdgeInsets.all(8.0),
+          ),
+        ),
+        onPressed: () {
+          onPressedCallback(newsArticle);
+          print("Tapped on article ${newsArticle.title}");
+        },
+        child: Container(
+          color: lightGreyTransparent,
+          child: Column(
+            children: [
+              Container(
+                color: lightGrey,
+                height: 1,
+              ),
+              SizedBox(
+                height: height,
+                // TODO: Add lr padding here
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              image,
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Expanded(
+                        flex: 1,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            image,
+                            Text(
+                              newsArticle.title,
+                              style: boldBodyStyle,
+                            ),
+                            SizedBox(height: 15),
+                            Text(
+                              newsArticle.content,
+                              style: smallBodyStyle,
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 3,
+                            ),
                           ],
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    Expanded(
-                      flex: 1,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            newsArticle.title,
-                            style: boldBodyStyle,
-                          ),
-                          SizedBox(height: 15),
-                          Text(
-                            newsArticle.content,
-                            style: smallBodyStyle,
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 3,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Container(
-              color: lightGrey,
-              height: 1,
-            ),
-          ],
+              Container(
+                color: lightGrey,
+                height: 1,
+              ),
+            ],
+          ),
         ),
       ),
     );

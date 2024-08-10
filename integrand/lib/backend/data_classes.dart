@@ -515,6 +515,10 @@ class NewsArticle {
     return '${weekdayToName(releaseDate.weekday)}, ${monthToName(releaseDate.month)} ${numberWithSuffix(releaseDate.day)}';
   }
 
+  String getShortDateString() {
+    return '${monthToName(releaseDate.month, short: true)} ${numberWithSuffix(releaseDate.day)}';
+  }
+
   NewsArticle();
 
   NewsArticle.fromJson(Map<String, dynamic> json) {
