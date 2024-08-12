@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:integrand/backend/transit_api.dart';
 import 'package:integrand/consts.dart';
 import 'package:provider/provider.dart';
+import 'package:geolocator/geolocator.dart';
 
 class Transit extends StatefulWidget {
   const Transit({super.key});
@@ -244,8 +246,57 @@ class _SavedStopCardState extends State<SavedStopCard> {
                 height: 1,
                 color: lighterGrey,
               ),
-              Column(
-                children: [],
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 20.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text("Routes:", style: bodyStyle),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Container(
+                      height: 30,
+                      width: 210,
+                      child:
+                          ListView(scrollDirection: Axis.horizontal, children: [
+                        for (var route in widget.stop.routes)
+                          GestureDetector(
+                            onTap: () {
+                              // Toggle route visibility
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 10),
+                              padding: const EdgeInsets.all(5),
+                              width: 30,
+                              decoration: BoxDecoration(
+                                color: darkGrey,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  route.toString(),
+                                  style: boldBodyStyle,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ]),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: textColor),
+                      color: textColor,
+                      onPressed: () {
+                        // Remove stop from saved stops
+                        Provider.of<TransitAPI>(context, listen: false)
+                            .removeSavedStop(widget.stop);
+                      },
+                    ),
+                  ],
+                ),
               )
             ])
         ],
@@ -261,22 +312,40 @@ class BusRouteIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int prevStop = arrival["blockPosition"]["lastLocID"] ?? -1;
-    int nextStop = arrival["blockPosition"]["nextLocID"] ?? -1;
+    int prevStopId = arrival["blockPosition"]["lastLocID"] ?? -1;
+    int nextStopId = arrival["blockPosition"]["nextLocID"] ?? -1;
+
+    Stop? prevStop;
+    Stop? nextStop;
 
     String prevStopName = "";
     String nextStopName = "";
 
-    for (Stop stop
-        in Provider.of<TransitAPI>(context, listen: false).staticStopData) {
-      if (stop.id == prevStop) {
-        prevStopName = stop.name;
-      } else if (stop.id == nextStop) {
-        nextStopName = stop.name;
-      }
+    if (prevStopId != -1) {
+      prevStop = Provider.of<TransitAPI>(context, listen: false)
+          .staticStopData
+          .firstWhere((element) => element.id == prevStopId);
+      prevStopName = prevStop.name;
     }
 
-    double fractionComplete = 0.5;
+    if (nextStopId != -1) {
+      nextStop = Provider.of<TransitAPI>(context, listen: false)
+          .staticStopData
+          .firstWhere((element) => element.id == nextStopId);
+      nextStopName = nextStop.name;
+    }
+
+    double fractionComplete = 0.0;
+
+    if (prevStop != null && nextStop != null) {
+      fractionComplete = Geolocator.distanceBetween(
+              prevStop.latitude,
+              prevStop.longitude,
+              arrival["blockPosition"]["lat"],
+              arrival["blockPosition"]["lng"]) /
+          Geolocator.distanceBetween(prevStop.latitude, prevStop.longitude,
+              nextStop.latitude, nextStop.longitude);
+    }
 
     return SizedBox(
       width: 160,

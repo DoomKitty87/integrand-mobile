@@ -13,6 +13,7 @@ class StopLive {
   final double latitude;
   final double longitude;
   final String direction;
+  final List<int> routes;
 
   List<dynamic> arrivals = [];
 
@@ -22,7 +23,8 @@ class StopLive {
     arrivals = jsonDecode(response.body)["resultSet"]["arrival"];
   }
 
-  StopLive(this.id, this.name, this.latitude, this.longitude, this.direction);
+  StopLive(this.id, this.name, this.latitude, this.longitude, this.direction,
+      this.routes);
 }
 
 class Stop {
@@ -31,8 +33,10 @@ class Stop {
   final double latitude;
   final double longitude;
   final String direction;
+  final List<int> routes;
 
-  Stop(this.id, this.name, this.latitude, this.longitude, this.direction);
+  Stop(this.id, this.name, this.latitude, this.longitude, this.direction,
+      this.routes);
 }
 
 Future<String> get _localPath async {
@@ -99,6 +103,11 @@ class TransitAPI with ChangeNotifier {
     notifyListeners();
   }
 
+  void removeSavedStop(StopLive stop) {
+    savedStops.remove(stop);
+    notifyListeners();
+  }
+
   void initialize() async {
     // print("Initializing TransitAPI");
     // Check if data for local transit provider is downloaded
@@ -112,7 +121,7 @@ class TransitAPI with ChangeNotifier {
       List<dynamic> stops = jsonDecode(data);
       for (var stop in stops) {
         staticStopData.add(Stop(stop["locid"], stop["desc"], stop["lat"],
-            stop["lng"], stop["dir"]));
+            stop["lng"], stop["dir"], stop["routes"].cast<int>()));
       }
       //print("Loaded ${staticStopData.length} stops from storage");
     } else {
@@ -121,13 +130,23 @@ class TransitAPI with ChangeNotifier {
       // print(response.body);
       List<dynamic> routes = jsonDecode(response.body)["resultSet"]["route"];
       List<dynamic> stops = [];
+      Map<int, List<int>> stopRoutes = {};
       for (var route in routes) {
         // if (route["type"] != "B") {
         //   continue;
         // }
         for (var dir in route["dir"]) {
+          if (dir["stop"] == null) {
+            continue;
+          }
           for (var stop in dir["stop"]) {
             stops.add(stop);
+            if (!stopRoutes.containsKey(stop["locid"])) {
+              stopRoutes[stop["locid"]] = [];
+            }
+            if (!(stopRoutes[stop["locid"]]!.contains(route["route"]))) {
+              stopRoutes[stop["locid"]]?.add(route["route"]);
+            }
           }
         }
       }
@@ -137,8 +156,22 @@ class TransitAPI with ChangeNotifier {
 
       for (var stop in stops) {
         staticStopData.add(Stop(stop["locid"], stop["desc"], stop["lat"],
-            stop["lng"], stop["dir"]));
+            stop["lng"], stop["dir"], stopRoutes[stop["locid"]]!));
       }
+
+      // Reorganize stops data for storage
+      stops = [];
+      for (var stop in staticStopData) {
+        stops.add({
+          "locid": stop.id,
+          "desc": stop.name,
+          "lat": stop.latitude,
+          "lng": stop.longitude,
+          "dir": stop.direction,
+          "routes": stop.routes
+        });
+      }
+
       // Save data to storage
       File file = File(await _localPath);
       //print("Saving ${staticStopData.length} stops to storage");
@@ -156,8 +189,8 @@ class TransitAPI with ChangeNotifier {
           position.latitude, position.longitude, stop.latitude, stop.longitude);
       if (distance < nearbyRadius) {
         // print("Adding nearby stop ${stop.name}");
-        nearbyStops.add(StopLive(
-            stop.id, stop.name, stop.latitude, stop.longitude, stop.direction));
+        nearbyStops.add(StopLive(stop.id, stop.name, stop.latitude,
+            stop.longitude, stop.direction, stop.routes));
       }
     }
 
