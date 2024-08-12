@@ -136,6 +136,42 @@ class TransitAPI with ChangeNotifier {
     await file.writeAsString(jsonEncode(stops));
   }
 
+  Future<void> updateAllStops() async {
+    // print("Updating all stops");
+    List<int> idsToUpdate = [];
+    for (var stop in savedStops) {
+      idsToUpdate.add(stop.id);
+    }
+    for (var stop in nearbyStops) {
+      idsToUpdate.add(stop.id);
+    }
+
+    http.Response response = await http.get(Uri.parse(
+        "${TransitAPI.arrivalsUrl}?locIDs=${idsToUpdate.join(",")}&showPosition=true&appID=${TransitAPI.appId}"));
+
+    List<dynamic> arrivals = jsonDecode(response.body)["resultSet"]["arrival"];
+
+    for (var stop in savedStops) {
+      stop.arrivals = [];
+    }
+    for (var stop in nearbyStops) {
+      stop.arrivals = [];
+    }
+
+    for (var arrival in arrivals) {
+      for (var stop in savedStops) {
+        if (arrival["locid"] == stop.id) {
+          stop.arrivals.add(arrival);
+        }
+      }
+      for (var stop in nearbyStops) {
+        if (arrival["locid"] == stop.id) {
+          stop.arrivals.add(arrival);
+        }
+      }
+    }
+  }
+
   void initialize() async {
     // print("Initializing TransitAPI");
     // Check if data for local transit provider is downloaded
@@ -247,26 +283,15 @@ class TransitAPI with ChangeNotifier {
     // Limit to 5 nearby stops
     nearbyStops = nearbyStops.sublist(0, 5);
 
-    for (var stop in nearbyStops) {
-      await stop.update();
-    }
-
-    for (var stop in savedStops) {
-      await stop.update();
-    }
+    await updateAllStops();
 
     notifyListeners();
 
     // Start timer to update stops
     Timer.periodic(const Duration(seconds: updateInterval), (timer) async {
       // Update stop data with live bus locations
-      for (var liveStop in savedStops) {
-        await liveStop.update();
-      }
 
-      for (var liveStop in nearbyStops) {
-        await liveStop.update();
-      }
+      await updateAllStops();
 
       notifyListeners();
     });
