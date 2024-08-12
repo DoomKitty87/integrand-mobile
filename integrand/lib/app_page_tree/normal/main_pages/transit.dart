@@ -30,7 +30,7 @@ class _TransitState extends State<Transit> {
     return Consumer<TransitAPI>(
       builder: (context, transitAPI, child) {
         return Padding(
-          padding: const EdgeInsets.all(30.0),
+          padding: const EdgeInsets.only(left: 30.0, right: 30.0),
           child: ListView(children: [
             if (enteringNewStop)
               Column(
