@@ -44,6 +44,11 @@ Future<String> get _localPath async {
   return File('${directory.path}/stops.json').path;
 }
 
+Future<String> get _localSavedStopsPath async {
+  final directory = await getApplicationDocumentsDirectory();
+  return File('${directory.path}/saved_stops.json').path;
+}
+
 Future<Position> _determinePosition() async {
   bool serviceEnabled;
   LocationPermission permission;
@@ -100,12 +105,35 @@ class TransitAPI with ChangeNotifier {
       return;
     }
     savedStops.add(stop);
+
+    saveSavedStopsData();
+
     notifyListeners();
   }
 
   void removeSavedStop(StopLive stop) {
     savedStops.remove(stop);
+
+    saveSavedStopsData();
+
     notifyListeners();
+  }
+
+  void saveSavedStopsData() async {
+    List<dynamic> stops = [];
+    for (var stop in savedStops) {
+      stops.add({
+        "locid": stop.id,
+        "desc": stop.name,
+        "lat": stop.latitude,
+        "lng": stop.longitude,
+        "dir": stop.direction,
+        "routes": stop.routes
+      });
+    }
+
+    File file = File(await _localSavedStopsPath);
+    await file.writeAsString(jsonEncode(stops));
   }
 
   void initialize() async {
@@ -180,6 +208,19 @@ class TransitAPI with ChangeNotifier {
     }
 
     // Load saved stops from storage
+    if (File(await _localSavedStopsPath).existsSync()) {
+      // print("Loading saved stops from storage");
+
+      File file = File(await _localSavedStopsPath);
+      String data = await file.readAsString();
+      // Parse data
+      List<dynamic> stops = jsonDecode(data);
+      for (var stop in stops) {
+        savedStops.add(StopLive(stop["locid"], stop["desc"], stop["lat"],
+            stop["lng"], stop["dir"], stop["routes"].cast<int>()));
+      }
+      //print("Loaded ${savedStops.length} saved stops from storage");
+    }
 
     // Load nearby stops from location
     Position position = await _determinePosition();
@@ -207,6 +248,10 @@ class TransitAPI with ChangeNotifier {
     nearbyStops = nearbyStops.sublist(0, 5);
 
     for (var stop in nearbyStops) {
+      await stop.update();
+    }
+
+    for (var stop in savedStops) {
       await stop.update();
     }
 

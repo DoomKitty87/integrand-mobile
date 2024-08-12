@@ -89,6 +89,10 @@ class _SavedStopCardState extends State<SavedStopCard> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.stop.arrivals.isEmpty) {
+      return Container();
+    }
+
     List<dynamic> arrivals = widget.stop.arrivals
         .where((element) => !ignoredRoutes.contains(element["route"]))
         .toList();
