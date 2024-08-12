@@ -25,9 +25,9 @@ class _TransitState extends State<Transit> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Saved Stops", style: mediumTitleStyle),
+                const Text("Saved Stops", style: mediumTitleStyle),
                 IconButton(
-                  icon: Icon(Icons.add),
+                  icon: const Icon(Icons.add),
                   color: textColor,
                   onPressed: () {},
                 ),
@@ -38,7 +38,7 @@ class _TransitState extends State<Transit> {
                 stop: stop,
               ),
             const SizedBox(height: 20),
-            Text("Nearby Stops", style: mediumTitleStyle),
+            const Text("Nearby Stops", style: mediumTitleStyle),
             const SizedBox(height: 10),
             for (StopLive stop in transitAPI.nearbyStops)
               NearbyStopCard(
@@ -85,8 +85,14 @@ class SavedStopCard extends StatefulWidget {
 class _SavedStopCardState extends State<SavedStopCard> {
   bool expanded = false;
 
+  List<int> ignoredRoutes = [];
+
   @override
   Widget build(BuildContext context) {
+    List<dynamic> arrivals = widget.stop.arrivals
+        .where((element) => !ignoredRoutes.contains(element["route"]))
+        .toList();
+
     return Container(
       margin: const EdgeInsets.only(top: 10),
       decoration: BoxDecoration(
@@ -135,25 +141,22 @@ class _SavedStopCardState extends State<SavedStopCard> {
                               height: 25,
                               child: Container(
                                   decoration: BoxDecoration(
-                                    color: HexColor(
-                                        widget.stop.arrivals[0]["routeColor"]),
+                                    color: HexColor(arrivals[0]["routeColor"]),
                                     borderRadius: BorderRadius.circular(5),
                                   ),
                                   child: Center(
                                     child: Text(
-                                      widget.stop.arrivals[0]["route"]
-                                          .toString(),
+                                      arrivals[0]["route"].toString(),
                                       style: boldBodyStyle,
                                     ),
                                   )),
                             ),
                             Text(
                                 truncate(
-                                    widget.stop.arrivals[0]["shortSign"]
+                                    arrivals[0]["shortSign"]
                                         .toString()
                                         .replaceFirst(
-                                            "${widget.stop.arrivals[0]["route"]}",
-                                            ""),
+                                            "${arrivals[0]["route"]}", ""),
                                     25),
                                 style: bodyStyle),
                           ],
@@ -161,15 +164,13 @@ class _SavedStopCardState extends State<SavedStopCard> {
                     ],
                   ),
                 ),
-                if (widget.stop.arrivals.isNotEmpty)
+                if (arrivals.isNotEmpty)
                   Expanded(
                     flex: 2,
                     child: Text(
                         formatDuration(max(
-                                int.parse(((widget.stop.arrivals[0]
-                                                ["estimated"] ??
-                                            widget.stop.arrivals[0]
-                                                ["scheduled"]) -
+                                int.parse(((arrivals[0]["estimated"] ??
+                                            arrivals[0]["scheduled"]) -
                                         DateTime.now().millisecondsSinceEpoch)
                                     .toString()),
                                 0))
@@ -213,10 +214,10 @@ class _SavedStopCardState extends State<SavedStopCard> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           BusRouteIndicator(
-                            arrival: widget.stop.arrivals[0],
+                            arrival: arrivals[0],
                           ),
                           ArrivalTimeIndicator(
-                            arrival: widget.stop.arrivals[0],
+                            arrival: arrivals[0],
                           ),
                         ],
                       ),
@@ -231,8 +232,7 @@ class _SavedStopCardState extends State<SavedStopCard> {
                                     style: boldBodyStyle,
                                   ),
                                   TextSpan(
-                                    text:
-                                        getFutureArrivals(widget.stop.arrivals),
+                                    text: getFutureArrivals(arrivals),
                                     style: bodyStyle,
                                   ),
                                 ],
@@ -254,11 +254,11 @@ class _SavedStopCardState extends State<SavedStopCard> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text("Routes:", style: bodyStyle),
-                    SizedBox(
+                    const Text("Routes:", style: bodyStyle),
+                    const SizedBox(
                       width: 10,
                     ),
-                    Container(
+                    SizedBox(
                       height: 30,
                       width: 210,
                       child:
@@ -267,13 +267,22 @@ class _SavedStopCardState extends State<SavedStopCard> {
                           GestureDetector(
                             onTap: () {
                               // Toggle route visibility
+                              setState(() {
+                                if (ignoredRoutes.contains(route)) {
+                                  ignoredRoutes.remove(route);
+                                } else {
+                                  ignoredRoutes.add(route);
+                                }
+                              });
                             },
                             child: Container(
                               margin: const EdgeInsets.only(right: 10),
                               padding: const EdgeInsets.all(5),
                               width: 30,
                               decoration: BoxDecoration(
-                                color: darkGrey,
+                                color: ignoredRoutes.contains(route)
+                                    ? lightGrey
+                                    : darkGrey,
                                 borderRadius: BorderRadius.circular(5),
                               ),
                               child: Center(
@@ -312,8 +321,14 @@ class BusRouteIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int prevStopId = arrival["blockPosition"]["lastLocID"] ?? -1;
-    int nextStopId = arrival["blockPosition"]["nextLocID"] ?? -1;
+    if (arrival["blockPosition"] == null) {
+      return const SizedBox(
+        width: 160,
+      );
+    }
+
+    int prevStopId = arrival["blockPosition"]!["lastLocID"] ?? -1;
+    int nextStopId = arrival["blockPosition"]!["nextLocID"] ?? -1;
 
     Stop? prevStop;
     Stop? nextStop;
@@ -379,7 +394,7 @@ class BusRouteIndicator extends StatelessWidget {
               ),
             ),
           ]),
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
           Row(
