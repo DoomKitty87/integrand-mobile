@@ -107,9 +107,24 @@ class _SavedStopCardState extends State<SavedStopCard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                          "${truncate(widget.stop.name, 16)} ${widget.stop.direction.replaceFirst('bound', '')}",
-                          style: boldBodyStyle),
+                      Row(
+                        children: [
+                          Text(truncate(widget.stop.name, 16),
+                              style: boldBodyStyle),
+                          Container(
+                            margin: const EdgeInsets.only(left: 5),
+                            width: 25,
+                            height: 25,
+                            decoration: BoxDecoration(
+                              color: darkGrey,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Center(
+                                child: Text(widget.stop.direction[0],
+                                    style: boldBodyStyle)),
+                          ),
+                        ],
+                      ),
                       if (widget.stop.arrivals.isNotEmpty)
                         Row(
                           children: [
@@ -339,9 +354,22 @@ class NearbyStopCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                    "${truncate(stop.name, 16)} ${stop.direction.replaceFirst('bound', '')}",
-                    style: boldBodyStyle),
+                Row(
+                  children: [
+                    Text(truncate(stop.name, 16), style: boldBodyStyle),
+                    Container(
+                      margin: const EdgeInsets.only(left: 5),
+                      width: 25,
+                      height: 25,
+                      decoration: BoxDecoration(
+                        color: darkGrey,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Center(
+                          child: Text(stop.direction[0], style: boldBodyStyle)),
+                    ),
+                  ],
+                ),
                 if (stop.arrivals.isNotEmpty)
                   Row(
                     children: [
