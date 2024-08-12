@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:integrand/backend/transit_api.dart';
 import 'package:integrand/consts.dart';
 import 'package:provider/provider.dart';
@@ -15,13 +14,114 @@ class Transit extends StatefulWidget {
 }
 
 class _TransitState extends State<Transit> {
+  bool enteringNewStop = false;
+  String currentSearch = "";
+
   @override
   Widget build(BuildContext context) {
+    List<Stop> searchedStops = Provider.of<TransitAPI>(context, listen: false)
+        .staticStopData
+        .where((element) =>
+            element.name.toLowerCase().contains(currentSearch.toLowerCase()) ||
+            element.id.toString().contains(currentSearch))
+        .take(10)
+        .toList();
+
     return Consumer<TransitAPI>(
       builder: (context, transitAPI, child) {
         return Padding(
           padding: const EdgeInsets.all(30.0),
           child: ListView(children: [
+            if (enteringNewStop)
+              Column(
+                children: [
+                  Material(
+                    color: Colors.transparent,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          flex: 6,
+                          child: TextField(
+                            decoration: const InputDecoration(
+                              labelText: "Stop Name or ID",
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: textColor),
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: textColor),
+                              ),
+                              labelStyle: bodyStyle,
+                            ),
+                            cursorColor: textColor.withOpacity(0.8),
+                            onChanged: (String value) {
+                              setState(() {
+                                currentSearch = value;
+                              });
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: IconButton(
+                            icon: const Icon(Icons.cancel),
+                            onPressed: () {
+                              setState(() {
+                                enteringNewStop = false;
+                                currentSearch = "";
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  for (Stop stop in searchedStops)
+                    GestureDetector(
+                        onTap: () {
+                          transitAPI.addSavedStop(StopLive(
+                              stop.id,
+                              stop.name,
+                              stop.latitude,
+                              stop.longitude,
+                              stop.direction,
+                              stop.routes));
+                          setState(() {
+                            enteringNewStop = false;
+                            currentSearch = "";
+                          });
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 5, bottom: 5),
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: lightGrey,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                  child: Text(stop.name, style: bodyStyle)),
+                              Container(
+                                width: 25,
+                                height: 25,
+                                decoration: BoxDecoration(
+                                  color: darkGrey,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Center(
+                                  child: Text(stop.direction[0],
+                                      style: boldBodyStyle),
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(stop.id.toString(), style: bodyStyle),
+                            ],
+                          ),
+                        )),
+                ],
+              ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -29,7 +129,11 @@ class _TransitState extends State<Transit> {
                 IconButton(
                   icon: const Icon(Icons.add),
                   color: textColor,
-                  onPressed: () {},
+                  onPressed: () {
+                    setState(
+                      () => enteringNewStop = true,
+                    );
+                  },
                 ),
               ],
             ),
@@ -137,13 +241,14 @@ class _SavedStopCardState extends State<SavedStopCard> {
                           ),
                         ],
                       ),
-                      if (widget.stop.arrivals.isNotEmpty)
+                      if (arrivals.isNotEmpty)
                         Row(
                           children: [
                             SizedBox(
-                              width: 25,
                               height: 25,
                               child: Container(
+                                  padding:
+                                      const EdgeInsets.only(left: 5, right: 5),
                                   decoration: BoxDecoration(
                                     color: HexColor(arrivals[0]["routeColor"]),
                                     borderRadius: BorderRadius.circular(5),
@@ -155,13 +260,16 @@ class _SavedStopCardState extends State<SavedStopCard> {
                                     ),
                                   )),
                             ),
+                            const SizedBox(
+                              width: 5,
+                            ),
                             Text(
                                 truncate(
                                     arrivals[0]["shortSign"]
                                         .toString()
                                         .replaceFirst(
                                             "${arrivals[0]["route"]}", ""),
-                                    25),
+                                    15),
                                 style: bodyStyle),
                           ],
                         )
@@ -208,44 +316,50 @@ class _SavedStopCardState extends State<SavedStopCard> {
           ),
           if (expanded)
             Column(children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                    left: 20, right: 20, bottom: 10, top: 10),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          BusRouteIndicator(
-                            arrival: arrivals[0],
-                          ),
-                          ArrivalTimeIndicator(
-                            arrival: arrivals[0],
-                          ),
-                        ],
-                      ),
-                      widget.stop.arrivals.length > 1
-                          ? Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
-                              child: RichText(
-                                  text: TextSpan(
-                                children: <TextSpan>[
-                                  const TextSpan(
-                                    text: "More in:",
-                                    style: boldBodyStyle,
-                                  ),
-                                  TextSpan(
-                                    text: getFutureArrivals(arrivals),
-                                    style: bodyStyle,
-                                  ),
-                                ],
-                              )),
-                            )
-                          : const Text("No more arrivals soon",
-                              style: boldBodyStyle),
-                    ]),
-              ),
+              arrivals.isNotEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.only(
+                          left: 20, right: 20, bottom: 10, top: 10),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                BusRouteIndicator(
+                                  arrival: arrivals[0],
+                                ),
+                                ArrivalTimeIndicator(
+                                  arrival: arrivals[0],
+                                ),
+                              ],
+                            ),
+                            widget.stop.arrivals.length > 1
+                                ? Padding(
+                                    padding: const EdgeInsets.only(top: 10.0),
+                                    child: RichText(
+                                        text: TextSpan(
+                                      children: <TextSpan>[
+                                        const TextSpan(
+                                          text: "More in:",
+                                          style: boldBodyStyle,
+                                        ),
+                                        TextSpan(
+                                          text: getFutureArrivals(arrivals),
+                                          style: bodyStyle,
+                                        ),
+                                      ],
+                                    )),
+                                  )
+                                : const Text("No more arrivals soon",
+                                    style: boldBodyStyle),
+                          ]),
+                    )
+                  : const Padding(
+                      padding: EdgeInsets.only(
+                          left: 20, right: 20, bottom: 10, top: 10),
+                      child: Text("No arrivals found", style: boldBodyStyle),
+                    ),
               Container(
                 height: 1,
                 color: lighterGrey,
@@ -282,7 +396,6 @@ class _SavedStopCardState extends State<SavedStopCard> {
                             child: Container(
                               margin: const EdgeInsets.only(right: 10),
                               padding: const EdgeInsets.all(5),
-                              width: 30,
                               decoration: BoxDecoration(
                                 color: ignoredRoutes.contains(route)
                                     ? lightGrey
@@ -356,7 +469,7 @@ class BusRouteIndicator extends StatelessWidget {
 
     double fractionComplete = 0.0;
 
-    if (prevStop != null && nextStop != null) {
+    if (prevStop != null && nextStop != null && prevStop != nextStop) {
       fractionComplete = Geolocator.distanceBetween(
               prevStop.latitude,
               prevStop.longitude,
@@ -539,9 +652,9 @@ class NearbyStopCard extends StatelessWidget {
                   Row(
                     children: [
                       SizedBox(
-                        width: 25,
                         height: 25,
                         child: Container(
+                            padding: const EdgeInsets.only(left: 5, right: 5),
                             decoration: BoxDecoration(
                               color: HexColor(stop.arrivals[0]["routeColor"]),
                               borderRadius: BorderRadius.circular(5),
@@ -553,13 +666,16 @@ class NearbyStopCard extends StatelessWidget {
                               ),
                             )),
                       ),
+                      const SizedBox(
+                        width: 5,
+                      ),
                       Text(
                           truncate(
                               stop.arrivals[0]["shortSign"]
                                   .toString()
                                   .replaceFirst(
                                       "${stop.arrivals[0]["route"]}", ""),
-                              25),
+                              15),
                           style: bodyStyle),
                     ],
                   )
