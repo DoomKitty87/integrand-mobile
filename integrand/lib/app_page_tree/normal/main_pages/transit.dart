@@ -64,7 +64,7 @@ String getFutureArrivals(List<dynamic> arrivals) {
         " ${formatDuration(max(int.parse(((arrivals[i]["estimated"] ?? arrivals[i]["scheduled"]) - DateTime.now().millisecondsSinceEpoch).toString()), 0))}";
 
     if (i < arrivals.length - 1) {
-      futureArrivals += ", ";
+      futureArrivals += ",";
     }
   }
 
@@ -200,8 +200,7 @@ class _SavedStopCardState extends State<SavedStopCard> {
             ),
           ),
           if (expanded)
-            Container(
-                child: Column(children: [
+            Column(children: [
               Padding(
                 padding: const EdgeInsets.only(
                     left: 20, right: 20, bottom: 10, top: 10),
@@ -209,31 +208,36 @@ class _SavedStopCardState extends State<SavedStopCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          if (widget.stop.arrivals[0]["departed"] == true)
-                            BusRouteIndicator(
-                              arrival: widget.stop.arrivals[0],
-                            ),
+                          BusRouteIndicator(
+                            arrival: widget.stop.arrivals[0],
+                          ),
                           ArrivalTimeIndicator(
                             arrival: widget.stop.arrivals[0],
                           ),
                         ],
                       ),
                       widget.stop.arrivals.length > 1
-                          ? RichText(
-                              text: TextSpan(
-                              children: <TextSpan>[
-                                TextSpan(
-                                  text: "More in:",
-                                  style: boldBodyStyle,
-                                ),
-                                TextSpan(
-                                  text: getFutureArrivals(widget.stop.arrivals),
-                                  style: bodyStyle,
-                                ),
-                              ],
-                            ))
-                          : Text("No more arrivals soon", style: boldBodyStyle),
+                          ? Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: RichText(
+                                  text: TextSpan(
+                                children: <TextSpan>[
+                                  const TextSpan(
+                                    text: "More in:",
+                                    style: boldBodyStyle,
+                                  ),
+                                  TextSpan(
+                                    text:
+                                        getFutureArrivals(widget.stop.arrivals),
+                                    style: bodyStyle,
+                                  ),
+                                ],
+                              )),
+                            )
+                          : const Text("No more arrivals soon",
+                              style: boldBodyStyle),
                     ]),
               ),
               Container(
@@ -243,7 +247,7 @@ class _SavedStopCardState extends State<SavedStopCard> {
               Column(
                 children: [],
               )
-            ]))
+            ])
         ],
       ),
     );
@@ -257,7 +261,80 @@ class BusRouteIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    int prevStop = arrival["blockPosition"]["lastLocID"] ?? -1;
+    int nextStop = arrival["blockPosition"]["nextLocID"] ?? -1;
+
+    String prevStopName = "";
+    String nextStopName = "";
+
+    for (Stop stop
+        in Provider.of<TransitAPI>(context, listen: false).staticStopData) {
+      if (stop.id == prevStop) {
+        prevStopName = stop.name;
+      } else if (stop.id == nextStop) {
+        nextStopName = stop.name;
+      }
+    }
+
+    double fractionComplete = 0.5;
+
+    return SizedBox(
+      width: 160,
+      child: Column(
+        children: [
+          Row(children: [
+            Expanded(
+              flex: (100 * fractionComplete).toInt(),
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: textGradient,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(5),
+                    bottomLeft: Radius.circular(5),
+                  ),
+                ),
+                height: 5,
+              ),
+            ),
+            Expanded(
+              flex: (100 * (1 - fractionComplete)).toInt(),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: darkGrey,
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(5),
+                    bottomRight: Radius.circular(5),
+                  ),
+                ),
+                height: 5,
+              ),
+            ),
+          ]),
+          SizedBox(
+            height: 5,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                  width: 80,
+                  child: Text(
+                    prevStopName,
+                    style: smallBodyStyle,
+                  )),
+              SizedBox(
+                  width: 80,
+                  child: Text(
+                    nextStopName,
+                    style: smallBodyStyle,
+                    textAlign: TextAlign.right,
+                  )),
+            ],
+          )
+        ],
+      ),
+    );
   }
 }
 
