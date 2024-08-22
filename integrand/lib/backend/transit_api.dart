@@ -281,7 +281,7 @@ class TransitAPI with ChangeNotifier {
     });
 
     // Limit to 5 nearby stops
-    nearbyStops = nearbyStops.sublist(0, 5);
+    if (nearbyStops.length >= 5) nearbyStops = nearbyStops.sublist(0, 5);
 
     await updateAllStops();
 
