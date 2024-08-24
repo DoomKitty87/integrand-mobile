@@ -64,9 +64,38 @@ class _ExpandableListItemState extends State<ExpandableListItem> {
             borderRadius: BorderRadius.circular(widget.borderRadius),
             color: primaryColor,
           ),
-          child: Container(
-            child: widget.child,
-          )
+          child: ClipRRect(
+            child: Stack(
+              children: [
+                Container(
+                  height: widget.unexpandedHeight - 2, // Border radius of 5 causes 2 pixels to be hidden?
+                  decoration: BoxDecoration(
+                    borderRadius: _expanded ? BorderRadius.only(
+                      topLeft: Radius.circular(widget.borderRadius),
+                      topRight: Radius.circular(widget.borderRadius),
+                    ) : BorderRadius.circular(widget.borderRadius),
+                    color: primaryColor,
+                  ),
+                  child: widget.child,
+                ),
+                Positioned(
+                  top: widget.unexpandedHeight,
+                  child: Container(
+                    height: widget.expandedHeight - widget.unexpandedHeight,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(widget.borderRadius),
+                        bottomRight: Radius.circular(widget.borderRadius),
+                      ),
+                      color: highlightColor,
+                    ),
+                    child: widget.expandedChild,
+                  ),
+                ),
+              ],
+            ),
+          ),
         )
       ),
     );

@@ -426,7 +426,7 @@ class ScheduleExpandableListItem extends StatelessWidget {
 
     return ExpandableListItem(
       unexpandedHeight: 50,
-      expandedHeight: 100,
+      expandedHeight: 150,
       highlighted: true,
       expandedChild: Container(
         height: 50,
