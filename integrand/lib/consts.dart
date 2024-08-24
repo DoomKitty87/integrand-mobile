@@ -131,15 +131,15 @@ const TextStyle mediumSubtitleStyle = TextStyle(
 
 const TextStyle bodyStyle = TextStyle(
   color: textColor,
-  fontSize: 16,
+  fontSize: 14,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
   decoration: TextDecoration.none,
 );
 
-TextStyle bodyStyleSubdued = TextStyle(
-  color: textColor.withOpacity(0.5),
-  fontSize: 16,
+const TextStyle bodyStyleSubdued = TextStyle(
+  color: textColorSecondary,
+  fontSize: 14,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
   decoration: TextDecoration.none,
@@ -147,7 +147,16 @@ TextStyle bodyStyleSubdued = TextStyle(
 
 const TextStyle boldBodyStyle = TextStyle(
   color: textColor,
-  fontSize: 16,
+  fontSize: 14,
+  fontWeight: FontWeight.bold,
+  fontFamily: "Inter",
+  decoration: TextDecoration.none,
+);
+
+
+const TextStyle boldBodyStyleSubdued = TextStyle(
+  color: textColorSecondary,
+  fontSize: 14,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
   decoration: TextDecoration.none,
@@ -161,8 +170,8 @@ const TextStyle smallBodyStyle = TextStyle(
   decoration: TextDecoration.none,
 );
 
-TextStyle smallBodyStyleSubdued = TextStyle(
-  color: textColor.withOpacity(0.5),
+const TextStyle smallBodyStyleSubdued = TextStyle(
+  color: textColorSecondary,
   fontSize: 12,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",

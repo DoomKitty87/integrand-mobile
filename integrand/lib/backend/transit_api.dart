@@ -145,7 +145,9 @@ class TransitAPI with ChangeNotifier {
     for (var stop in nearbyStops) {
       idsToUpdate.add(stop.id);
     }
-
+    if (idsToUpdate.isEmpty) {
+      return;
+    }
     http.Response response = await http.get(Uri.parse(
         "${TransitAPI.arrivalsUrl}?locIDs=${idsToUpdate.join(",")}&showPosition=true&appID=${TransitAPI.appId}"));
 
@@ -281,7 +283,7 @@ class TransitAPI with ChangeNotifier {
     });
 
     // Limit to 5 nearby stops
-    nearbyStops = nearbyStops.sublist(0, 5);
+    if (nearbyStops.length >= 5) nearbyStops = nearbyStops.sublist(0, 5);
 
     await updateAllStops();
 

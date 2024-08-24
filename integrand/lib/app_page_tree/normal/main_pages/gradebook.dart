@@ -95,12 +95,15 @@ class Recommendation {
   final double classGradeMaxImprovement;
 
   Recommendation(
-      {required this.percent,
+    {
+      required this.percent,
       required this.courseGradeIfZero,
       required this.courseGradeIfMax,
       required this.title,
       required this.courseTitle,
-      required this.classGradeMaxImprovement});
+      required this.classGradeMaxImprovement,
+    }
+  );
 }
 
 class RecommendationsDisplay extends StatelessWidget {
