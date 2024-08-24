@@ -106,6 +106,61 @@ class _ExpandableListItemState extends State<ExpandableListItem> {
   }
 }
 
+class NonExpandableListItem extends StatelessWidget {
+  const NonExpandableListItem({
+    super.key,
+    this.child,
+    this.height = 60,
+    this.spacing = 10,
+    this.borderWidth = 1,
+    this.borderRadius = 5,
+    this.highlighted = false,
+  });
+
+  final Widget? child;
+  final double spacing;
+  final double height;
+  final double borderWidth;
+  final double borderRadius;
+  final bool highlighted;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: height,
+      margin: EdgeInsets.only(bottom: spacing),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadius),
+        gradient: highlighted ? textGradient : null,
+        color: highlightColor,
+      ),
+      padding: EdgeInsets.all(borderWidth),
+      child: Container(
+        padding: EdgeInsets.zero,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(borderRadius),
+          color: primaryColor,
+        ),
+        child: ClipRRect(
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(borderRadius),
+              border: Border(
+                bottom: BorderSide(
+                  color: highlightColor,
+                  width: borderWidth,
+                ),
+              ),
+              color: primaryColor,
+            ),
+            child: child,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class IconButtonTemplate extends StatelessWidget {
   const IconButtonTemplate(
       {super.key,

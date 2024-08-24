@@ -153,7 +153,6 @@ const TextStyle boldBodyStyle = TextStyle(
   decoration: TextDecoration.none,
 );
 
-
 const TextStyle boldBodyStyleSubdued = TextStyle(
   color: textColorSecondary,
   fontSize: 14,

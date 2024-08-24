@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:integrand/backend/studentvue_api.dart';
+import 'package:integrand/widget_templates.dart';
 import 'package:provider/provider.dart';
 import 'package:integrand/backend/data_classes.dart';
 import 'package:integrand/main.dart';
@@ -771,68 +772,66 @@ class _GradebookDisplayState extends State<GradebookDisplay> {
   @override
   Widget build(BuildContext context) {
     return Consumer<StudentVueAPI>(builder: (context, value, child) {
-      children.clear();
-
-      final Widget border = Padding(
-        padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-        child: Container(
-          decoration: const BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: textColor, width: 0.1),
-            ),
-          ),
-        ),
-      );
-
-      children.add(border);
-
-      for (var course in value.gradebookData.courses) {
-        RegExp getTitle = RegExp(r" [(](.*?)[)]");
-        String title;
-
-        if (getTitle.firstMatch(course.courseTitle) != null) {
-          title = course.courseTitle.replaceFirst(
-              getTitle.firstMatch(course.courseTitle)!.group(0).toString(), '');
-        } else {
-          title = course.courseTitle;
-        }
-
-        double grade = course.grade;
-
-        if (grade > 10) grade /= 25;
-
-        children.add(GestureDetector(
-          onTap: () {
-            widget.selectedCourse(course);
-          },
-          child: Padding(
-            padding: const EdgeInsets.only(
-                left: 30.0, right: 30.0, top: 16.0, bottom: 16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: Text(title, style: bodyStyle),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Text(parseGradeToLetter(grade), style: bodyStyle),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Text(grade.toStringAsFixed(2),
-                      style: bodyStyle, textAlign: TextAlign.right),
-                ),
-              ],
-            ),
-          ),
-        ));
-        children.add(border);
-      }
-
       return Expanded(
-        child: ListView(
-          children: children,
+        child: ListView.builder(
+          itemCount: value.gradebookData.courses.length,
+          itemBuilder: (context, index) {
+            CourseGrading course = value.gradebookData.courses[index];
+
+            RegExp getTitle = RegExp(r" [(](.*?)[)]");
+            String title;
+
+            if (getTitle.firstMatch(course.courseTitle) != null) {
+              title = course.courseTitle.replaceFirst(
+                  getTitle.firstMatch(course.courseTitle)!.group(0).toString(),
+                  '');
+            } else {
+              title = course.courseTitle;
+            }
+
+            double grade = course.grade;
+
+            if (grade > 10) grade /= 25;
+
+            return GestureDetector(
+              onTap: () {
+                widget.selectedCourse(value.gradebookData.courses[index]);
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                child: NonExpandableListItem(
+                  height: 50,
+                  child: Container(
+                    color: primaryColor,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        left: 20.0,
+                        right: 20.0,
+                      ),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Text(title, style: bodyStyle),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Text(parseGradeToLetter(grade),
+                                style: bodyStyle),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: Text(grade.toStringAsFixed(2),
+                                style: bodyStyle, textAlign: TextAlign.right),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
       );
     });
