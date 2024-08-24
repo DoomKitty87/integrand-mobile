@@ -22,8 +22,12 @@ class _TransitState extends State<Transit> {
     List<Stop> searchedStops = Provider.of<TransitAPI>(context, listen: false)
         .staticStopData
         .where((element) =>
-            element.name.toLowerCase().contains(currentSearch.toLowerCase()) ||
-            element.id.toString().contains(currentSearch))
+            (element.name.toLowerCase().contains(currentSearch.toLowerCase()) ||
+                element.id.toString().contains(currentSearch)) &&
+            !Provider.of<TransitAPI>(context, listen: false)
+                .savedStops
+                .map((e) => e.id)
+                .contains(element.id))
         .take(10)
         .toList();
 

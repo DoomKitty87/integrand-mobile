@@ -100,14 +100,16 @@ class TransitAPI with ChangeNotifier {
       "https://developer.trimet.org/ws/v2/arrivals/";
   static const String appId = "E3CD8568B5DDD3C637CB78337";
 
-  void addSavedStop(StopLive stop) {
-    if (savedStops.contains(stop)) {
-      return;
+  void addSavedStop(StopLive stop) async {
+    for (var savedStop in savedStops) {
+      if (savedStop.id == stop.id) {
+        return;
+      }
     }
     savedStops.add(stop);
 
     saveSavedStopsData();
-
+    await stop.update();
     notifyListeners();
   }
 
