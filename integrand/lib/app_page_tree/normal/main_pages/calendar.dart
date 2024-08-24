@@ -243,6 +243,11 @@ class CalendarGrid extends StatelessWidget {
       }),
     );
 
+    int trueCurrentDay = -1;
+    if (DateTime.now().month == month + 1 && DateTime.now().year == year) {
+      trueCurrentDay = DateTime.now().day;
+    }
+
     List<Widget> weekRows = [];
     weekRows.add(const SizedBox(height: 14));
 
@@ -285,6 +290,10 @@ class CalendarGrid extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       gradient: dayNumber == day ? textGradient : null,
+                      border: Border.all(
+                          color: dayNumber == trueCurrentDay
+                              ? textColor
+                              : Colors.transparent),
                       borderRadius: const BorderRadius.all(Radius.circular(5)),
                     ),
                     padding: const EdgeInsets.all(6),
