@@ -9,8 +9,8 @@ class ExpandableListItem extends StatefulWidget {
       this.expandedChild,
       required this.unexpandedHeight,
       required this.expandedHeight,
-      this.durationMs = 100,
-      this.curve = Curves.easeOut, 
+      this.durationMs = 200,
+      this.curve = Curves.easeInOut, 
       this.spacing = 10,
       this.borderWidth = 1,
       this.borderRadius = 5,
@@ -55,7 +55,7 @@ class _ExpandableListItemState extends State<ExpandableListItem> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(widget.borderRadius),
           gradient: widget.highlighted ? textGradient : null,
-          color: widget.highlighted ? null : primaryColor,
+          color: highlightColor,
         ),
         padding: EdgeInsets.all(widget.borderWidth),
         child: Container(
@@ -74,6 +74,12 @@ class _ExpandableListItemState extends State<ExpandableListItem> {
                       topLeft: Radius.circular(widget.borderRadius),
                       topRight: Radius.circular(widget.borderRadius),
                     ) : BorderRadius.circular(widget.borderRadius),
+                    border: Border(
+                      bottom: BorderSide(
+                        color: highlightColor,
+                        width: widget.borderWidth,
+                      ),
+                    ),
                     color: primaryColor,
                   ),
                   child: widget.child,
@@ -88,7 +94,6 @@ class _ExpandableListItemState extends State<ExpandableListItem> {
                         bottomLeft: Radius.circular(widget.borderRadius),
                         bottomRight: Radius.circular(widget.borderRadius),
                       ),
-                      color: highlightColor,
                     ),
                     child: widget.expandedChild,
                   ),
@@ -99,5 +104,14 @@ class _ExpandableListItemState extends State<ExpandableListItem> {
         )
       ),
     );
+  }
+}
+
+class IconButton extends StatelessWidget {
+  const IconButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }

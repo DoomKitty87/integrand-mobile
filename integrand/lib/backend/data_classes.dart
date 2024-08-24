@@ -361,6 +361,61 @@ class BellSchedule {
     ];
   }
 
+  BellSchedule.testDataAll8() {
+    periods = [
+      BellPeriod.withValues(
+        periodName: "1",
+        startTime: const TimeOfDay(hour: 8, minute: 30),
+        endTime: const TimeOfDay(hour: 10, minute: 2),
+      ),
+      BellPeriod.withValues(
+        periodName: "2",
+        startTime: const TimeOfDay(hour: 10, minute: 9),
+        endTime: const TimeOfDay(hour: 11, minute: 41),
+      ),
+      BellPeriod.withValues(
+        periodName: "3",
+        startTime: const TimeOfDay(hour: 12, minute: 19),
+        endTime: const TimeOfDay(hour: 13, minute: 51),
+      ),
+      BellPeriod.withValues(
+        periodName: "4",
+        startTime: const TimeOfDay(hour: 13, minute: 58),
+        endTime: const TimeOfDay(hour: 15, minute: 30),
+      ),
+      BellPeriod.withValues(
+        periodName: "Lunch",
+        startTime: const TimeOfDay(hour: 11, minute: 41),
+        endTime: const TimeOfDay(hour: 12, minute: 14),
+      ),
+      BellPeriod.withValues(
+        periodName: "5",
+        startTime: const TimeOfDay(hour: 8, minute: 30),
+        endTime: const TimeOfDay(hour: 10, minute: 2),
+      ),
+      BellPeriod.withValues(
+        periodName: "6",
+        startTime: const TimeOfDay(hour: 10, minute: 9),
+        endTime: const TimeOfDay(hour: 11, minute: 41),
+      ),
+      BellPeriod.withValues(
+        periodName: "Lunch",
+        startTime: const TimeOfDay(hour: 11, minute: 41),
+        endTime: const TimeOfDay(hour: 12, minute: 14),
+      ),
+      BellPeriod.withValues(
+        periodName: "7",
+        startTime: const TimeOfDay(hour: 12, minute: 19),
+        endTime: const TimeOfDay(hour: 13, minute: 51),
+      ),
+      BellPeriod.withValues(
+        periodName: "8",
+        startTime: const TimeOfDay(hour: 13, minute: 58),
+        endTime: const TimeOfDay(hour: 15, minute: 30),
+      ),
+    ];
+  }
+
   BellPeriod? getCurrentPeriod(TimeOfDay now) {
     for (var period in periods) {
       if (period.isHappening(now) == true) {

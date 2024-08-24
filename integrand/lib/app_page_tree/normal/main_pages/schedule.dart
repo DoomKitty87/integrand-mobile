@@ -83,15 +83,19 @@ class _ScheduleState extends State<Schedule> {
       } else {
         return Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: ScheduleTimeIndicators(
-                bellSchedule: schedule,
-                currentTime: _currentTime,
-                periodNameToIndicatorMap: periodNameToIndicator,
+            Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                child: ScheduleTimeIndicators(
+                  bellSchedule: schedule,
+                  currentTime: _currentTime,
+                  periodNameToIndicatorMap: periodNameToIndicator,
+                ),
               ),
             ),
             Expanded(
+              flex: 7,
               child: ScheduleDisplay(
                 bellSchedule: schedule,
                 currentTime: _currentTime,
@@ -379,7 +383,7 @@ class LayeredProgressIndicator extends StatelessWidget {
 // Schedule Display =================================================================================================================================================
 
 String removeAMPM(String time) {
-  if (time.toLowerCase().contains("AM") || time.toLowerCase().contains("PM")) {
+  if (time.toLowerCase().contains("am") || time.toLowerCase().contains("pm")) {
     return time.substring(0, time.length - 3);
   } else {
     return time;
@@ -397,16 +401,19 @@ class ScheduleDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 500,
-      child: ListView.builder(
-        itemCount: bellSchedule.periods.length,
-        itemBuilder: (context, index) {
-          BellPeriod period = bellSchedule.periods[index];
-          return ScheduleExpandableListItem(
-            period: period,
-            currentTime: currentTime,
-            scheduleData: scheduleData,
-          );
-        },
+      child: Padding(
+        padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+        child: ListView.builder(
+          itemCount: bellSchedule.periods.length,
+          itemBuilder: (context, index) {
+            BellPeriod period = bellSchedule.periods[index];
+            return ScheduleExpandableListItem(
+              period: period,
+              currentTime: currentTime,
+              scheduleData: scheduleData,
+            );
+          },
+        ),
       ),
     );
   }
@@ -425,28 +432,60 @@ class ScheduleExpandableListItem extends StatelessWidget {
     String name = course == null ? period.periodName : course.courseTitle;
 
     return ExpandableListItem(
-      unexpandedHeight: 50,
+      unexpandedHeight: 60,
       expandedHeight: 150,
-      highlighted: true,
-      expandedChild: Container(
-        height: 50,
-        child: Placeholder(),
-      ),
-      child: Container(
-        height: 50,
+      highlighted: period.isHappening(TimeOfDay.fromDateTime(currentTime)),
+      // ignore: sort_child_properties_last
+      child: Padding(
+        padding: const EdgeInsets.only(left: 20.0, right: 20.0),
         child: Row(
           children: [
             Expanded(
-              flex: 5,
-              child: Text(name),
+              flex: 9,
+              child: Text(
+                name,
+                style: boldBodyStyle,
+                textAlign: TextAlign.left,
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                removeAMPM(period.startTime.format(context)),
+                textAlign: TextAlign.center,  
+                style: bodyStyle,
+              ),
+            ),
+            const Expanded(
+              flex: 1,
+              child: SizedBox()
+            ),
+            Expanded(
+              flex: 2,
+              child: Text(
+                removeAMPM(period.endTime.format(context)),
+                textAlign: TextAlign.center,
+                style: bodyStyle,
+              ),
+            ),
+          ],
+        ),
+      ),
+      expandedChild: Container(
+        child: Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: Column(
+                children: [
+                  Text(scheduleData.getCourseByPeriod(period.periodName)?.teacher ?? "Teacher N/A"),
+                  Text(scheduleData.getCourseByPeriod(period.periodName)?.room ?? "Location N/A"),
+                ],
+              ),
             ),
             Expanded(
               flex: 1,
-              child: Text(removeAMPM(period.startTime.format(context))),
-            ),
-            Expanded(
-              flex: 1,
-              child: Text(removeAMPM(period.endTime.format(context))),
+              child: Placeholder(),
             ),
           ],
         ),
