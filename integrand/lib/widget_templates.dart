@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:integrand/consts.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class ExpandableListItem extends StatefulWidget {
   const ExpandableListItem({
@@ -65,15 +66,14 @@ class _ExpandableListItemState extends State<ExpandableListItem> {
             child: Stack(
               children: [
                 Container(
-                  height: widget.unexpandedHeight -
-                      2, // Border radius of 5 causes 2 pixels to be hidden?
+                  height: widget.unexpandedHeight - 2, // Border radius of 5 causes 2 pixels to be hidden?
                   decoration: BoxDecoration(
                     borderRadius: _expanded
-                        ? BorderRadius.only(
-                            topLeft: Radius.circular(widget.borderRadius),
-                            topRight: Radius.circular(widget.borderRadius),
-                          )
-                        : BorderRadius.circular(widget.borderRadius),
+                      ? BorderRadius.only(
+                          topLeft: Radius.circular(widget.borderRadius),
+                          topRight: Radius.circular(widget.borderRadius),
+                        )
+                      : BorderRadius.circular(widget.borderRadius),
                     border: Border(
                       bottom: BorderSide(
                         color: highlightColor,
@@ -189,6 +189,49 @@ class IconButtonTemplate extends StatelessWidget {
         child: Center(
           child: Icon(icon, size: size, color: textColor),
         ),
+      ),
+    );
+  }
+}
+
+class FlashingText extends StatelessWidget {
+  const FlashingText(
+    {
+      super.key,
+      required this.text,
+      required this.style,
+      this.textAlign = TextAlign.left,
+      required this.durationMs,
+      this.opacityMin = 0.4,
+      this.opacityMax = 1.0,
+    }
+  );
+
+  final String text;
+  final double durationMs;
+  final TextStyle style;
+  final TextAlign textAlign;
+  final double opacityMin;
+  final double opacityMax;
+
+  @override
+  Widget build(BuildContext context) {
+    return Animate(
+      onPlay: (controller) {
+        controller.repeat(reverse: true);
+      },
+      effects: [
+        FadeEffect(
+          begin: opacityMin,
+          end: opacityMax,
+          curve: Curves.easeInOut,
+          duration: Duration(milliseconds: (durationMs / 2).toInt()),
+        ),
+      ],
+      child: Text(
+        text,
+        style: style,
+        textAlign: textAlign,
       ),
     );
   }

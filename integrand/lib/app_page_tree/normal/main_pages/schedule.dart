@@ -7,6 +7,7 @@ import 'package:integrand/helpers/time_of_day_helpers.dart';
 import 'package:integrand/consts.dart';
 import 'package:integrand/backend/data_classes.dart';
 import 'package:integrand/main.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 // Main Widget
 // ============================================================================================
@@ -26,7 +27,7 @@ class _ScheduleState extends State<Schedule> {
   void initState() {
     super.initState();
     _timer =
-        Timer.periodic(const Duration(milliseconds: 500), (timer) => _update());
+        Timer.periodic(const Duration(milliseconds: 1000), (timer) => _update());
   }
 
   void _update() {
@@ -35,12 +36,12 @@ class _ScheduleState extends State<Schedule> {
       return;
     }
 
-    // setState(() {
-    //   // TODO: Change this to change the timescale of the app
-    //   _currentTime = DateTime.fromMillisecondsSinceEpoch(
-    //       _currentTime.millisecondsSinceEpoch + 50000);
-    //   // print(_currentTime);
-    // });
+    setState(() {
+      // TODO: Change this to change the timescale of the app
+      _currentTime = DateTime.fromMillisecondsSinceEpoch(
+          _currentTime.millisecondsSinceEpoch + 1000);
+      // print(_currentTime);
+    });
   }
 
   @override
@@ -95,7 +96,7 @@ class _ScheduleState extends State<Schedule> {
               ),
             ),
             Expanded(
-              flex: 7,
+              flex: 9,
               child: ScheduleDisplay(
                 bellSchedule: schedule,
                 currentTime: _currentTime,
@@ -180,9 +181,9 @@ class ScheduleTimeIndicators extends StatelessWidget {
           height: 20,
         ),
         LayeredProgressIndicator(
-          startTime: startTime,
-          endTime: endTime,
-          currentTime: TimeOfDay.fromDateTime(currentTime),
+          startTime: TimeOfDayPrecise.fromTimeOfDay(startTime),
+          endTime: TimeOfDayPrecise.fromTimeOfDay(endTime),
+          currentTime: TimeOfDayPrecise.fromDateTime(currentTime),
         ),
         const SizedBox(
           height: 5,
@@ -326,35 +327,39 @@ class MinutesLeftText extends StatelessWidget {
 
 class LayeredProgressIndicator extends StatelessWidget {
   const LayeredProgressIndicator(
-      {super.key,
+    {
+      super.key,
       required this.startTime,
       required this.endTime,
-      required this.currentTime});
+      required this.currentTime,
+    }
+  );
 
-  final TimeOfDay startTime;
-  final TimeOfDay endTime;
-  final TimeOfDay currentTime;
+  final TimeOfDayPrecise startTime;
+  final TimeOfDayPrecise endTime;
+  final TimeOfDayPrecise currentTime;
 
   @override
   Widget build(BuildContext context) {
-    final int total = differenceMinutesTimeOfDay(endTime, startTime);
-    final int current = differenceMinutesTimeOfDay(currentTime, startTime);
+    final int total = endTime.toMilliseconds() - startTime.toMilliseconds();
+    final int current = total - (endTime.toMilliseconds() - currentTime.toMilliseconds());
 
     final double progress = current / total;
 
-    final int flex1 = (progress * 100).toInt();
-    final int flex2 = 100 - flex1;
+    final int flex1 = (progress * 1000).toInt();
+    final int flex2 = 1000 - flex1;
+
+    print("${current}/${total} flex1: ${flex1}, flex2: ${flex2}");
 
     return Row(
       children: [
-        Expanded(
-          flex: flex1,
-          child: Container(
-            height: 5,
-            decoration: BoxDecoration(
-              gradient: textGradient,
-              borderRadius: BorderRadius.circular(5),
-            ),
+        AnimatedContainer(
+          duration: Durations.short2,
+          height: 5,
+          width: flex1 / 1000 * MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            gradient: textGradient,
+            borderRadius: BorderRadius.circular(5),
           ),
         ),
         Container(
@@ -365,14 +370,13 @@ class LayeredProgressIndicator extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
           ),
         ),
-        Expanded(
-          flex: flex2,
-          child: Container(
-            height: 5,
-            decoration: BoxDecoration(
-              color: lighterGrey,
-              borderRadius: BorderRadius.circular(5),
-            ),
+        AnimatedContainer(
+          duration: Durations.short2,
+          height: 5,
+          width: flex2 / 1000 * MediaQuery.of(context).size.width - 45, // why -45?
+          decoration: BoxDecoration(
+            color: lighterGrey,
+            borderRadius: BorderRadius.circular(5),
           ),
         ),
       ],
@@ -390,12 +394,52 @@ String removeAMPM(String time) {
   }
 }
 
+class ScheduleDisplayListLegend extends StatelessWidget {
+  const ScheduleDisplayListLegend({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      children: [
+        Expanded(
+          flex: 9,
+          child: Text(
+            "Class",
+            style: boldBodyStyle,
+            textAlign: TextAlign.left,
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Text(
+            "Start",
+            textAlign: TextAlign.center,
+            style: boldBodyStyle,
+          ),
+        ),
+        const Expanded(flex: 1, child: SizedBox()),
+        Expanded(
+          flex: 2,
+          child: Text(
+            "End",
+            textAlign: TextAlign.center,
+            style: boldBodyStyle,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class ScheduleDisplay extends StatelessWidget {
   const ScheduleDisplay(
-      {super.key,
+    {
+      super.key,
       required this.bellSchedule,
       required this.currentTime,
-      required this.scheduleData});
+      required this.scheduleData,
+    }
+  );
 
   final BellSchedule bellSchedule;
   final ScheduleData scheduleData;
@@ -403,46 +447,80 @@ class ScheduleDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 500,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-        child: ListView.builder(
-          itemCount: bellSchedule.periods.length,
-          itemBuilder: (context, index) {
-            BellPeriod period = bellSchedule.periods[index];
-            return ScheduleExpandableListItem(
-              period: period,
-              currentTime: currentTime,
-              scheduleData: scheduleData,
+    return Padding(
+      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+      child: ListView.builder(
+        itemCount: bellSchedule.periods.length + 1,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    child: const ScheduleDisplayListLegend(),
+                    margin: EdgeInsets.only(bottom: 20),
+                  ),
+                ],
+              ),
             );
-          },
-        ),
+          }
+          index -= 1;
+          BellPeriod period = bellSchedule.periods[index];
+          return ScheduleExpandableListItem(
+            bellSchedule: bellSchedule,
+            period: period,
+            currentTime: currentTime,
+            scheduleData: scheduleData,
+          );
+        },
       ),
     );
   }
 }
 
-class ScheduleExpandableListItem extends StatelessWidget {
+class ScheduleExpandableListItem extends StatefulWidget {
   const ScheduleExpandableListItem(
-      {super.key,
+    {
+      super.key,
+      required this.bellSchedule,
       required this.period,
       required this.currentTime,
-      required this.scheduleData});
+      required this.scheduleData,
+    }
+  );
 
+  final BellSchedule bellSchedule;
   final BellPeriod period;
   final DateTime currentTime;
   final ScheduleData scheduleData;
 
   @override
+  State<ScheduleExpandableListItem> createState() => _ScheduleExpandableListItemState();
+}
+
+class _ScheduleExpandableListItemState extends State<ScheduleExpandableListItem> {
+  final double flashDurationMs = 3000;
+
+  @override
   Widget build(BuildContext context) {
-    Course? course = scheduleData.getCourseByPeriod(period.periodName);
-    String name = course == null ? period.periodName : course.courseTitle;
+    TimeOfDay now = TimeOfDay.fromDateTime(widget.currentTime);
+    Course? course = widget.scheduleData.getCourseByPeriod(widget.period.periodName);
+    String name = course == null ? widget.period.periodName : course.courseTitle;
+
+    bool subdueName = widget.period.endedBefore(now);
+    bool subdueStart = isBAfterATimeOfDay(widget.period.startTime, now);
+    bool subdueEnd = isBAfterATimeOfDay(widget.period.endTime, now);
+
+    bool nextDuringPassing = widget.bellSchedule.isPassingPeriod(now).$3 == widget.period;
 
     return ExpandableListItem(
       unexpandedHeight: 60,
       expandedHeight: 150,
-      highlighted: period.isHappening(TimeOfDay.fromDateTime(currentTime)),
+      highlighted: widget.period.isHappening(now) || nextDuringPassing,
       // ignore: sort_child_properties_last
       child: Padding(
         padding: const EdgeInsets.only(left: 20.0, right: 20.0),
@@ -452,25 +530,30 @@ class ScheduleExpandableListItem extends StatelessWidget {
               flex: 9,
               child: Text(
                 name,
-                style: boldBodyStyle,
+                style: subdueName ? boldBodyStyleSubdued : boldBodyStyle,
                 textAlign: TextAlign.left,
               ),
             ),
             Expanded(
               flex: 2,
-              child: Text(
-                removeAMPM(period.startTime.format(context)),
+              child: nextDuringPassing? FlashingText(
+                text: removeAMPM(widget.period.startTime.format(context)),
                 textAlign: TextAlign.center,
-                style: bodyStyle,
+                style: subdueStart ? bodyStyleSubdued : bodyStyle,
+                durationMs: flashDurationMs,
+              ) : Text(
+                removeAMPM(widget.period.startTime.format(context)),
+                textAlign: TextAlign.center,
+                style: subdueStart ? bodyStyleSubdued : bodyStyle,
               ),
             ),
             const Expanded(flex: 1, child: SizedBox()),
             Expanded(
               flex: 2,
               child: Text(
-                removeAMPM(period.endTime.format(context)),
+                removeAMPM(widget.period.endTime.format(context)),
                 textAlign: TextAlign.center,
-                style: bodyStyle,
+                style: subdueEnd ? bodyStyleSubdued : bodyStyle,
               ),
             ),
           ],
@@ -487,42 +570,41 @@ class ScheduleExpandableListItem extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(scheduleData
-                            .getCourseByPeriod(period.periodName)
-                            ?.teacher ??
-                        "Teacher N/A"),
-                    Text(scheduleData
-                            .getCourseByPeriod(period.periodName)
-                            ?.room ??
-                        "Location N/A"),
+                    Text(
+                      widget.scheduleData.getCourseByPeriod(widget.period.periodName)?.teacher ?? "Teacher N/A",
+                    ),
+                    Text(
+                      widget.scheduleData.getCourseByPeriod(widget.period.periodName)?.room ?? "Location N/A",
+                    ),
                   ],
                 ),
               ),
               Expanded(
                 flex: 3,
                 child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      IconButtonTemplate(
-                        icon: Icons.email_sharp,
-                        size: 25,
-                        padding: 15,
-                        onPressed: () {},
-                      ),
-                      IconButtonTemplate(
-                        icon: Icons.book_sharp,
-                        size: 25,
-                        padding: 15,
-                        onPressed: () {
-                          // Send to gradebook page for that class
-                          Provider.of<AppData>(context, listen: false)
-                              .selectGradebookClass(
-                                  int.parse(period.periodName));
-                          Provider.of<AppData>(context, listen: false)
-                              .changePage(AppPage.gradebook, animate: true);
-                        },
-                      ),
-                    ]),
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    IconButtonTemplate(
+                      icon: Icons.email_sharp,
+                      size: 25,
+                      padding: 15,
+                      onPressed: () {},
+                    ),
+                    IconButtonTemplate(
+                      icon: Icons.book_sharp,
+                      size: 25,
+                      padding: 15,
+                      onPressed: () {
+                        // Send to gradebook page for that class
+                        Provider.of<AppData>(context, listen: false)
+                            .selectGradebookClass(
+                                int.parse(widget.period.periodName));
+                        Provider.of<AppData>(context, listen: false)
+                            .changePage(AppPage.gradebook, animate: true);
+                      },
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

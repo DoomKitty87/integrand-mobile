@@ -5,6 +5,12 @@ int toMinutesTimeOfDay(TimeOfDay timeOfDay) {
   return timeOfDay.hour * 60 + timeOfDay.minute;
 }
 
+bool isBAfterATimeOfDay(TimeOfDay a, TimeOfDay b) {
+  int aInt = toMinutesTimeOfDay(a);
+  int bInt = toMinutesTimeOfDay(b);
+  return bInt > aInt;
+}
+
 int differenceMinutesTimeOfDay(TimeOfDay a, TimeOfDay b) {
   int aMinutes = toMinutesTimeOfDay(a);
   int bMinutes = toMinutesTimeOfDay(b);
@@ -103,5 +109,42 @@ String numberWithSuffix(int number) {
       return '$number' + 'rd';
     default:
       return '$number' + 'th';
+  }
+}
+
+class TimeOfDayPrecise {
+  TimeOfDayPrecise();
+  TimeOfDayPrecise.fromTimeOfDay(TimeOfDay timeOfDay) {
+    hour = timeOfDay.hour;
+    minute = timeOfDay.minute;
+    second = 0;
+    millisecond = 0;
+  }
+  TimeOfDayPrecise.fromDateTime(DateTime dateTime) {
+    hour = dateTime.hour;
+    minute = dateTime.minute;
+    second = dateTime.second;
+    millisecond = dateTime.millisecond;
+  }
+  TimeOfDayPrecise.fromMilliseconds(int milliseconds) {
+    hour = milliseconds ~/ Duration.millisecondsPerHour;
+    minute = (milliseconds % Duration.millisecondsPerHour) ~/ Duration.millisecondsPerMinute;
+    second = (milliseconds % Duration.millisecondsPerMinute) ~/ Duration.millisecondsPerSecond;
+    millisecond = milliseconds % Duration.millisecondsPerSecond;
+  }
+  int toMilliseconds() {
+    return Duration.millisecondsPerHour * hour + Duration.millisecondsPerMinute * minute + Duration.millisecondsPerSecond * second + millisecond;
+  }
+
+  int hour = 0;
+  int minute = 0;
+  int second = 0;
+  int millisecond = 0;
+
+  
+
+  @override
+  String toString() {
+    return '$hour:$minute:$second.$millisecond';
   }
 }
