@@ -17,6 +17,7 @@ class Gradebook extends StatefulWidget {
 class _GradebookState extends State<Gradebook> {
   double realCourseGrade = 0;
   CourseGrading virtualCourse = CourseGrading();
+  bool justUpdatedSlider = false;
 
   @override
   Widget build(BuildContext context) {
@@ -35,13 +36,15 @@ class _GradebookState extends State<Gradebook> {
       int selectedCourse = Provider.of<AppData>(context).selectedGradebookIndex;
 
       if (selectedCourse != -1) {
-        virtualCourse = value.gradebookData.courses[selectedCourse].clone();
-        realCourseGrade = virtualCourse.grade;
+        if (!justUpdatedSlider) {
+          virtualCourse = value.gradebookData.courses[selectedCourse].clone();
+          realCourseGrade = virtualCourse.grade;
+        }
+        justUpdatedSlider = false;
         controller = PageController(initialPage: 1);
       } else {
         controller = PageController(initialPage: 0);
       }
-
       return PageView(
           controller: controller,
           physics: const NeverScrollableScrollPhysics(),
@@ -93,6 +96,7 @@ class _GradebookState extends State<Gradebook> {
                     setState(() {
                       virtualCourse = course;
                       virtualCourse.calculateGrade();
+                      justUpdatedSlider = true;
                     });
                   },
                 ),
@@ -360,119 +364,119 @@ String scoreToMark(double score, double total) {
 
 class _AssignmentDisplayState extends State<AssignmentDisplay> {
   bool editing = false;
+  double score = -1;
 
   @override
   Widget build(BuildContext context) {
     Assignment virtualAssignment =
         widget.virtualized.assignments[widget.assignment];
 
-    return Column(children: [
-      GestureDetector(
-        onTap: () {
-          setState(() {
-            editing = !editing;
-          });
-        },
-        child: Container(
-          color: editing ? lightGrey : null,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: Container(
-              decoration: const BoxDecoration(
-                border: BorderDirectional(
-                  bottom: BorderSide(color: textColor, width: 0.1),
-                  top: BorderSide(color: textColor, width: 0.1),
+    if (score != -1) {
+      virtualAssignment.score = score;
+    }
+
+    return ExpandableListItem(
+      unexpandedHeight: 50,
+      expandedHeight: 200,
+      expandedChild: Column(children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 24.0, right: 24.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("0.0", style: smallBodyStyle),
+              Expanded(
+                child: Material(
+                  color: Colors.transparent,
+                  child: SliderTheme(
+                    data: const SliderThemeData(
+                        trackHeight: 0.5,
+                        thumbShape:
+                            RoundSliderThumbShape(enabledThumbRadius: 8.0),
+                        trackShape: GradientRectSliderTrackShape()),
+                    child: Slider(
+                      inactiveColor: lightGrey,
+                      activeColor: purpleGradient,
+                      thumbColor: textColor,
+                      value: virtualAssignment.score,
+                      onChanged: (value) {
+                        setState(() {
+                          virtualAssignment.score = value;
+                          score = value;
+                          widget.updateCallback(widget.virtualized);
+                        });
+                      },
+                      min: 0,
+                      max: virtualAssignment.total,
+                    ),
+                  ),
                 ),
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(children: [
-                  Expanded(
-                    flex: 4,
-                    child: Text(
-                      virtualAssignment.title,
-                      style: bodyStyle,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      scoreToMark(
-                          virtualAssignment.score, virtualAssignment.total),
-                      style: bodyStyle,
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Text(
-                      (virtualAssignment.score / virtualAssignment.total * 4)
-                          .toStringAsFixed(2),
-                      style: bodyStyle,
-                    ),
-                  ),
-                ]),
+              const Text("4.0", style: smallBodyStyle)
+            ],
+          ),
+        ),
+        const SizedBox(height: 10.0),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text("Type: \n${virtualAssignment.type.title}",
+                style: smallBodyStyle, textAlign: TextAlign.center),
+            Text(
+                "Virtual Grade: \n${(virtualAssignment.score / virtualAssignment.total * 4).toStringAsFixed(2)}",
+                style: smallBodyStyle,
+                textAlign: TextAlign.center),
+            Text(
+                "Weight: \n${(virtualAssignment.type.weight * 100).toStringAsFixed(0)}%",
+                style: smallBodyStyle,
+                textAlign: TextAlign.center),
+          ],
+        ),
+        const SizedBox(height: 20.0)
+      ]),
+      child: Container(
+        color: editing ? lightGrey : null,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+          child: Container(
+            decoration: const BoxDecoration(
+              border: BorderDirectional(
+                bottom: BorderSide(color: textColor, width: 0.1),
+                top: BorderSide(color: textColor, width: 0.1),
               ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Row(children: [
+                Expanded(
+                  flex: 4,
+                  child: Text(
+                    virtualAssignment.title,
+                    style: bodyStyle,
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    scoreToMark(
+                        virtualAssignment.score, virtualAssignment.total),
+                    style: bodyStyle,
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Text(
+                    (virtualAssignment.score / virtualAssignment.total * 4)
+                        .toStringAsFixed(2),
+                    style: bodyStyle,
+                  ),
+                ),
+              ]),
             ),
           ),
         ),
       ),
-      if (editing)
-        Column(children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 24.0, right: 24.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("0.0", style: smallBodyStyle),
-                Expanded(
-                  child: Material(
-                    color: Colors.transparent,
-                    child: SliderTheme(
-                      data: const SliderThemeData(
-                          trackHeight: 0.5,
-                          thumbShape:
-                              RoundSliderThumbShape(enabledThumbRadius: 8.0),
-                          trackShape: GradientRectSliderTrackShape()),
-                      child: Slider(
-                        inactiveColor: lightGrey,
-                        activeColor: purpleGradient,
-                        thumbColor: textColor,
-                        value: virtualAssignment.score,
-                        onChanged: (value) {
-                          setState(() {
-                            virtualAssignment.score = value;
-                            widget.updateCallback(widget.virtualized);
-                          });
-                        },
-                        min: 0,
-                        max: virtualAssignment.total,
-                      ),
-                    ),
-                  ),
-                ),
-                const Text("4.0", style: smallBodyStyle)
-              ],
-            ),
-          ),
-          const SizedBox(height: 10.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text("Type: \n${virtualAssignment.type.title}",
-                  style: smallBodyStyle, textAlign: TextAlign.center),
-              Text(
-                  "Virtual Grade: \n${(virtualAssignment.score / virtualAssignment.total * 4).toStringAsFixed(2)}",
-                  style: smallBodyStyle,
-                  textAlign: TextAlign.center),
-              Text(
-                  "Weight: \n${(virtualAssignment.type.weight * 100).toStringAsFixed(0)}%",
-                  style: smallBodyStyle,
-                  textAlign: TextAlign.center),
-            ],
-          ),
-          const SizedBox(height: 20.0)
-        ])
-    ]);
+    );
   }
 }
 

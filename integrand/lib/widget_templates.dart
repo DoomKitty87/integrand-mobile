@@ -45,63 +45,64 @@ class _ExpandableListItemState extends State<ExpandableListItem> {
     return GestureDetector(
       onTap: _onTap,
       child: AnimatedContainer(
-          margin: EdgeInsets.only(bottom: widget.spacing),
-          height: _expanded ? widget.expandedHeight : widget.unexpandedHeight,
-          duration: Duration(milliseconds: widget.durationMs.toInt()),
-          curve: widget.curve,
+        margin: EdgeInsets.only(bottom: widget.spacing),
+        height: _expanded ? widget.expandedHeight : widget.unexpandedHeight,
+        duration: Duration(milliseconds: widget.durationMs.toInt()),
+        curve: widget.curve,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(widget.borderRadius),
+          gradient: widget.highlighted ? textGradient : null,
+          color: highlightColor,
+        ),
+        padding: EdgeInsets.all(widget.borderWidth),
+        child: Container(
+          padding: EdgeInsets.zero,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(widget.borderRadius),
-            gradient: widget.highlighted ? textGradient : null,
-            color: highlightColor,
+            color: primaryColor,
           ),
-          padding: EdgeInsets.all(widget.borderWidth),
-          child: Container(
-            padding: EdgeInsets.zero,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(widget.borderRadius),
-              color: primaryColor,
-            ),
-            child: ClipRRect(
-              child: Stack(
-                children: [
-                  Container(
-                    height: widget.unexpandedHeight -
-                        2, // Border radius of 5 causes 2 pixels to be hidden?
+          child: ClipRRect(
+            child: Stack(
+              children: [
+                Container(
+                  height: widget.unexpandedHeight -
+                      2, // Border radius of 5 causes 2 pixels to be hidden?
+                  decoration: BoxDecoration(
+                    borderRadius: _expanded
+                        ? BorderRadius.only(
+                            topLeft: Radius.circular(widget.borderRadius),
+                            topRight: Radius.circular(widget.borderRadius),
+                          )
+                        : BorderRadius.circular(widget.borderRadius),
+                    border: Border(
+                      bottom: BorderSide(
+                        color: highlightColor,
+                        width: widget.borderWidth,
+                      ),
+                    ),
+                    color: primaryColor,
+                  ),
+                  child: widget.child,
+                ),
+                Positioned(
+                  top: widget.unexpandedHeight,
+                  child: Container(
+                    height: widget.expandedHeight - widget.unexpandedHeight,
+                    width: MediaQuery.of(context).size.width,
                     decoration: BoxDecoration(
-                      borderRadius: _expanded
-                          ? BorderRadius.only(
-                              topLeft: Radius.circular(widget.borderRadius),
-                              topRight: Radius.circular(widget.borderRadius),
-                            )
-                          : BorderRadius.circular(widget.borderRadius),
-                      border: Border(
-                        bottom: BorderSide(
-                          color: highlightColor,
-                          width: widget.borderWidth,
-                        ),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(widget.borderRadius),
+                        bottomRight: Radius.circular(widget.borderRadius),
                       ),
-                      color: primaryColor,
                     ),
-                    child: widget.child,
+                    child: widget.expandedChild,
                   ),
-                  Positioned(
-                    top: widget.unexpandedHeight,
-                    child: Container(
-                      height: widget.expandedHeight - widget.unexpandedHeight,
-                      width: MediaQuery.of(context).size.width,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(widget.borderRadius),
-                          bottomRight: Radius.circular(widget.borderRadius),
-                        ),
-                      ),
-                      child: widget.expandedChild,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }
