@@ -473,10 +473,14 @@ class ScheduleExpandableListItem extends StatelessWidget {
       ),
       expandedChild: Container(
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
               flex: 3,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(scheduleData.getCourseByPeriod(period.periodName)?.teacher ?? "Teacher N/A"),
                   Text(scheduleData.getCourseByPeriod(period.periodName)?.room ?? "Location N/A"),
@@ -485,7 +489,14 @@ class ScheduleExpandableListItem extends StatelessWidget {
             ),
             Expanded(
               flex: 1,
-              child: Placeholder(),
+              child: IntegrandIconButton(
+                icon: Icons.book,
+                iconSize: 24,
+                size: 32,
+                onPressed: () {
+                  print("Link to gradebook here");
+                },
+              ),
             ),
           ],
         ),

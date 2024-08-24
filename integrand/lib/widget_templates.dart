@@ -107,11 +107,51 @@ class _ExpandableListItemState extends State<ExpandableListItem> {
   }
 }
 
-class IconButton extends StatelessWidget {
-  const IconButton({super.key});
+class IntegrandIconButton extends StatelessWidget {
+  const IntegrandIconButton(
+    {
+      super.key,
+      required this.size,
+      this.color = primaryColor,
+      this.borderColor = highlightColor,
+      required this.icon,
+      required this.iconSize,
+      required this.onPressed,
+      this.borderRadius = 5,  
+    }
+  );
 
+  final IconData icon;
+  final Color color;
+  final Color borderColor;
+  final double iconSize;
+  final double size;
+  final double borderRadius;
+  final void Function() onPressed;
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return GestureDetector(
+      onTap: () => onPressed,
+      child: SizedBox.fromSize(
+        size: Size.square(size),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(borderRadius),
+            border: Border.all(
+              color: borderColor,
+              width: 1,
+            ),
+            color: color,
+          ),
+          child: Center(
+            child: Icon(
+              icon,
+              size: iconSize,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
