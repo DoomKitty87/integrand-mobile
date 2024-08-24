@@ -185,11 +185,11 @@ class ScheduleTimeIndicators extends StatelessWidget {
         ),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text(
-            startTime.format(context),
+            removeAMPM(startTime.format(context)),
             style: smallBodyStyle,
           ),
           Text(
-            endTime.format(context),
+            removeAMPM(endTime.format(context)),
             style: smallBodyStyle,
           ),
         ])
@@ -220,7 +220,8 @@ class DayOfWeekText extends StatelessWidget {
 }
 
 class TimeLarge extends StatelessWidget {
-  const TimeLarge({super.key, required this.currentDateTime, required this.bellSchedule});
+  const TimeLarge(
+      {super.key, required this.currentDateTime, required this.bellSchedule});
 
   final DateTime currentDateTime;
   final BellSchedule bellSchedule;
@@ -229,18 +230,22 @@ class TimeLarge extends StatelessWidget {
   Widget build(BuildContext context) {
     String output;
 
-    var info = bellSchedule.isPassingPeriod(TimeOfDay.fromDateTime(currentDateTime));
-    if (info.$1) { // if passing period
-      int minutesLeft = differenceMinutesTimeOfDay(info.$3!.startTime, TimeOfDay.fromDateTime(currentDateTime)) - 1;
+    var info =
+        bellSchedule.isPassingPeriod(TimeOfDay.fromDateTime(currentDateTime));
+    if (info.$1) {
+      // if passing period
+      int minutesLeft = differenceMinutesTimeOfDay(
+              info.$3!.startTime, TimeOfDay.fromDateTime(currentDateTime)) -
+          1;
       int secondsLeft = 60 - currentDateTime.second;
 
       if (secondsLeft == 60) {
         secondsLeft = 0;
         minutesLeft++;
       }
-      output = "$minutesLeft:${secondsLeft > 9 ? secondsLeft : '0$secondsLeft'}";
-    } 
-    else {
+      output =
+          "$minutesLeft:${secondsLeft > 9 ? secondsLeft : '0$secondsLeft'}";
+    } else {
       output = TimeOfDay.fromDateTime(currentDateTime).format(context);
     }
     return Text(
@@ -374,7 +379,11 @@ class LayeredProgressIndicator extends StatelessWidget {
 // Schedule Display =================================================================================================================================================
 
 String removeAMPM(String time) {
-  return time.substring(0, time.length - 3);
+  if (time.toLowerCase().contains("AM") || time.toLowerCase().contains("PM")) {
+    return time.substring(0, time.length - 3);
+  } else {
+    return time;
+  }
 }
 
 class ScheduleDisplay extends StatefulWidget {
@@ -619,13 +628,10 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
             .$1) {
           if (i < widget.bellSchedule.periods.length - 1) {
             // Check if the passing period is between the current period and the next period
-            if (
-                isBetweenTimeOfDayInclusive(
+            if (isBetweenTimeOfDayInclusive(
                 widget.bellSchedule.periods[i].endTime,
                 widget.bellSchedule.periods[i + 1].startTime,
-                TimeOfDay.fromDateTime(widget.currentTime))
-              )
-            {
+                TimeOfDay.fromDateTime(widget.currentTime))) {
               border = Container(
                 child: Padding(
                   padding: const EdgeInsets.only(left: 20.0, right: 20.0),
@@ -637,8 +643,7 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
                   ),
                 ),
               );
-            }
-            else {
+            } else {
               border = Container(
                 child: const Padding(
                   padding: EdgeInsets.only(left: 20.0, right: 20.0),
@@ -651,13 +656,14 @@ class _ScheduleDisplayState extends State<ScheduleDisplay> {
 
         if (i != widget.bellSchedule.periods.length - 1) {
           textChildren.add(border);
-        } else { // Prevents the final border line from lighting up
+        } else {
+          // Prevents the final border line from lighting up
           border = Container(
-                child: const Padding(
-                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                  child: BorderLine(),
-                ),
-              );
+            child: const Padding(
+              padding: EdgeInsets.only(left: 20.0, right: 20.0),
+              child: BorderLine(),
+            ),
+          );
 
           textChildren.add(border); // Adds a border line between each period
         }
