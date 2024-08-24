@@ -64,6 +64,9 @@ class AppData extends ChangeNotifier {
   AppPage _currentPage = AppPage.schedule;
   AppPage get currentPage => _currentPage;
 
+  PageController? _mainPageController;
+  int selectedGradebookIndex = -1;
+
   static int indexFromPage(AppPage page) {
     switch (page) {
       case AppPage.transit:
@@ -79,8 +82,17 @@ class AppData extends ChangeNotifier {
     }
   }
 
-  void changePage(AppPage page) {
+  void selectGradebookClass(int index) {
+    selectedGradebookIndex = index;
+    notifyListeners();
+  }
+
+  void changePage(AppPage page, {bool animate = false}) {
     _currentPage = page;
+    if (_mainPageController != null && animate) {
+      _mainPageController!.animateToPage(indexFromPage(page),
+          duration: const Duration(milliseconds: 250), curve: Curves.easeInOut);
+    }
     notifyListeners();
   }
 
@@ -247,6 +259,9 @@ class _CenterPageState extends State<CenterPage> {
       initialPage: widget.startIndex,
     );
 
+    Provider.of<AppData>(context, listen: false)._mainPageController =
+        innerPageController;
+
     return Column(
       children: [
         TopLevelPageSelectBar(
@@ -263,7 +278,7 @@ class _CenterPageState extends State<CenterPage> {
             controller: innerPageController,
             onPageChanged: (value) => {
               Provider.of<AppData>(context, listen: false)
-                    .changePage(AppPage.values[value])
+                  .changePage(AppPage.values[value])
             },
           ),
         ),

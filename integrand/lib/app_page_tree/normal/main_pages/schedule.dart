@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:integrand/backend/studentvue_api.dart';
 import 'package:integrand/widget_templates.dart';
 import 'package:provider/provider.dart';
@@ -7,6 +6,7 @@ import 'dart:async';
 import 'package:integrand/helpers/time_of_day_helpers.dart';
 import 'package:integrand/consts.dart';
 import 'package:integrand/backend/data_classes.dart';
+import 'package:integrand/main.dart';
 
 // Main Widget
 // ============================================================================================
@@ -391,7 +391,11 @@ String removeAMPM(String time) {
 }
 
 class ScheduleDisplay extends StatelessWidget {
-  const ScheduleDisplay({super.key, required this.bellSchedule, required this.currentTime, required this.scheduleData});
+  const ScheduleDisplay(
+      {super.key,
+      required this.bellSchedule,
+      required this.currentTime,
+      required this.scheduleData});
 
   final BellSchedule bellSchedule;
   final ScheduleData scheduleData;
@@ -420,7 +424,11 @@ class ScheduleDisplay extends StatelessWidget {
 }
 
 class ScheduleExpandableListItem extends StatelessWidget {
-  const ScheduleExpandableListItem({super.key, required this.period, required this.currentTime, required this.scheduleData});
+  const ScheduleExpandableListItem(
+      {super.key,
+      required this.period,
+      required this.currentTime,
+      required this.scheduleData});
 
   final BellPeriod period;
   final DateTime currentTime;
@@ -452,14 +460,11 @@ class ScheduleExpandableListItem extends StatelessWidget {
               flex: 2,
               child: Text(
                 removeAMPM(period.startTime.format(context)),
-                textAlign: TextAlign.center,  
+                textAlign: TextAlign.center,
                 style: bodyStyle,
               ),
             ),
-            const Expanded(
-              flex: 1,
-              child: SizedBox()
-            ),
+            const Expanded(flex: 1, child: SizedBox()),
             Expanded(
               flex: 2,
               child: Text(
@@ -472,22 +477,55 @@ class ScheduleExpandableListItem extends StatelessWidget {
         ),
       ),
       expandedChild: Container(
-        child: Row(
-          children: [
-            Expanded(
-              flex: 3,
-              child: Column(
-                children: [
-                  Text(scheduleData.getCourseByPeriod(period.periodName)?.teacher ?? "Teacher N/A"),
-                  Text(scheduleData.getCourseByPeriod(period.periodName)?.room ?? "Location N/A"),
-                ],
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(scheduleData
+                            .getCourseByPeriod(period.periodName)
+                            ?.teacher ??
+                        "Teacher N/A"),
+                    Text(scheduleData
+                            .getCourseByPeriod(period.periodName)
+                            ?.room ??
+                        "Location N/A"),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Placeholder(),
-            ),
-          ],
+              Expanded(
+                flex: 3,
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      IconButtonTemplate(
+                        icon: Icons.email_sharp,
+                        size: 25,
+                        padding: 15,
+                        onPressed: () {},
+                      ),
+                      IconButtonTemplate(
+                        icon: Icons.book_sharp,
+                        size: 25,
+                        padding: 15,
+                        onPressed: () {
+                          // Send to gradebook page for that class
+                          Provider.of<AppData>(context, listen: false)
+                              .selectGradebookClass(
+                                  int.parse(period.periodName));
+                          Provider.of<AppData>(context, listen: false)
+                              .changePage(AppPage.gradebook, animate: true);
+                        },
+                      ),
+                    ]),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:integrand/backend/studentvue_api.dart';
 import 'package:provider/provider.dart';
 import 'package:integrand/backend/data_classes.dart';
+import 'package:integrand/main.dart';
 
 import '../../../consts.dart';
 
@@ -28,7 +29,17 @@ class _GradebookState extends State<Gradebook> {
         );
       }
 
-      PageController controller = PageController();
+      PageController controller;
+
+      int selectedCourse = Provider.of<AppData>(context).selectedGradebookIndex;
+
+      if (selectedCourse != -1) {
+        virtualCourse = value.gradebookData.courses[selectedCourse].clone();
+        realCourseGrade = virtualCourse.grade;
+        controller = PageController(initialPage: 1);
+      } else {
+        controller = PageController(initialPage: 0);
+      }
 
       return PageView(
           controller: controller,
@@ -46,6 +57,9 @@ class _GradebookState extends State<Gradebook> {
                     virtualCourse = course.clone();
                     realCourseGrade = virtualCourse.grade;
                   });
+                  Provider.of<AppData>(context, listen: false)
+                      .selectGradebookClass(value.gradebookData.courses
+                          .indexWhere((element) => element == course));
                   controller.animateToPage(1,
                       duration: const Duration(milliseconds: 250),
                       curve: Curves.easeInOut);
@@ -56,6 +70,8 @@ class _GradebookState extends State<Gradebook> {
               ClassHeaderBar(
                 classTitle: virtualCourse.courseTitle,
                 exitCallback: () {
+                  Provider.of<AppData>(context, listen: false)
+                      .selectGradebookClass(-1);
                   controller.animateToPage(0,
                       duration: const Duration(milliseconds: 250),
                       curve: Curves.easeInOut);
@@ -94,16 +110,14 @@ class Recommendation {
   final String courseTitle;
   final double classGradeMaxImprovement;
 
-  Recommendation(
-    {
-      required this.percent,
-      required this.courseGradeIfZero,
-      required this.courseGradeIfMax,
-      required this.title,
-      required this.courseTitle,
-      required this.classGradeMaxImprovement,
-    }
-  );
+  Recommendation({
+    required this.percent,
+    required this.courseGradeIfZero,
+    required this.courseGradeIfMax,
+    required this.title,
+    required this.courseTitle,
+    required this.classGradeMaxImprovement,
+  });
 }
 
 class RecommendationsDisplay extends StatelessWidget {
