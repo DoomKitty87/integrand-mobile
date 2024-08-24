@@ -145,7 +145,9 @@ class TransitAPI with ChangeNotifier {
     for (var stop in nearbyStops) {
       idsToUpdate.add(stop.id);
     }
-
+    if (idsToUpdate.isEmpty) {
+      return;
+    }
     http.Response response = await http.get(Uri.parse(
         "${TransitAPI.arrivalsUrl}?locIDs=${idsToUpdate.join(",")}&showPosition=true&appID=${TransitAPI.appId}"));
 

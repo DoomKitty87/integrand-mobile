@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:integrand/backend/studentvue_api.dart';
+import 'package:integrand/widget_templates.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
-
-import '../../../helpers/time_of_day_helpers.dart';
-import '../../../consts.dart';
-import '../../../backend/data_classes.dart';
+import 'package:integrand/helpers/time_of_day_helpers.dart';
+import 'package:integrand/consts.dart';
+import 'package:integrand/backend/data_classes.dart';
 
 // Main Widget
 // ============================================================================================
@@ -35,12 +35,12 @@ class _ScheduleState extends State<Schedule> {
       return;
     }
 
-    setState(() {
-      // TODO: Change this to change the timescale of the app
-      _currentTime = DateTime.fromMillisecondsSinceEpoch(
-          _currentTime.millisecondsSinceEpoch + 50000);
-      // print(_currentTime);
-    });
+    // setState(() {
+    //   // TODO: Change this to change the timescale of the app
+    //   _currentTime = DateTime.fromMillisecondsSinceEpoch(
+    //       _currentTime.millisecondsSinceEpoch + 50000);
+    //   // print(_currentTime);
+    // });
   }
 
   @override
@@ -91,12 +91,12 @@ class _ScheduleState extends State<Schedule> {
                 periodNameToIndicatorMap: periodNameToIndicator,
               ),
             ),
-            const SizedBox(
-              height: 30,
-            ),
-            ScheduleDisplay(
-              bellSchedule: schedule,
-              currentTime: _currentTime,
+            Expanded(
+              child: ScheduleDisplay(
+                bellSchedule: schedule,
+                currentTime: _currentTime,
+                scheduleData: value.scheduleData,
+              ),
             ),
           ],
         );
@@ -386,310 +386,71 @@ String removeAMPM(String time) {
   }
 }
 
-class ScheduleDisplay extends StatefulWidget {
-  const ScheduleDisplay(
-      {super.key, required this.bellSchedule, required this.currentTime});
+class ScheduleDisplay extends StatelessWidget {
+  const ScheduleDisplay({super.key, required this.bellSchedule, required this.currentTime, required this.scheduleData});
 
   final BellSchedule bellSchedule;
+  final ScheduleData scheduleData;
   final DateTime currentTime;
 
   @override
-  State<ScheduleDisplay> createState() => _ScheduleDisplayState();
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 500,
+      child: ListView.builder(
+        itemCount: bellSchedule.periods.length,
+        itemBuilder: (context, index) {
+          BellPeriod period = bellSchedule.periods[index];
+          return ScheduleExpandableListItem(
+            period: period,
+            currentTime: currentTime,
+            scheduleData: scheduleData,
+          );
+        },
+      ),
+    );
+  }
 }
 
-class _ScheduleDisplayState extends State<ScheduleDisplay> {
-  final List<Container> textChildren = [];
+class ScheduleExpandableListItem extends StatelessWidget {
+  const ScheduleExpandableListItem({super.key, required this.period, required this.currentTime, required this.scheduleData});
 
-  int expandedIndexManual = -1;
-  int expandedIndexAutomatic = -1;
+  final BellPeriod period;
+  final DateTime currentTime;
+  final ScheduleData scheduleData;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<StudentVueAPI>(builder: (context, studentVueAPI, child) {
-      textChildren.clear();
+    Course? course = scheduleData.getCourseByPeriod(period.periodName);
+    String name = course == null ? period.periodName : course.courseTitle;
 
-      // Set expanded index to that of the next or current period
-      for (int i = 0; i < widget.bellSchedule.periods.length; i++) {
-        if (widget.bellSchedule.periods[i]
-            .isHappening(TimeOfDay.fromDateTime(widget.currentTime))) {
-          expandedIndexAutomatic = i;
-          break;
-        }
-      }
-
-      if (expandedIndexAutomatic == -1) {
-        for (int i = 0; i < widget.bellSchedule.periods.length - 1; i++) {
-          BellPeriod period = widget.bellSchedule.periods[i];
-          BellPeriod nextPeriod = widget.bellSchedule.periods[i + 1];
-
-          if (isBetweenTimeOfDayInclusive(period.endTime, nextPeriod.startTime,
-              TimeOfDay.fromDateTime(widget.currentTime))) {
-            expandedIndexAutomatic = i + 1;
-            break;
-          }
-        }
-      }
-
-      if (expandedIndexManual != -1) {
-        expandedIndexAutomatic = -1;
-      }
-
-      // Border element
-      // ignore: avoid_unnecessary_containers
-      Container border = Container(
-        child: const Padding(
-          padding: EdgeInsets.only(left: 20.0, right: 20.0),
-          child: BorderLine(),
+    return ExpandableListItem(
+      unexpandedHeight: 50,
+      expandedHeight: 100,
+      highlighted: true,
+      expandedChild: Container(
+        height: 50,
+        child: Placeholder(),
+      ),
+      child: Container(
+        height: 50,
+        child: Row(
+          children: [
+            Expanded(
+              flex: 5,
+              child: Text(name),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text(removeAMPM(period.startTime.format(context))),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text(removeAMPM(period.endTime.format(context))),
+            ),
+          ],
         ),
-      );
-      textChildren.add(border);
-
-      int i = 0;
-      for (BellPeriod period in widget.bellSchedule.periods) {
-        int index = i;
-        final bool isCurrentPeriod =
-            period.isHappening(TimeOfDay.fromDateTime(widget.currentTime));
-        final TextStyle textStyle = isCurrentPeriod ? boldBodyStyle : bodyStyle;
-
-        final Course? course =
-            studentVueAPI.scheduleData.getCourseByPeriod(period.periodName);
-
-        final String name =
-            (course == null) ? period.periodName : course.courseTitle;
-
-        const EdgeInsets textPadding = EdgeInsets.only(
-          top: 14,
-          bottom: 14,
-          left: 25.0,
-          right: 25.0,
-        );
-
-        Container nextPeriodText = Container(
-          child: TextButton(
-            // Disable the button if it's lunch or flex`
-            // onPressed: (isLunchOrFlex(name) ? null : () => toggleExpanded(index, name)),
-            onPressed: () => toggleExpanded(index, name),
-
-            style: TextButton.styleFrom(
-              // TODO: Change onclick visuals
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-              padding: EdgeInsets.zero,
-            ),
-            child: SizedBox(
-              child: Column(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: isCurrentPeriod
-                          ? textGradient
-                          : (expandedIndexManual == index
-                              ? const LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                      Colors.transparent,
-                                      Colors.transparent
-                                    ])
-                              : const LinearGradient(colors: [
-                                  Colors.transparent,
-                                  Colors.transparent
-                                ])),
-                    ),
-                    child: Padding(
-                      padding: textPadding,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: SizedBox(
-                              width: 200.0,
-                              child: FittedBox(
-                                fit: BoxFit.scaleDown,
-                                alignment: Alignment.centerLeft,
-                                child: Text(
-                                  name,
-                                  style: textStyle,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            width: 80.0,
-                            child: Text(
-                              period.startTime.format(context),
-                              style: textStyle,
-                              textAlign: TextAlign.right,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 80.0,
-                            child: Text(
-                              period.endTime.format(context),
-                              style: textStyle,
-                              textAlign: TextAlign.right,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if ((expandedIndexManual == index ||
-                          expandedIndexAutomatic == index) &&
-                      period.periodName != "Lunch" &&
-                      period.periodName != "Flex")
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 25.0,
-                        right: 25.0,
-                        bottom: 14.0,
-                        top: 14.0,
-                      ),
-                      child: Row(
-                        children: [
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Container(
-                              width: isCurrentPeriod ? 5.0 : 3.0,
-                              height: 80,
-                              decoration: isCurrentPeriod
-                                  ? const BoxDecoration(
-                                      gradient: verticalGradientAccent,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(5.0)),
-                                    )
-                                  : const BoxDecoration(
-                                      color: lighterGrey,
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(3.0)),
-                                    )),
-                          const SizedBox(
-                            width: 16,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  top: 8.0,
-                                  bottom: 8.0,
-                                ),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.room,
-                                      color: iconColor,
-                                    ),
-                                    const SizedBox(
-                                      width: 8,
-                                    ),
-                                    Text(
-                                      "Room ${course?.room ?? "N/A"}",
-                                      style: bodyStyle,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 8.0, bottom: 8.0),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.assignment_ind,
-                                      color: iconColor,
-                                    ),
-                                    const SizedBox(
-                                      width: 8,
-                                    ),
-                                    Text(
-                                      course?.teacher ?? "N/A",
-                                      style: bodyStyle,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          // TODO: Fix overflow wrapping here
-                        ],
-                      ),
-                    )
-                ],
-              ),
-            ),
-          ),
-        );
-        textChildren.add(nextPeriodText);
-
-        if (widget.bellSchedule
-            .isPassingPeriod(TimeOfDay.fromDateTime(widget.currentTime))
-            .$1) {
-          if (i < widget.bellSchedule.periods.length - 1) {
-            // Check if the passing period is between the current period and the next period
-            if (isBetweenTimeOfDayInclusive(
-                widget.bellSchedule.periods[i].endTime,
-                widget.bellSchedule.periods[i + 1].startTime,
-                TimeOfDay.fromDateTime(widget.currentTime))) {
-              border = Container(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-                  child: Container(
-                    height: 3,
-                    decoration: const BoxDecoration(
-                      gradient: textGradient,
-                    ),
-                  ),
-                ),
-              );
-            } else {
-              border = Container(
-                child: const Padding(
-                  padding: EdgeInsets.only(left: 20.0, right: 20.0),
-                  child: BorderLine(),
-                ),
-              );
-            }
-          }
-        }
-
-        if (i != widget.bellSchedule.periods.length - 1) {
-          textChildren.add(border);
-        } else {
-          // Prevents the final border line from lighting up
-          border = Container(
-            child: const Padding(
-              padding: EdgeInsets.only(left: 20.0, right: 20.0),
-              child: BorderLine(),
-            ),
-          );
-
-          textChildren.add(border); // Adds a border line between each period
-        }
-        i++;
-      }
-
-      return Column(
-        children: textChildren,
-      );
-    });
-  }
-
-  bool isLunchOrFlex(String name) {
-    return name == "Lunch" || name == "Flex";
-  }
-
-  void toggleExpanded(int index, String name) {
-    if (isLunchOrFlex(name)) {
-      return;
-    }
-    setState(() {
-      if (expandedIndexManual == index) {
-        expandedIndexManual = -1;
-      } else {
-        expandedIndexManual = index;
-      }
-    });
+      ),
+    );
   }
 }
