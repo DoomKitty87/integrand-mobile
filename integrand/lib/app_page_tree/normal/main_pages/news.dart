@@ -7,6 +7,7 @@ import 'package:integrand/consts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:integrand/backend/data_classes.dart';
 import 'package:integrand/backend/database_interactions.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class News extends StatefulWidget {
   const News({super.key});
@@ -59,7 +60,8 @@ class _NewsState extends State<News> {
     setState(() {
       _searchResults = getArticlesTitleMatching(query);
       _showCancelButton = true;
-      print("*************************\nCalled setState\nSearch results: $_searchResults\nquery: $query\n*************************");
+      print(
+          "*************************\nCalled setState\nSearch results: $_searchResults\nquery: $query\n*************************");
     });
   }
 
@@ -297,8 +299,8 @@ class ArticleSearchResultsList extends StatelessWidget {
 
 class ArticleSearchResult extends StatelessWidget {
   const ArticleSearchResult({
-    super.key, 
-    required this.newsArticle, 
+    super.key,
+    required this.newsArticle,
     required this.onPressedCallback,
   });
 
@@ -739,10 +741,8 @@ class ArticleFullscreenText extends StatelessWidget {
           style: mediumTitleStyle,
         ),
         SizedBox(height: 30),
-        Text(
-          newsArticle.content,
-          style: smallBodyStyle,
-          textAlign: TextAlign.left,
+        MarkdownBody(
+          data: newsArticle.content,
         ),
         SizedBox(height: 30),
       ],
