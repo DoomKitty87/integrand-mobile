@@ -120,6 +120,7 @@ class NonExpandableListItem extends StatelessWidget {
     this.borderWidth = 1,
     this.borderRadius = 5,
     this.highlighted = false,
+    this.ignoreHeight = false,
   });
 
   final Widget? child;
@@ -128,11 +129,12 @@ class NonExpandableListItem extends StatelessWidget {
   final double borderWidth;
   final double borderRadius;
   final bool highlighted;
+  final bool ignoreHeight;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: height,
+      height: ignoreHeight ? null : height,
       margin: EdgeInsets.only(bottom: spacing),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(borderRadius),

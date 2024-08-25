@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:integrand/backend/transit_api.dart';
 import 'package:integrand/consts.dart';
+import 'package:integrand/widget_templates.dart';
 import 'package:provider/provider.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -205,231 +206,206 @@ class _SavedStopCardState extends State<SavedStopCard> {
         .where((element) => !ignoredRoutes.contains(element["route"]))
         .toList();
 
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      decoration: BoxDecoration(
-        color: lightGrey,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.only(top: 10, bottom: 10, left: 20),
-            decoration: BoxDecoration(
-              color: lightGrey,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: lighterGrey),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 4,
-                  child: Column(
+    return ExpandableListItem(
+      unexpandedHeight: 80,
+      expandedHeight: 236,
+      highlighted: expanded,
+      expandedChild: Column(children: [
+        arrivals.isNotEmpty
+            ? Padding(
+                padding: const EdgeInsets.only(
+                    left: 20, right: 20, bottom: 10, top: 10),
+                child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Text(truncate(widget.stop.name, 16),
-                              style: boldBodyStyle),
-                          Container(
-                            margin: const EdgeInsets.only(left: 5),
-                            width: 25,
-                            height: 25,
-                            decoration: BoxDecoration(
-                              color: darkGrey,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Center(
-                                child: Text(widget.stop.direction[0],
-                                    style: boldBodyStyle)),
-                          ),
-                        ],
-                      ),
-                      if (arrivals.isNotEmpty)
-                        Row(
+                      SizedBox(
+                        height: 60,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            SizedBox(
-                              height: 25,
-                              child: Container(
-                                  padding:
-                                      const EdgeInsets.only(left: 5, right: 5),
-                                  decoration: BoxDecoration(
-                                    color: HexColor(arrivals[0]["routeColor"]),
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      arrivals[0]["route"].toString(),
-                                      style: boldBodyStyle,
-                                    ),
-                                  )),
+                            BusRouteIndicator(
+                              arrival: arrivals[0],
                             ),
-                            const SizedBox(
-                              width: 5,
+                            ArrivalTimeIndicator(
+                              arrival: arrivals[0],
                             ),
-                            Text(
-                                truncate(
-                                    arrivals[0]["shortSign"]
-                                        .toString()
-                                        .replaceFirst(
-                                            "${arrivals[0]["route"]}", ""),
-                                    15),
-                                style: bodyStyle),
                           ],
-                        )
-                    ],
-                  ),
-                ),
-                if (arrivals.isNotEmpty)
-                  Expanded(
-                    flex: 2,
-                    child: Text(
-                        formatDuration(max(
-                                int.parse(((arrivals[0]["estimated"] ??
-                                            arrivals[0]["scheduled"]) -
-                                        DateTime.now().millisecondsSinceEpoch)
-                                    .toString()),
-                                0))
-                            .toString(),
-                        style: mediumTitleStyle,
-                        textAlign: TextAlign.right),
-                  ),
-                Expanded(
-                  flex: 1,
-                  child: Column(
+                        ),
+                      ),
+                      widget.stop.arrivals.length > 1
+                          ? Padding(
+                              padding: const EdgeInsets.only(top: 10.0),
+                              child: RichText(
+                                  overflow: TextOverflow.ellipsis,
+                                  text: TextSpan(
+                                    children: <TextSpan>[
+                                      const TextSpan(
+                                        text: "More in:",
+                                        style: boldBodyStyle,
+                                      ),
+                                      TextSpan(
+                                        text: getFutureArrivals(arrivals),
+                                        style: bodyStyle,
+                                      ),
+                                    ],
+                                  )),
+                            )
+                          : const Text("No more arrivals soon",
+                              style: boldBodyStyle),
+                    ]),
+              )
+            : const Padding(
+                padding:
+                    EdgeInsets.only(left: 20, right: 20, bottom: 10, top: 10),
+                child: Text("No arrivals found", style: boldBodyStyle),
+              ),
+        Container(
+          height: 1,
+          color: highlightColor,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+            left: 20.0,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text("Routes:", style: bodyStyle),
+              const SizedBox(
+                width: 10,
+              ),
+              SizedBox(
+                height: 30,
+                width: 210,
+                child: ListView(scrollDirection: Axis.horizontal, children: [
+                  for (var route in widget.stop.routes)
+                    GestureDetector(
+                      onTap: () {
+                        // Toggle route visibility
+                        setState(() {
+                          if (ignoredRoutes.contains(route)) {
+                            ignoredRoutes.remove(route);
+                          } else {
+                            ignoredRoutes.add(route);
+                          }
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 10),
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                            color: primaryColor,
+                            borderRadius: BorderRadius.circular(5),
+                            border: Border.all(
+                                color: ignoredRoutes.contains(route)
+                                    ? Colors.transparent
+                                    : highlightColor)),
+                        child: Center(
+                          child: Text(
+                            route.toString(),
+                            style: boldBodyStyle,
+                          ),
+                        ),
+                      ),
+                    ),
+                ]),
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete, color: textColor),
+                color: textColor,
+                onPressed: () {
+                  // Remove stop from saved stops
+                  Provider.of<TransitAPI>(context, listen: false)
+                      .removeSavedStop(widget.stop);
+                },
+              ),
+            ],
+          ),
+        )
+      ]),
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10, bottom: 10, left: 20),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
                     children: [
-                      IconButton(
-                        icon: Icon(
-                            expanded
-                                ? Icons.arrow_drop_up_sharp
-                                : Icons.arrow_drop_down_sharp,
-                            color: textColor),
-                        color: textColor,
-                        onPressed: () {
-                          // Open dropdown menu
-                          setState(() {
-                            expanded = !expanded;
-                          });
-                        },
+                      Text(truncate(widget.stop.name, 16),
+                          style: boldBodyStyle),
+                      Container(
+                        margin: const EdgeInsets.only(left: 5),
+                        width: 25,
+                        height: 25,
+                        decoration: BoxDecoration(
+                          color: primaryColor,
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(color: highlightColor),
+                        ),
+                        child: Center(
+                            child: Text(widget.stop.direction[0],
+                                style: boldBodyStyle)),
                       ),
                     ],
                   ),
-                ),
-              ],
-            ),
-          ),
-          if (expanded)
-            Column(children: [
-              arrivals.isNotEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.only(
-                          left: 20, right: 20, bottom: 10, top: 10),
-                      child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                BusRouteIndicator(
-                                  arrival: arrivals[0],
-                                ),
-                                ArrivalTimeIndicator(
-                                  arrival: arrivals[0],
-                                ),
-                              ],
-                            ),
-                            widget.stop.arrivals.length > 1
-                                ? Padding(
-                                    padding: const EdgeInsets.only(top: 10.0),
-                                    child: RichText(
-                                        text: TextSpan(
-                                      children: <TextSpan>[
-                                        const TextSpan(
-                                          text: "More in:",
-                                          style: boldBodyStyle,
-                                        ),
-                                        TextSpan(
-                                          text: getFutureArrivals(arrivals),
-                                          style: bodyStyle,
-                                        ),
-                                      ],
-                                    )),
-                                  )
-                                : const Text("No more arrivals soon",
-                                    style: boldBodyStyle),
-                          ]),
-                    )
-                  : const Padding(
-                      padding: EdgeInsets.only(
-                          left: 20, right: 20, bottom: 10, top: 10),
-                      child: Text("No arrivals found", style: boldBodyStyle),
-                    ),
-              Container(
-                height: 1,
-                color: lighterGrey,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 20.0,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text("Routes:", style: bodyStyle),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    SizedBox(
-                      height: 30,
-                      width: 210,
-                      child:
-                          ListView(scrollDirection: Axis.horizontal, children: [
-                        for (var route in widget.stop.routes)
-                          GestureDetector(
-                            onTap: () {
-                              // Toggle route visibility
-                              setState(() {
-                                if (ignoredRoutes.contains(route)) {
-                                  ignoredRoutes.remove(route);
-                                } else {
-                                  ignoredRoutes.add(route);
-                                }
-                              });
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(right: 10),
-                              padding: const EdgeInsets.all(5),
+                  if (arrivals.isNotEmpty)
+                    Row(
+                      children: [
+                        SizedBox(
+                          height: 25,
+                          child: Container(
+                              padding: const EdgeInsets.only(left: 5, right: 5),
                               decoration: BoxDecoration(
-                                color: ignoredRoutes.contains(route)
-                                    ? lightGrey
-                                    : darkGrey,
+                                color: HexColor(arrivals[0]["routeColor"]),
                                 borderRadius: BorderRadius.circular(5),
                               ),
                               child: Center(
                                 child: Text(
-                                  route.toString(),
+                                  arrivals[0]["route"].toString(),
                                   style: boldBodyStyle,
                                 ),
-                              ),
-                            ),
-                          ),
-                      ]),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete, color: textColor),
-                      color: textColor,
-                      onPressed: () {
-                        // Remove stop from saved stops
-                        Provider.of<TransitAPI>(context, listen: false)
-                            .removeSavedStop(widget.stop);
-                      },
-                    ),
-                  ],
-                ),
-              )
-            ])
-        ],
+                              )),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                            truncate(
+                                arrivals[0]["shortSign"]
+                                    .toString()
+                                    .replaceFirst(
+                                        "${arrivals[0]["route"]}", ""),
+                                15),
+                            style: bodyStyle),
+                      ],
+                    )
+                ],
+              ),
+            ),
+            if (arrivals.isNotEmpty)
+              Expanded(
+                flex: 2,
+                child: Text(
+                    formatDuration(max(
+                            int.parse(((arrivals[0]["estimated"] ??
+                                        arrivals[0]["scheduled"]) -
+                                    DateTime.now().millisecondsSinceEpoch)
+                                .toString()),
+                            0))
+                        .toString(),
+                    style: mediumTitleStyle,
+                    textAlign: TextAlign.right),
+              ),
+            const Expanded(
+              flex: 1,
+              child: Icon(Icons.arrow_drop_down_sharp, color: textColor),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -622,101 +598,102 @@ class NearbyStopCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 10),
-      padding: const EdgeInsets.only(top: 10, bottom: 10, left: 20),
-      decoration: BoxDecoration(
-        color: lightGrey,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 4,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(truncate(stop.name, 16), style: boldBodyStyle),
-                    Container(
-                      margin: const EdgeInsets.only(left: 5),
-                      width: 25,
-                      height: 25,
-                      decoration: BoxDecoration(
-                        color: darkGrey,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Center(
-                          child: Text(stop.direction[0], style: boldBodyStyle)),
-                    ),
-                  ],
-                ),
-                if (stop.arrivals.isNotEmpty)
+    return NonExpandableListItem(
+      spacing: 10,
+      height: 80,
+      child: Padding(
+        padding: const EdgeInsets.only(
+          left: 20.0,
+          top: 10.0,
+          bottom: 10.0,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 4,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Row(
                     children: [
-                      SizedBox(
+                      Text(truncate(stop.name, 16), style: boldBodyStyle),
+                      Container(
+                        margin: const EdgeInsets.only(left: 5),
+                        width: 25,
                         height: 25,
-                        child: Container(
-                            padding: const EdgeInsets.only(left: 5, right: 5),
-                            decoration: BoxDecoration(
-                              color: HexColor(stop.arrivals[0]["routeColor"]),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Center(
-                              child: Text(
-                                stop.arrivals[0]["route"].toString(),
-                                style: boldBodyStyle,
-                              ),
-                            )),
+                        decoration: BoxDecoration(
+                          color: primaryColor,
+                          borderRadius: BorderRadius.circular(5),
+                          border: Border.all(color: highlightColor),
+                        ),
+                        child: Center(
+                            child:
+                                Text(stop.direction[0], style: boldBodyStyle)),
                       ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Text(
-                          truncate(
-                              stop.arrivals[0]["shortSign"]
-                                  .toString()
-                                  .replaceFirst(
-                                      "${stop.arrivals[0]["route"]}", ""),
-                              15),
-                          style: bodyStyle),
                     ],
-                  )
-              ],
+                  ),
+                  if (stop.arrivals.isNotEmpty)
+                    Row(
+                      children: [
+                        SizedBox(
+                          height: 25,
+                          child: Container(
+                              padding: const EdgeInsets.only(left: 5, right: 5),
+                              decoration: BoxDecoration(
+                                color: HexColor(stop.arrivals[0]["routeColor"]),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  stop.arrivals[0]["route"].toString(),
+                                  style: boldBodyStyle,
+                                ),
+                              )),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                            truncate(
+                                stop.arrivals[0]["shortSign"]
+                                    .toString()
+                                    .replaceFirst(
+                                        "${stop.arrivals[0]["route"]}", ""),
+                                15),
+                            style: bodyStyle),
+                      ],
+                    )
+                ],
+              ),
             ),
-          ),
-          if (stop.arrivals.isNotEmpty)
+            if (stop.arrivals.isNotEmpty)
+              Expanded(
+                flex: 2,
+                child: Text(
+                    formatDuration(max(
+                            int.parse(((stop.arrivals[0]["estimated"] ??
+                                        stop.arrivals[0]["scheduled"]) -
+                                    DateTime.now().millisecondsSinceEpoch)
+                                .toString()),
+                            0))
+                        .toString(),
+                    style: mediumTitleStyle,
+                    textAlign: TextAlign.right),
+              ),
             Expanded(
-              flex: 2,
-              child: Text(
-                  formatDuration(max(
-                          int.parse(((stop.arrivals[0]["estimated"] ??
-                                      stop.arrivals[0]["scheduled"]) -
-                                  DateTime.now().millisecondsSinceEpoch)
-                              .toString()),
-                          0))
-                      .toString(),
-                  style: mediumTitleStyle,
-                  textAlign: TextAlign.right),
+              flex: 1,
+              child: IconButton(
+                icon: const Icon(Icons.add, color: textColor),
+                color: textColor,
+                onPressed: () {
+                  // Add stop to saved stops
+                  Provider.of<TransitAPI>(context, listen: false)
+                      .addSavedStop(stop);
+                },
+              ),
             ),
-          Expanded(
-            flex: 1,
-            child: Column(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.add, color: textColor),
-                  color: textColor,
-                  onPressed: () {
-                    // Add stop to saved stops
-                    Provider.of<TransitAPI>(context, listen: false)
-                        .addSavedStop(stop);
-                  },
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
