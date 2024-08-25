@@ -82,7 +82,7 @@ class _GradebookState extends State<Gradebook> {
                 },
               ),
               const SizedBox(
-                height: 30.0,
+                height: 20.0,
               ),
               ClassGradeDisplay(
                   course: realCourseGrade, virtualized: virtualCourse.grade),
@@ -380,7 +380,8 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
 
     return ExpandableListItem(
       unexpandedHeight: 50,
-      expandedHeight: 200,
+      expandedHeight: 160,
+      highlighted: score != -1,
       expandedChild: Column(children: [
         Padding(
           padding: const EdgeInsets.only(left: 20.0, right: 20.0),
@@ -436,46 +437,34 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
           ],
         ),
       ]),
-      child: Container(
-        color: editing ? lightGrey : null,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 20.0, right: 20.0),
         child: Padding(
-          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-          child: Container(
-            decoration: const BoxDecoration(
-              border: BorderDirectional(
-                bottom: BorderSide(color: textColor, width: 0.1),
-                top: BorderSide(color: textColor, width: 0.1),
+          padding: const EdgeInsets.all(12.0),
+          child: Row(children: [
+            Expanded(
+              flex: 4,
+              child: Text(
+                virtualAssignment.title,
+                style: bodyStyle,
               ),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Row(children: [
-                Expanded(
-                  flex: 4,
-                  child: Text(
-                    virtualAssignment.title,
-                    style: bodyStyle,
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Text(
-                    scoreToMark(
-                        virtualAssignment.score, virtualAssignment.total),
-                    style: bodyStyle,
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Text(
-                    (virtualAssignment.score / virtualAssignment.total * 4)
-                        .toStringAsFixed(2),
-                    style: bodyStyle,
-                  ),
-                ),
-              ]),
+            Expanded(
+              flex: 1,
+              child: Text(
+                scoreToMark(virtualAssignment.score, virtualAssignment.total),
+                style: bodyStyle,
+              ),
             ),
-          ),
+            Expanded(
+              flex: 1,
+              child: Text(
+                (virtualAssignment.score / virtualAssignment.total * 4)
+                    .toStringAsFixed(2),
+                style: bodyStyle,
+              ),
+            ),
+          ]),
         ),
       ),
     );
@@ -656,7 +645,7 @@ class ClassGradeDisplay extends StatelessWidget {
         height: 10.0,
       ),
       Text(
-        "Default: ${course.toStringAsFixed(2)}",
+        "Actual: ${course.toStringAsFixed(2)}",
         style: bodyStyle,
       ),
     ]);
