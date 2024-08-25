@@ -8,6 +8,7 @@ import 'package:integrand/consts.dart';
 import 'package:integrand/backend/data_classes.dart';
 import 'package:integrand/main.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 // Main Widget
 // ============================================================================================
@@ -511,6 +512,8 @@ class _ScheduleExpandableListItemState
     String name =
         course == null ? widget.period.periodName : course.courseTitle;
 
+    String email = course?.teacherEmail ?? "N/A";
+
     bool subdueName = widget.period.endedBefore(now);
     bool subdueStart = isBAfterATimeOfDay(widget.period.startTime, now);
     bool subdueEnd = isBAfterATimeOfDay(widget.period.endTime, now);
@@ -593,19 +596,32 @@ class _ScheduleExpandableListItemState
                 children: [
                   IconButtonTemplate(
                     icon: Icons.email_sharp,
-                    size: 25,
-                    padding: 15,
-                    onPressed: () {},
+                    size: 20,
+                    padding: 10,
+                    onPressed: () {
+                      // Link to email teacher
+                      if (email != "N/A") {
+                        final Uri params = Uri(
+                          scheme: 'mailto',
+                          path: email,
+                        );
+                        try {
+                          launchUrl(params);
+                        } catch (_) {
+                          // Empty catch block because email can fail due to OS/package errors
+                        }
+                      }
+                    },
                   ),
                   IconButtonTemplate(
                     icon: Icons.book_sharp,
-                    size: 25,
-                    padding: 15,
+                    size: 20,
+                    padding: 10,
                     onPressed: () {
                       // Send to gradebook page for that class
                       Provider.of<AppData>(context, listen: false)
                           .selectGradebookClass(
-                              int.parse(widget.period.periodName));
+                              int.parse(widget.period.periodName) - 1);
                       Provider.of<AppData>(context, listen: false)
                           .changePage(AppPage.gradebook, animate: true);
                     },
