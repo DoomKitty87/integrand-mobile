@@ -455,12 +455,12 @@ class ScheduleDisplay extends StatelessWidget {
               padding: const EdgeInsets.only(left: 20, right: 20),
               child: Column(
                 children: [
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Container(
+                    margin: const EdgeInsets.only(bottom: 20),
                     child: const ScheduleDisplayListLegend(),
-                    margin: EdgeInsets.only(bottom: 20),
                   ),
                 ],
               ),
@@ -564,61 +564,56 @@ class _ScheduleExpandableListItemState
           ],
         ),
       ),
-      expandedChild: Container(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.scheduleData
-                              .getCourseByPeriod(widget.period.periodName)
-                              ?.teacher ??
-                          "Teacher N/A",
-                    ),
-                    Text(
-                      widget.scheduleData
-                              .getCourseByPeriod(widget.period.periodName)
-                              ?.room ??
-                          "Location N/A",
-                    ),
-                  ],
-                ),
+      expandedChild: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.scheduleData
+                            .getCourseByPeriod(widget.period.periodName)
+                            ?.teacher ??
+                        "Teacher N/A",
+                  ),
+                  Text(
+                    "Room ${widget.scheduleData.getCourseByPeriod(widget.period.periodName)?.room ?? "N/A"}",
+                  ),
+                ],
               ),
-              Expanded(
-                flex: 3,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    IconButtonTemplate(
-                      icon: Icons.email_sharp,
-                      size: 25,
-                      padding: 15,
-                      onPressed: () {},
-                    ),
-                    IconButtonTemplate(
-                      icon: Icons.book_sharp,
-                      size: 25,
-                      padding: 15,
-                      onPressed: () {
-                        // Send to gradebook page for that class
-                        Provider.of<AppData>(context, listen: false)
-                            .selectGradebookClass(
-                                int.parse(widget.period.periodName));
-                        Provider.of<AppData>(context, listen: false)
-                            .changePage(AppPage.gradebook, animate: true);
-                      },
-                    ),
-                  ],
-                ),
+            ),
+            Expanded(
+              flex: 2,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  IconButtonTemplate(
+                    icon: Icons.email_sharp,
+                    size: 25,
+                    padding: 15,
+                    onPressed: () {},
+                  ),
+                  IconButtonTemplate(
+                    icon: Icons.book_sharp,
+                    size: 25,
+                    padding: 15,
+                    onPressed: () {
+                      // Send to gradebook page for that class
+                      Provider.of<AppData>(context, listen: false)
+                          .selectGradebookClass(
+                              int.parse(widget.period.periodName));
+                      Provider.of<AppData>(context, listen: false)
+                          .changePage(AppPage.gradebook, animate: true);
+                    },
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

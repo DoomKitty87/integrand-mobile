@@ -59,17 +59,14 @@ class StudentVueAPI with ChangeNotifier {
     ready = true;
 
     // TODO: Change this before production
-    bool USE_TEST_DATA = true;
+    bool USE_TEST_DATA = false;
     if (USE_TEST_DATA) {
       scheduleData = ScheduleData.testData();
       gradebookData = GradebookData.testData();
       // studentData = StudentData(); profile still seems to work
       gpaData = GPAData.testData();
       bellSchedule = BellSchedule.testDataA();
-      courseHistory = CourseHistory();
     }
-
-
 
     notifyListeners();
   }
@@ -154,7 +151,7 @@ class StudentVueAPI with ChangeNotifier {
     String url = '$baseUrl/Service/PXPCommunication.asmx';
 
     Uri uri = Uri.parse(url);
-    //TODO: Use the correct term index
+    // TODO: Use the correct term index if it matters
     String xml =
         '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"><soap:Body><ProcessWebServiceRequest xmlns="http://edupoint.com/webservices/"><userID>$username</userID><password>$password</password><skipLoginLog>1</skipLoginLog><parent>0</parent><webServiceHandleName>PXPWebServices</webServiceHandleName><methodName>StudentClassList</methodName><paramStr>&lt;Parms&gt;&lt;childIntID&gt;0&lt;/childIntID&gt; &lt;TermIndex&gt;1&lt;/TermIndex&gt; &lt;/Parms&gt;</paramStr></ProcessWebServiceRequest></soap:Body></soap:Envelope>';
 
@@ -227,10 +224,12 @@ class StudentVueAPI with ChangeNotifier {
     int currentPeriod = getCurrentReportingPeriod(response);
 
     if (currentPeriod == -1) {
-      GradebookData data = GradebookData();
-      data.error = true;
-      initializedGrades = true;
-      return data;
+      // This means school hasn't started yet
+      currentPeriod = 0;
+      // GradebookData data = GradebookData();
+      // data.error = true;
+      // initializedGrades = true;
+      // return data;
     }
 
     response = await gradebookPeriod(currentPeriod);
@@ -262,7 +261,6 @@ class StudentVueAPI with ChangeNotifier {
     scheduleData = parseSchedule(response);
 
     initializedSchedule = true;
-
     return scheduleData;
   }
 
@@ -358,15 +356,6 @@ class StudentVueAPI with ChangeNotifier {
     }
 
     try {
-      GPAData gpaData = updateGPA();
-      this.gpaData = gpaData;
-    } catch (e) {
-      GPAData gpaData = GPAData();
-      gpaData.error = true;
-      this.gpaData = gpaData;
-    }
-
-    try {
       BellSchedule bellSchedule = updateCurrentBellSchedule();
       this.bellSchedule = bellSchedule;
     } catch (e) {
@@ -382,6 +371,17 @@ class StudentVueAPI with ChangeNotifier {
       CourseHistory courseHistory = CourseHistory();
       courseHistory.error = true;
       this.courseHistory = courseHistory;
+    }
+
+    try {
+      GPAData gpaData = GPAData();
+      gpaData.weightedGPA = calculateWeightedGPA(courseHistory);
+      gpaData.unweightedGPA = calculateUnweightedGPA(courseHistory);
+      this.gpaData = gpaData;
+    } catch (e) {
+      GPAData gpaData = GPAData();
+      gpaData.error = true;
+      this.gpaData = gpaData;
     }
   }
 
@@ -418,6 +418,42 @@ class StudentVueAPI with ChangeNotifier {
     requestBellSchedule();
   }
 
+  double calculateWeightedGPA(CourseHistory courseHistory) {
+    // TODO: Include # of credits for each course to make this more accurate
+    double totalWeightedGPA = 0;
+    int totalWeightedCourses = 0;
+
+    for (CourseEntry course in courseHistory.courses) {
+      totalWeightedGPA += course.grade;
+      if (course.isWeighted) {
+        totalWeightedGPA++;
+      }
+      totalWeightedCourses++;
+    }
+
+    if (totalWeightedCourses == 0) {
+      return 0;
+    }
+
+    return totalWeightedGPA / totalWeightedCourses;
+  }
+
+  double calculateUnweightedGPA(CourseHistory courseHistory) {
+    double totalUnweightedGPA = 0;
+    int totalUnweightedCourses = 0;
+
+    for (CourseEntry course in courseHistory.courses) {
+      totalUnweightedGPA += course.grade;
+      totalUnweightedCourses++;
+    }
+
+    if (totalUnweightedCourses == 0) {
+      return 0;
+    }
+
+    return totalUnweightedGPA / totalUnweightedCourses;
+  }
+
   // Future<void> requestStudentVueWebData() async {
   //   String url = '$baseUrl/PXP2_CourseHistory.aspx?AGU=0';
 
@@ -450,44 +486,14 @@ class StudentVueAPI with ChangeNotifier {
         .replaceAll('\r', '');
   }
 
-  GPAData updateGPA() {
-    String html = currentWebData.courseHistory;
-
-    RegExp gpaRegExp = RegExp(r'<spanclass="gpa-score">(.*?)</span>');
-
-    String unweightedGPA = gpaRegExp.firstMatch(html)!.group(1)!;
-    String weightedGPA = gpaRegExp.allMatches(html).elementAt(1).group(1)!;
-
-    RegExp rankRegExp = RegExp(r'Rank:(.*?)outof');
-
-    String unweightedRank = rankRegExp.firstMatch(html)!.group(1)!;
-    String weightedRank = rankRegExp.allMatches(html).elementAt(1).group(1)!;
-
-    RegExp totalStudentsRegExp = RegExp(r'outof(.*?)</span>');
-
-    String totalStudents = totalStudentsRegExp.firstMatch(html)!.group(1)!;
-
-    GPAData data = GPAData();
-
-    data.unweightedGPA = double.parse(unweightedGPA);
-    data.weightedGPA = double.parse(weightedGPA);
-
-    data.unweightedRank = int.parse(unweightedRank);
-    data.weightedRank = int.parse(weightedRank);
-
-    data.totalStudents = int.parse(totalStudents);
-
-    return data;
-  }
-
   BellSchedule updateCurrentBellSchedule() {
     String html = currentWebData.classSchedule;
 
-    RegExp periodExp = RegExp(r'0(.):');
+    RegExp periodExp = RegExp(r'"period":"0(.)",');
 
-    RegExp beginningExp = RegExp(r'startTime">(.*?)</span>');
+    RegExp beginningExp = RegExp(r'"startTime":"(.*?)",');
 
-    RegExp endExp = RegExp(r'endTime">(.*?)</span>');
+    RegExp endExp = RegExp(r'"endTime":"(.*?)",');
 
     List<String> periods = periodExp.allMatches(html).map((e) {
       return e.group(1)!;
@@ -517,8 +523,8 @@ class StudentVueAPI with ChangeNotifier {
       bool isPMEnd = ends[i].contains('PM');
 
       String startTime =
-          beginnings[i].replaceAll(' AM', '').replaceAll(' PM', '');
-      String endTime = ends[i].replaceAll(' AM', '').replaceAll(' PM', '');
+          beginnings[i].replaceAll('AM', '').replaceAll('PM', '');
+      String endTime = ends[i].replaceAll('AM', '').replaceAll('PM', '');
 
       period.startTime = TimeOfDay(
         hour: int.parse(startTime.split(':')[0]) + (isPM ? 12 : 0),
@@ -631,10 +637,10 @@ class StudentVueAPI with ChangeNotifier {
   CourseHistory updateCourseHistory() {
     String html = currentWebData.courseHistory;
 
-    RegExp courseTitleRegExp = RegExp(r'text: CourseTitle">(.*?)</span>');
-    RegExp courseIdRegExp = RegExp(r'text: CourseID">(.*?)</span>');
-    RegExp gradeRegExp = RegExp(r'text: Mark">(.*?)</span>');
-    RegExp schoolTypeRegExp = RegExp(r'text: CHSType">(.*?)</span>');
+    RegExp courseTitleRegExp = RegExp(r'"CourseTitle":"(.*?)"');
+    RegExp courseIdRegExp = RegExp(r'"CourseID":"(.*?)"');
+    RegExp gradeRegExp = RegExp(r'"Mark":"(.*?)"');
+    RegExp schoolTypeRegExp = RegExp(r'"CHSType":"(.*?)"');
 
     List<String> courseTitles = courseTitleRegExp.allMatches(html).map((e) {
       return e.group(1)!;

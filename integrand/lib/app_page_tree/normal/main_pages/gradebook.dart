@@ -725,6 +725,9 @@ class GPADisplay extends StatelessWidget {
 }
 
 String parseGradeToLetter(double grade) {
+  if (grade == -1) {
+    return "N/A";
+  }
   if (grade < 10) {
     if (grade >= 3.5) {
       return "A";
@@ -786,6 +789,10 @@ class _GradebookDisplayState extends State<GradebookDisplay> {
 
             double grade = course.grade;
 
+            if (course.assignments.isEmpty) {
+              grade = -1;
+            }
+
             if (grade > 10) grade /= 25;
 
             return GestureDetector(
@@ -806,7 +813,7 @@ class _GradebookDisplayState extends State<GradebookDisplay> {
                       child: Row(
                         children: [
                           Expanded(
-                            flex: 3,
+                            flex: 5,
                             child: Text(title, style: bodyStyle),
                           ),
                           Expanded(
@@ -816,8 +823,10 @@ class _GradebookDisplayState extends State<GradebookDisplay> {
                           ),
                           Expanded(
                             flex: 1,
-                            child: Text(grade.toStringAsFixed(2),
-                                style: bodyStyle, textAlign: TextAlign.right),
+                            child: Text(
+                                grade == -1 ? "" : grade.toStringAsFixed(2),
+                                style: bodyStyle,
+                                textAlign: TextAlign.right),
                           ),
                         ],
                       ),
