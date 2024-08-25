@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:integrand/consts.dart';
 import 'package:integrand/backend/data_classes.dart';
 import 'package:integrand/backend/database_interactions.dart';
+import 'package:integrand/widget_templates.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
@@ -388,11 +389,9 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: lightGrey,
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
+    return ExpandableListItem(
+      unexpandedHeight: 70,
+      expandedHeight: 70,
       child: Row(children: [
         Container(
           width: 70,
@@ -400,7 +399,7 @@ class EventCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: eventTypeColors[event.type],
             borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
+                topLeft: Radius.circular(5), bottomLeft: Radius.circular(5)),
           ),
           child: Center(
             child: Icon(
@@ -414,7 +413,8 @@ class EventCard extends StatelessWidget {
           flex: 3,
           child: Padding(
             padding: const EdgeInsets.only(left: 12.0),
-            child: Column(children: [
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               Row(
                 children: [
                   Text(event.title,
@@ -442,39 +442,7 @@ class EventCard extends StatelessWidget {
             style: smallBodyStyle,
           ),
         ),
-        SizedBox(width: 10),
-        Container(
-          width: 15,
-          height: 70,
-          decoration: const BoxDecoration(
-            color: lighterGrey,
-            borderRadius: BorderRadius.only(
-                topRight: Radius.circular(10),
-                bottomRight: Radius.circular(10)),
-          ),
-          child: event.description == ''
-              ? null
-              : const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.circle,
-                      size: 4,
-                      color: textColor,
-                    ),
-                    Icon(
-                      Icons.circle,
-                      size: 4,
-                      color: textColor,
-                    ),
-                    Icon(
-                      Icons.circle,
-                      size: 4,
-                      color: textColor,
-                    ),
-                  ],
-                ),
-        )
+        const SizedBox(width: 10)
       ]),
     );
   }
@@ -527,11 +495,8 @@ class DayEventsList extends StatelessWidget {
             ]),
           ),
         );
-      } else {
-        eventCards.add(const SizedBox(height: 10));
       }
       eventCards.add(EventCard(event: event));
-      eventCards.add(const SizedBox(height: 20));
     }
 
     return ListView.builder(
