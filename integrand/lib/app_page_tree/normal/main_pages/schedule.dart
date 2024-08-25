@@ -26,8 +26,8 @@ class _ScheduleState extends State<Schedule> {
   @override
   void initState() {
     super.initState();
-    _timer =
-        Timer.periodic(const Duration(milliseconds: 1000), (timer) => _update());
+    _timer = Timer.periodic(
+        const Duration(milliseconds: 1000), (timer) => _update());
   }
 
   void _update() {
@@ -37,6 +37,7 @@ class _ScheduleState extends State<Schedule> {
     }
 
     setState(() {
+      // TODO: This should be the current real time, right? (For production)
       // TODO: Change this to change the timescale of the app
       _currentTime = DateTime.fromMillisecondsSinceEpoch(
           _currentTime.millisecondsSinceEpoch + 1000);
@@ -326,14 +327,12 @@ class MinutesLeftText extends StatelessWidget {
 }
 
 class LayeredProgressIndicator extends StatelessWidget {
-  const LayeredProgressIndicator(
-    {
-      super.key,
-      required this.startTime,
-      required this.endTime,
-      required this.currentTime,
-    }
-  );
+  const LayeredProgressIndicator({
+    super.key,
+    required this.startTime,
+    required this.endTime,
+    required this.currentTime,
+  });
 
   final TimeOfDayPrecise startTime;
   final TimeOfDayPrecise endTime;
@@ -342,14 +341,13 @@ class LayeredProgressIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final int total = endTime.toMilliseconds() - startTime.toMilliseconds();
-    final int current = total - (endTime.toMilliseconds() - currentTime.toMilliseconds());
+    final int current =
+        total - (endTime.toMilliseconds() - currentTime.toMilliseconds());
 
     final double progress = current / total;
 
     final int flex1 = (progress * 1000).toInt();
     final int flex2 = 1000 - flex1;
-
-    print("${current}/${total} flex1: ${flex1}, flex2: ${flex2}");
 
     return Row(
       children: [
@@ -357,7 +355,6 @@ class LayeredProgressIndicator extends StatelessWidget {
           flex: flex1,
           child: Container(
             height: 5,
-            width: flex1 / 1000 * MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
               gradient: textGradient,
               borderRadius: BorderRadius.circular(5),
@@ -376,7 +373,6 @@ class LayeredProgressIndicator extends StatelessWidget {
           flex: flex2,
           child: Container(
             height: 5,
-            width: flex2 / 1000 * MediaQuery.of(context).size.width - 45, // why -45?
             decoration: BoxDecoration(
               color: lighterGrey,
               borderRadius: BorderRadius.circular(5),
@@ -436,14 +432,12 @@ class ScheduleDisplayListLegend extends StatelessWidget {
 }
 
 class ScheduleDisplay extends StatelessWidget {
-  const ScheduleDisplay(
-    {
-      super.key,
-      required this.bellSchedule,
-      required this.currentTime,
-      required this.scheduleData,
-    }
-  );
+  const ScheduleDisplay({
+    super.key,
+    required this.bellSchedule,
+    required this.currentTime,
+    required this.scheduleData,
+  });
 
   final BellSchedule bellSchedule;
   final ScheduleData scheduleData;
@@ -487,15 +481,13 @@ class ScheduleDisplay extends StatelessWidget {
 }
 
 class ScheduleExpandableListItem extends StatefulWidget {
-  const ScheduleExpandableListItem(
-    {
-      super.key,
-      required this.bellSchedule,
-      required this.period,
-      required this.currentTime,
-      required this.scheduleData,
-    }
-  );
+  const ScheduleExpandableListItem({
+    super.key,
+    required this.bellSchedule,
+    required this.period,
+    required this.currentTime,
+    required this.scheduleData,
+  });
 
   final BellSchedule bellSchedule;
   final BellPeriod period;
@@ -503,27 +495,34 @@ class ScheduleExpandableListItem extends StatefulWidget {
   final ScheduleData scheduleData;
 
   @override
-  State<ScheduleExpandableListItem> createState() => _ScheduleExpandableListItemState();
+  State<ScheduleExpandableListItem> createState() =>
+      _ScheduleExpandableListItemState();
 }
 
-class _ScheduleExpandableListItemState extends State<ScheduleExpandableListItem> {
+class _ScheduleExpandableListItemState
+    extends State<ScheduleExpandableListItem> {
   final double flashDurationMs = 3000;
 
   @override
   Widget build(BuildContext context) {
     TimeOfDay now = TimeOfDay.fromDateTime(widget.currentTime);
-    Course? course = widget.scheduleData.getCourseByPeriod(widget.period.periodName);
-    String name = course == null ? widget.period.periodName : course.courseTitle;
+    Course? course =
+        widget.scheduleData.getCourseByPeriod(widget.period.periodName);
+    String name =
+        course == null ? widget.period.periodName : course.courseTitle;
 
     bool subdueName = widget.period.endedBefore(now);
     bool subdueStart = isBAfterATimeOfDay(widget.period.startTime, now);
     bool subdueEnd = isBAfterATimeOfDay(widget.period.endTime, now);
 
-    bool nextDuringPassing = widget.bellSchedule.isPassingPeriod(now).$3 == widget.period;
+    bool nextDuringPassing =
+        widget.bellSchedule.isPassingPeriod(now).$3 == widget.period;
+
+    bool isLunchOrFlex = course == null;
 
     return ExpandableListItem(
       unexpandedHeight: 60,
-      expandedHeight: 150,
+      expandedHeight: isLunchOrFlex ? 60 : 150,
       highlighted: widget.period.isHappening(now) || nextDuringPassing,
       // ignore: sort_child_properties_last
       child: Padding(
@@ -540,16 +539,18 @@ class _ScheduleExpandableListItemState extends State<ScheduleExpandableListItem>
             ),
             Expanded(
               flex: 2,
-              child: nextDuringPassing? FlashingText(
-                text: removeAMPM(widget.period.startTime.format(context)),
-                textAlign: TextAlign.center,
-                style: subdueStart ? bodyStyleSubdued : bodyStyle,
-                durationMs: flashDurationMs,
-              ) : Text(
-                removeAMPM(widget.period.startTime.format(context)),
-                textAlign: TextAlign.center,
-                style: subdueStart ? bodyStyleSubdued : bodyStyle,
-              ),
+              child: nextDuringPassing
+                  ? FlashingText(
+                      text: removeAMPM(widget.period.startTime.format(context)),
+                      textAlign: TextAlign.center,
+                      style: subdueStart ? bodyStyleSubdued : bodyStyle,
+                      durationMs: flashDurationMs,
+                    )
+                  : Text(
+                      removeAMPM(widget.period.startTime.format(context)),
+                      textAlign: TextAlign.center,
+                      style: subdueStart ? bodyStyleSubdued : bodyStyle,
+                    ),
             ),
             const Expanded(flex: 1, child: SizedBox()),
             Expanded(
@@ -575,10 +576,16 @@ class _ScheduleExpandableListItemState extends State<ScheduleExpandableListItem>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.scheduleData.getCourseByPeriod(widget.period.periodName)?.teacher ?? "Teacher N/A",
+                      widget.scheduleData
+                              .getCourseByPeriod(widget.period.periodName)
+                              ?.teacher ??
+                          "Teacher N/A",
                     ),
                     Text(
-                      widget.scheduleData.getCourseByPeriod(widget.period.periodName)?.room ?? "Location N/A",
+                      widget.scheduleData
+                              .getCourseByPeriod(widget.period.periodName)
+                              ?.room ??
+                          "Location N/A",
                     ),
                   ],
                 ),

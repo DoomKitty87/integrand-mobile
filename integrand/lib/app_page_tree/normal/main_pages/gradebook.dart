@@ -311,18 +311,21 @@ class _ClassGradeCalculatorState extends State<ClassGradeCalculator> {
         height: 30.0,
       ),
       Expanded(
-        child: ListView(
-          children: [
-            for (int assignment = 0;
-                assignment < widget.virtualized.assignments.length;
-                assignment++)
-              AssignmentDisplay(
-                assignment: assignment,
-                virtualized: widget.virtualized,
-                updateCallback: widget.updateCallback,
-                orderByGrade: orderByGrade,
-              ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+          child: ListView(
+            children: [
+              for (int assignment = 0;
+                  assignment < widget.virtualized.assignments.length;
+                  assignment++)
+                AssignmentDisplay(
+                  assignment: assignment,
+                  virtualized: widget.virtualized,
+                  updateCallback: widget.updateCallback,
+                  orderByGrade: orderByGrade,
+                ),
+            ],
+          ),
         ),
       ),
     ]);
@@ -380,7 +383,7 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
       expandedHeight: 200,
       expandedChild: Column(children: [
         Padding(
-          padding: const EdgeInsets.only(left: 24.0, right: 24.0),
+          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -432,7 +435,6 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
                 textAlign: TextAlign.center),
           ],
         ),
-        const SizedBox(height: 20.0)
       ]),
       child: Container(
         color: editing ? lightGrey : null,

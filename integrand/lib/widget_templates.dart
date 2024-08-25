@@ -43,67 +43,71 @@ class _ExpandableListItemState extends State<ExpandableListItem> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _onTap,
-      child: AnimatedContainer(
-        margin: EdgeInsets.only(bottom: widget.spacing),
-        height: _expanded ? widget.expandedHeight : widget.unexpandedHeight,
-        duration: Duration(milliseconds: widget.durationMs.toInt()),
-        curve: widget.curve,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          gradient: widget.highlighted ? textGradient : null,
-          color: highlightColor,
-        ),
-        padding: EdgeInsets.all(widget.borderWidth),
-        child: Container(
-          padding: EdgeInsets.zero,
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+      return GestureDetector(
+        onTap: _onTap,
+        child: AnimatedContainer(
+          margin: EdgeInsets.only(bottom: widget.spacing),
+          height: _expanded ? widget.expandedHeight : widget.unexpandedHeight,
+          duration: Duration(milliseconds: widget.durationMs.toInt()),
+          curve: widget.curve,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(widget.borderRadius),
-            color: primaryColor,
+            gradient: widget.highlighted ? textGradient : null,
+            color: highlightColor,
           ),
-          child: ClipRRect(
-            child: Stack(
-              children: [
-                Container(
-                  height: widget.unexpandedHeight - 2, // Border radius of 5 causes 2 pixels to be hidden?
-                  decoration: BoxDecoration(
-                    borderRadius: _expanded
-                      ? BorderRadius.only(
-                          topLeft: Radius.circular(widget.borderRadius),
-                          topRight: Radius.circular(widget.borderRadius),
-                        )
-                      : BorderRadius.circular(widget.borderRadius),
-                    border: Border(
-                      bottom: BorderSide(
-                        color: highlightColor,
-                        width: widget.borderWidth,
-                      ),
-                    ),
-                    color: primaryColor,
-                  ),
-                  child: widget.child,
-                ),
-                Positioned(
-                  top: widget.unexpandedHeight,
-                  child: Container(
-                    height: widget.expandedHeight - widget.unexpandedHeight,
-                    width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.all(widget.borderWidth),
+          child: Container(
+            padding: EdgeInsets.zero,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+              color: primaryColor,
+            ),
+            child: ClipRRect(
+              child: Stack(
+                children: [
+                  Container(
+                    height: widget.unexpandedHeight -
+                        2, // Border radius of 5 causes 2 pixels to be hidden?
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(widget.borderRadius),
-                        bottomRight: Radius.circular(widget.borderRadius),
+                      borderRadius: _expanded
+                          ? BorderRadius.only(
+                              topLeft: Radius.circular(widget.borderRadius),
+                              topRight: Radius.circular(widget.borderRadius),
+                            )
+                          : BorderRadius.circular(widget.borderRadius),
+                      border: Border(
+                        bottom: BorderSide(
+                          color: highlightColor,
+                          width: widget.borderWidth,
+                        ),
                       ),
+                      color: primaryColor,
                     ),
-                    child: widget.expandedChild,
+                    child: widget.child,
                   ),
-                ),
-              ],
+                  Positioned(
+                    top: widget.unexpandedHeight,
+                    child: Container(
+                      height: widget.expandedHeight - widget.unexpandedHeight,
+                      width: constraints.maxWidth,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(widget.borderRadius),
+                          bottomRight: Radius.circular(widget.borderRadius),
+                        ),
+                      ),
+                      child: widget.expandedChild,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 }
 
@@ -195,17 +199,15 @@ class IconButtonTemplate extends StatelessWidget {
 }
 
 class FlashingText extends StatelessWidget {
-  const FlashingText(
-    {
-      super.key,
-      required this.text,
-      required this.style,
-      this.textAlign = TextAlign.left,
-      required this.durationMs,
-      this.opacityMin = 0.4,
-      this.opacityMax = 1.0,
-    }
-  );
+  const FlashingText({
+    super.key,
+    required this.text,
+    required this.style,
+    this.textAlign = TextAlign.left,
+    required this.durationMs,
+    this.opacityMin = 0.4,
+    this.opacityMax = 1.0,
+  });
 
   final String text;
   final double durationMs;
