@@ -353,13 +353,15 @@ class LayeredProgressIndicator extends StatelessWidget {
 
     return Row(
       children: [
-        AnimatedContainer(
-          duration: Durations.short2,
-          height: 5,
-          width: flex1 / 1000 * MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            gradient: textGradient,
-            borderRadius: BorderRadius.circular(5),
+        Expanded(
+          flex: flex1,
+          child: Container(
+            height: 5,
+            width: flex1 / 1000 * MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              gradient: textGradient,
+              borderRadius: BorderRadius.circular(5),
+            ),
           ),
         ),
         Container(
@@ -370,13 +372,15 @@ class LayeredProgressIndicator extends StatelessWidget {
             borderRadius: BorderRadius.circular(5),
           ),
         ),
-        AnimatedContainer(
-          duration: Durations.short2,
-          height: 5,
-          width: flex2 / 1000 * MediaQuery.of(context).size.width - 45, // why -45?
-          decoration: BoxDecoration(
-            color: lighterGrey,
-            borderRadius: BorderRadius.circular(5),
+        Expanded(
+          flex: flex2,
+          child: Container(
+            height: 5,
+            width: flex2 / 1000 * MediaQuery.of(context).size.width - 45, // why -45?
+            decoration: BoxDecoration(
+              color: lighterGrey,
+              borderRadius: BorderRadius.circular(5),
+            ),
           ),
         ),
       ],
