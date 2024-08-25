@@ -503,6 +503,8 @@ class BusRouteIndicator extends StatelessWidget {
                   child: Text(
                     prevStopName,
                     style: smallBodyStyle,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                   )),
               SizedBox(
                   width: 80,
@@ -510,6 +512,8 @@ class BusRouteIndicator extends StatelessWidget {
                     nextStopName,
                     style: smallBodyStyle,
                     textAlign: TextAlign.right,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                   )),
             ],
           )
