@@ -292,7 +292,7 @@ class CalendarGrid extends StatelessWidget {
                       gradient: dayNumber == day ? textGradient : null,
                       border: Border.all(
                           color: dayNumber == trueCurrentDay
-                              ? textColor
+                              ? highlightColor
                               : Colors.transparent),
                       borderRadius: const BorderRadius.all(Radius.circular(5)),
                     ),
