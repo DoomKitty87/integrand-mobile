@@ -143,9 +143,13 @@ class FilterBar extends StatelessWidget {
             },
             child: Container(
               decoration: BoxDecoration(
-                color: filter == index ? null : lightGrey,
+                color: filter == index ? null : primaryColor,
                 gradient: filter == index ? textGradient : null,
                 borderRadius: const BorderRadius.all(Radius.circular(5)),
+                border: Border.all(
+                    color:
+                        filter == index ? Colors.transparent : highlightColor,
+                    width: 1),
               ),
               margin: const EdgeInsets.all(3),
               padding: const EdgeInsets.all(5),

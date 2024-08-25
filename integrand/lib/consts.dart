@@ -34,11 +34,11 @@ class BorderLine extends StatelessWidget {
 }
 
 const List<Color> eventTypeColors = [
-  Color(0x8E7DBEFF),
-  Color(0xFFC857FF),
-  Color(0x61E786FF),
-  Color(0xF03A47FF),
-  Color(0x2B56A1FF),
+  Color(0xFF8E7DBE),
+  Color(0xFFFFC857),
+  Color(0xFF61E786),
+  Color(0xFFF03A47),
+  Color(0xFF2B56A1),
 ];
 
 const List<String> eventTypeNames = [
