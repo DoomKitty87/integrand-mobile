@@ -65,7 +65,7 @@ class _CalendarState extends State<Calendar> {
               ),
             ]),
             SizedBox(
-              height: 285,
+              height: 291,
               child: CalendarGrid(
                   events: events,
                   filter: filter,
@@ -95,12 +95,14 @@ class _CalendarState extends State<Calendar> {
                 },
               ),
             ]),
-            Padding(
-              padding: const EdgeInsets.only(left: 30, right: 30, top: 10),
-              child: DayEventsList(
-                  events: eventsThisMonth(events, selectedTime),
-                  currentTime: selectedTime,
-                  filter: filter),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 30, right: 30, top: 10),
+                child: DayEventsList(
+                    events: eventsThisMonth(events, selectedTime),
+                    currentTime: selectedTime,
+                    filter: filter),
+              ),
             ),
           ]);
         } else if (snapshot.hasError) {
@@ -289,8 +291,8 @@ class CalendarGrid extends StatelessWidget {
                   selectDayCallback(dayNumber);
                 },
                 child: SizedBox(
-                  width: 35,
-                  height: 35,
+                  width: 36,
+                  height: 36,
                   child: Container(
                     decoration: BoxDecoration(
                       gradient: dayNumber == day ? textGradient : null,
