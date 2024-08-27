@@ -395,6 +395,15 @@ String removeAMPM(String time) {
   }
 }
 
+String cleanClassName(String className) {
+  // Remove number in parentheses at beginning of class name
+  className = className.replaceFirst(RegExp(r"^\(\d+\)"), "");
+  // Remove em dash with spaces around it
+  className = className.replaceAll(" - ", " ");
+
+  return className;
+}
+
 class ScheduleDisplayListLegend extends StatelessWidget {
   const ScheduleDisplayListLegend({super.key});
 
@@ -418,7 +427,7 @@ class ScheduleDisplayListLegend extends StatelessWidget {
             style: boldBodyStyle,
           ),
         ),
-        const Expanded(flex: 1, child: SizedBox()),
+        Expanded(flex: 1, child: SizedBox()),
         Expanded(
           flex: 2,
           child: Text(
@@ -509,8 +518,9 @@ class _ScheduleExpandableListItemState
     TimeOfDay now = TimeOfDay.fromDateTime(widget.currentTime);
     Course? course =
         widget.scheduleData.getCourseByPeriod(widget.period.periodName);
-    String name =
-        course == null ? widget.period.periodName : course.courseTitle;
+    String name = course == null
+        ? widget.period.periodName
+        : cleanClassName(course.courseTitle);
 
     String email = course?.teacherEmail ?? "N/A";
 
