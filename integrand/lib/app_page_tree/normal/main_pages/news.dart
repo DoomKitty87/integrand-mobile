@@ -700,29 +700,39 @@ class ArticleFullscreenImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(5),
-      child: Container(
+    bool hasImage = newsArticle.image != null;
+    if (!hasImage) {
+      return Container(
         height: 216,
         width: 384,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: newsArticle.image!.image,
-            fit: BoxFit.cover,
+        color: Colors.black,
+      );
+    }
+    else {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(5),
+        child: Container(
+          height: 216,
+          width: 384,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: newsArticle.image!.image,
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(5),
-          child: Container(
-            color: Colors.black.withOpacity(0.3),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-              child: newsArticle.image,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(5),
+            child: Container(
+              color: Colors.black.withOpacity(0.3),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                child: newsArticle.image,
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    }
   }
 }
 
