@@ -217,7 +217,7 @@ class CalendarGrid extends StatelessWidget {
     int offset = DateTime(year, month, 1).weekday % 7;
 
     List<Event> eventsThisMonth = events.where((event) {
-      return event.startTime.month == month;
+      return (event.startTime.month == month && event.startTime.year == year);
     }).toList();
 
     if (filter != -1) {
