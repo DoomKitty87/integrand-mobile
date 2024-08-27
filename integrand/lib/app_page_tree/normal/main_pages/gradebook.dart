@@ -704,7 +704,7 @@ class GPADisplay extends StatelessWidget {
                 style: titleStyle,
               ),
               Text(
-                gpa.toString(),
+                gpa.toStringAsFixed(2),
                 style: titleStyle,
               ),
             ],
@@ -713,7 +713,7 @@ class GPADisplay extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Text(
-                "Unweighted $uw",
+                "Unweighted ${uw.toStringAsFixed(2)}",
                 style: bodyStyle,
               ),
             ],
