@@ -373,16 +373,8 @@ class StudentVueAPI with ChangeNotifier {
       this.courseHistory = courseHistory;
     }
 
-    try {
-      GPAData gpaData = GPAData();
-      gpaData.weightedGPA = calculateWeightedGPA(courseHistory);
-      gpaData.unweightedGPA = calculateUnweightedGPA(courseHistory);
-      this.gpaData = gpaData;
-    } catch (e) {
-      GPAData gpaData = GPAData();
-      gpaData.error = true;
-      this.gpaData = gpaData;
-    }
+    GPAData gpaData = updateGPAData();
+    this.gpaData = gpaData;
   }
 
   Future<void> requestCourseHistory() async {
@@ -477,6 +469,25 @@ class StudentVueAPI with ChangeNotifier {
 
   //   currentWebData.classSchedule = removeWhitespace(response.body);
   // }
+
+  GPAData updateGPAData() {
+    GPAData data = GPAData();
+
+    String html = currentWebData.courseHistory;
+
+    RegExp unweightedGPAExp =
+        RegExp(r'HSCumulative</h2><spanclass="gpa-score">(.*?)</span>');
+    RegExp weightedGPAExp =
+        RegExp(r'HSCumulativeWgt</h2><spanclass="gpa-score">(.*?)</span>');
+
+    String unweightedGPA = unweightedGPAExp.firstMatch(html)!.group(1)!;
+    String weightedGPA = weightedGPAExp.firstMatch(html)!.group(1)!;
+
+    data.unweightedGPA = double.parse(unweightedGPA);
+    data.weightedGPA = double.parse(weightedGPA);
+
+    return data;
+  }
 
   static String removeWhitespace(String html) {
     return html
