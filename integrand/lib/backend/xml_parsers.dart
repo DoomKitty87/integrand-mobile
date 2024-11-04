@@ -183,6 +183,7 @@ GradebookData parseGradebook(http.Response response) {
     List<XmlElement> assignments = mark.findAllElements('Assignment').toList();
 
     for (XmlElement assignment in assignments) {
+      print(assignment.attributes);
       Assignment a = Assignment();
 
       // Check if element has attributes
@@ -193,7 +194,7 @@ GradebookData parseGradebook(http.Response response) {
       }
 
       if (assignment.attributes
-          .where((attribute) => attribute.name.local == 'Score')
+          .where((attribute) => attribute.name.local == 'DisplayScore')
           .isEmpty) {
         continue;
       }
@@ -210,12 +211,14 @@ GradebookData parseGradebook(http.Response response) {
         continue;
       }
 
+      // TODO: Transition string parsing of score to new data packed max & cal score
+
       a.title = assignment.attributes
           .firstWhere((attribute) => attribute.name.local == 'Measure')
           .value;
 
       String score = assignment.attributes
-          .firstWhere((attribute) => attribute.name.local == 'Score')
+          .firstWhere((attribute) => attribute.name.local == 'DisplayScore')
           .value;
 
       String scoreType = assignment.attributes
@@ -226,7 +229,7 @@ GradebookData parseGradebook(http.Response response) {
           .firstWhere((attribute) => attribute.name.local == 'Points')
           .value;
 
-      if (score == 'Not Graded') {
+      if (score == 'Not Graded' || score == 'Not Due') {
         continue;
       }
 
@@ -235,7 +238,7 @@ GradebookData parseGradebook(http.Response response) {
           a.score = double.parse(score.substring(0, score.length - 1));
           a.total = 100.0;
           break;
-        case 'Raw Score':
+        case 'Raw Score' || '4pt Rubric ':
           a.score = double.parse(score.split(' out of ')[0]);
           a.total = double.parse(score.split(' out of ')[1]);
           break;

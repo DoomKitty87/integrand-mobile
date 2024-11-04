@@ -222,7 +222,6 @@ class StudentVueAPI with ChangeNotifier {
     http.Response response = await gradebook();
 
     int currentPeriod = getCurrentReportingPeriod(response);
-
     if (currentPeriod == -1) {
       // This means school hasn't started yet
       currentPeriod = 0;
@@ -242,7 +241,6 @@ class StudentVueAPI with ChangeNotifier {
     }
 
     gradebookData = parseGradebook(response);
-
     initializedGrades = true;
 
     return gradebookData;
@@ -480,11 +478,14 @@ class StudentVueAPI with ChangeNotifier {
     RegExp weightedGPAExp =
         RegExp(r'HSCumulativeWgt</h2><spanclass="gpa-score">(.*?)</span>');
 
-    String unweightedGPA = unweightedGPAExp.firstMatch(html)!.group(1)!;
-    String weightedGPA = weightedGPAExp.firstMatch(html)!.group(1)!;
-
-    data.unweightedGPA = double.parse(unweightedGPA);
-    data.weightedGPA = double.parse(weightedGPA);
+    try {
+      String unweightedGPA = unweightedGPAExp.firstMatch(html)!.group(1)!;
+      String weightedGPA = weightedGPAExp.firstMatch(html)!.group(1)!;
+      data.unweightedGPA = double.parse(unweightedGPA);
+      data.weightedGPA = double.parse(weightedGPA);
+    } catch (e) {
+      data.error = true;
+    }
 
     return data;
   }
