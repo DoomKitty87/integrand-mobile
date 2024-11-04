@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:integrand/backend/studentvue_api.dart';
 import 'package:integrand/widget_templates.dart';
@@ -402,7 +404,8 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
                       inactiveColor: lightGrey,
                       activeColor: purpleGradient,
                       thumbColor: textColor,
-                      value: virtualAssignment.score,
+                      value:
+                          min(virtualAssignment.score, virtualAssignment.total),
                       onChanged: (value) {
                         setState(() {
                           virtualAssignment.score = value;

@@ -183,7 +183,7 @@ GradebookData parseGradebook(http.Response response) {
     List<XmlElement> assignments = mark.findAllElements('Assignment').toList();
 
     for (XmlElement assignment in assignments) {
-      print(assignment.attributes);
+      // print(assignment.attributes);
       Assignment a = Assignment();
 
       // Check if element has attributes
