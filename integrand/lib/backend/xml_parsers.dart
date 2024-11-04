@@ -206,7 +206,13 @@ GradebookData parseGradebook(http.Response response) {
       }
 
       if (assignment.attributes
-          .where((attribute) => attribute.name.local == 'Points')
+          .where((attribute) => attribute.name.local == 'Point')
+          .isEmpty) {
+        continue;
+      }
+
+      if (assignment.attributes
+          .where((attribute) => attribute.name.local == 'PointPossible')
           .isEmpty) {
         continue;
       }
@@ -226,12 +232,19 @@ GradebookData parseGradebook(http.Response response) {
           .value;
 
       String points = assignment.attributes
-          .firstWhere((attribute) => attribute.name.local == 'Points')
+          .firstWhere((attribute) => attribute.name.local == 'Point')
+          .value;
+
+      String totalPoints = assignment.attributes
+          .firstWhere((attribute) => attribute.name.local == 'PointPossible')
           .value;
 
       if (score == 'Not Graded' || score == 'Not Due') {
         continue;
       }
+
+      a.points = points == "" ? 0 : double.parse(points);
+      a.totalPoints = totalPoints == "" ? 0 : double.parse(totalPoints);
 
       switch (scoreType) {
         case 'Percentage':

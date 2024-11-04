@@ -408,7 +408,9 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
                           min(virtualAssignment.score, virtualAssignment.total),
                       onChanged: (value) {
                         setState(() {
-                          virtualAssignment.score = value;
+                          virtualAssignment.points = value /
+                              virtualAssignment.total *
+                              virtualAssignment.totalPoints;
                           score = value;
                           widget.updateCallback(widget.virtualized);
                         });

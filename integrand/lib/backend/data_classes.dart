@@ -176,9 +176,15 @@ class CourseGrading {
     double totalTotalPoints = 0.0;
 
     for (var assignment in assignments) {
-      double percent = assignment.score / assignment.total;
+      // print(assignment.title);
+      // print(assignment.type.title);
+      // print(assignment.type.weight);
+      // print(assignment.points);
+      // print(assignment.totalPoints);
+      // print(assignment.score);
+      // print(assignment.total);
 
-      totalPoints += assignment.totalPoints * assignment.type.weight * percent;
+      totalPoints += assignment.points * assignment.type.weight;
       totalTotalPoints += assignment.totalPoints * assignment.type.weight;
     }
 
