@@ -72,8 +72,8 @@ class _LoadingScheduleState extends State<LoadingSchedule> {
               const ColorEffect(
                 blendMode: ShimmerEffect.defaultBlendMode,
                 duration: Durations.long4,
-                begin: lightGrey,
-                end: lighterGrey,
+                begin: background1,
+                end: background2,
                 curve: Curves.ease,
               ),
             ]
@@ -95,7 +95,7 @@ class GreyRoundedContainer extends StatelessWidget {
       padding: EdgeInsets.all(padding),
       child: Container(
         decoration: BoxDecoration(
-          color: lightGrey,
+          color: background1,
           borderRadius: BorderRadius.circular(10)
         ),
       ),

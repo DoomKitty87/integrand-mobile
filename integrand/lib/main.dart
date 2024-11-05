@@ -41,14 +41,14 @@ void main() {
         theme: ThemeData(
           fontFamily: 'Inter',
           brightness: Brightness.dark,
-          primaryColor: primaryColor,
-          scaffoldBackgroundColor: backgroundColor,
+          primaryColor: background1,
+          scaffoldBackgroundColor: background0,
         ),
         debugShowCheckedModeBanner: false,
         home: DefaultTextStyle(
           style: const TextStyle(
               fontFamily: 'Inter',
-              color: textColor,
+              color: textWhite,
               decoration: TextDecoration.none),
           child: MediaQuery.withNoTextScaling(
               // ignored because it lets hot reload work
@@ -308,7 +308,7 @@ class TopLevelPageSelectBar extends StatelessWidget {
             icon: const Icon(
               Icons.account_circle_sharp,
               size: 25,
-              color: textColor,
+              color: textWhite,
             ),
             onPressed: () {
               topLevelPageController.animateToPage(0,
@@ -320,7 +320,7 @@ class TopLevelPageSelectBar extends StatelessWidget {
             icon: const Icon(
               Icons.settings_sharp,
               size: 25,
-              color: textColor,
+              color: textWhite,
             ),
             onPressed: () {
               topLevelPageController.animateToPage(2,
@@ -417,7 +417,7 @@ class PageSelectIcon extends StatelessWidget {
                   icon,
                   size: 25,
                   color:
-                      appData.currentPage == page ? barColorSelected : barColor,
+                      appData.currentPage == page ? textWhite : textGrey,
                 ),
                 const SizedBox(
                   height: 2,

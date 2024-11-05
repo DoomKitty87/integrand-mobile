@@ -28,7 +28,7 @@ class _CalendarState extends State<Calendar> {
                 child: IconButton(
                   icon: const Icon(
                     Icons.arrow_back,
-                    color: textColor,
+                    color: textWhite,
                     size: 20,
                   ),
                   onPressed: () {
@@ -50,7 +50,7 @@ class _CalendarState extends State<Calendar> {
               Expanded(
                 child: IconButton(
                   icon: const Icon(Icons.arrow_forward,
-                      color: textColor, size: 20),
+                      color: textWhite, size: 20),
                   onPressed: () {
                     setState(() {
                       if (selectedTime.month == 12) {
@@ -146,12 +146,12 @@ class FilterBar extends StatelessWidget {
             },
             child: Container(
               decoration: BoxDecoration(
-                color: filter == index ? null : primaryColor,
+                color: filter == index ? null : background1,
                 gradient: filter == index ? textGradient : null,
                 borderRadius: const BorderRadius.all(Radius.circular(5)),
                 border: Border.all(
                     color:
-                        filter == index ? Colors.transparent : highlightColor,
+                        filter == index ? Colors.transparent : background2,
                     width: 1),
               ),
               margin: const EdgeInsets.all(3),
@@ -299,7 +299,7 @@ class CalendarGrid extends StatelessWidget {
                       gradient: dayNumber == day ? textGradient : null,
                       border: Border.all(
                           color: dayNumber == trueCurrentDay
-                              ? highlightColor
+                              ? background2
                               : Colors.transparent),
                       borderRadius: const BorderRadius.all(Radius.circular(5)),
                     ),
@@ -404,7 +404,7 @@ class EventCard extends StatelessWidget {
           child: Center(
             child: Icon(
               eventTypeIcons[event.type],
-              color: textColor,
+              color: textWhite,
               size: 50,
             ),
           ),
@@ -424,7 +424,7 @@ class EventCard extends StatelessWidget {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  const Icon(Icons.place, size: 16, color: textColor),
+                  const Icon(Icons.place, size: 16, color: textWhite),
                   const SizedBox(width: 5),
                   Text(event.location, style: smallBodyStyle),
                 ],

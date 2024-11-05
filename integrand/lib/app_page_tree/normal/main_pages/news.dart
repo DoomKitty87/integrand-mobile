@@ -237,7 +237,7 @@ class ArticleSearchBar extends StatelessWidget {
             child: Container(
               height: height,
               decoration: BoxDecoration(
-                color: lightGrey,
+                color: background2,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Material(
@@ -358,11 +358,13 @@ class ArticleSearchResult extends StatelessWidget {
 
 class ArticleList extends StatelessWidget {
   const ArticleList(
-      {super.key,
+  {
+      super.key,
       required this.articleCount,
       required this.newsArticles,
       required this.enterArticleView,
-      required this.pageController});
+      required this.pageController,
+      });
 
   final int articleCount;
   final List<NewsArticle> newsArticles;
@@ -409,13 +411,14 @@ class ArticleList extends StatelessWidget {
 }
 
 class ArticleListItemContainer extends StatelessWidget {
-  const ArticleListItemContainer(
-      {super.key,
-      required this.newsArticle,
-      this.hasDate = false,
-      this.ignoreDateSpacing = false,
-      required this.enterArticleView,
-      required this.pageController});
+  const ArticleListItemContainer({
+    super.key,
+    required this.newsArticle,
+    this.hasDate = false,
+    this.ignoreDateSpacing = false,
+    required this.enterArticleView,
+    required this.pageController,
+  });
 
   final NewsArticle newsArticle;
   final bool hasDate;
@@ -536,7 +539,7 @@ class ArticleListItem extends StatelessWidget {
           print("Tapped on article ${newsArticle.title}");
         },
         child: Container(
-          color: lightGreyTransparent,
+          color: background1,
           child: Column(
             children: [
               const BorderLine(),
@@ -610,7 +613,7 @@ class ArticleFullscreenPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: primaryColor,
+      color: background0,
       child: Column(
         children: [
           Padding(
@@ -658,7 +661,7 @@ class ArticleFullscreenPageHeader extends StatelessWidget {
               IconButton(
                 icon: const Icon(
                   Icons.arrow_back_ios_new_rounded,
-                  color: textColor,
+                  color: textWhite,
                 ),
                 onPressed: exitArticleView,
               ),

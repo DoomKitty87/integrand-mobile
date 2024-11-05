@@ -366,7 +366,7 @@ class LayeredProgressIndicator extends StatelessWidget {
           width: 5,
           height: 5,
           decoration: BoxDecoration(
-            color: textColor,
+            color: textWhite,
             borderRadius: BorderRadius.circular(5),
           ),
         ),
@@ -375,7 +375,7 @@ class LayeredProgressIndicator extends StatelessWidget {
           child: Container(
             height: 5,
             decoration: BoxDecoration(
-              color: lighterGrey,
+              color: background3,
               borderRadius: BorderRadius.circular(5),
             ),
           ),
@@ -604,10 +604,10 @@ class _ScheduleExpandableListItemState
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  IconButtonTemplate(
-                    icon: Icons.email_sharp,
-                    size: 20,
-                    padding: 10,
+                  IconButton(
+                    icon: Icon(Icons.email_sharp),
+                    iconSize: 20,
+                    padding: EdgeInsets.all(10),
                     onPressed: () {
                       // Link to email teacher
                       if (email != "N/A") {
@@ -623,10 +623,10 @@ class _ScheduleExpandableListItemState
                       }
                     },
                   ),
-                  IconButtonTemplate(
-                    icon: Icons.book_sharp,
-                    size: 20,
-                    padding: 10,
+                  IconButton(
+                    icon: Icon(Icons.book_sharp),
+                    iconSize: 20,
+                    padding: EdgeInsets.all(10),
                     onPressed: () {
                       // Send to gradebook page for that class
                       Provider.of<AppData>(context, listen: false)

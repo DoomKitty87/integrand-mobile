@@ -193,7 +193,7 @@ class RecommendationsDisplay extends StatelessWidget {
                   ),
                   Expanded(
                     flex: 100 - (recommendation.percent * 100).toInt(),
-                    child: Container(color: lighterGrey),
+                    child: Container(color: background3),
                   )
                 ],
               ),
@@ -220,7 +220,7 @@ class RecommendationsDisplay extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Container(
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10), color: lightGrey),
+              borderRadius: BorderRadius.circular(10), color: background2),
           height: 200,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -270,10 +270,10 @@ class _ClassGradeCalculatorState extends State<ClassGradeCalculator> {
         GestureDetector(
           child: Container(
             decoration: BoxDecoration(
-              color: orderByGrade ? lightGrey : null,
+              color: orderByGrade ? background2 : null,
               gradient: orderByGrade ? null : textGradient,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: textColor, width: 0.1),
+              border: Border.all(color: textWhite, width: 0.1),
             ),
             child: const SizedBox(
                 width: 150,
@@ -292,10 +292,10 @@ class _ClassGradeCalculatorState extends State<ClassGradeCalculator> {
         GestureDetector(
           child: Container(
             decoration: BoxDecoration(
-              color: orderByGrade ? null : lightGrey,
+              color: orderByGrade ? null : background2,
               gradient: orderByGrade ? textGradient : null,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: textColor, width: 0.1),
+              border: Border.all(color: textWhite, width: 0.1),
             ),
             child: const SizedBox(
                 width: 150,
@@ -401,9 +401,9 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
                             RoundSliderThumbShape(enabledThumbRadius: 8.0),
                         trackShape: GradientRectSliderTrackShape()),
                     child: Slider(
-                      inactiveColor: lightGrey,
+                      inactiveColor: background2,
                       activeColor: purpleGradient,
-                      thumbColor: textColor,
+                      thumbColor: textWhite,
                       value:
                           min(virtualAssignment.score, virtualAssignment.total),
                       onChanged: (value) {
@@ -675,7 +675,7 @@ class ClassHeaderBar extends StatelessWidget {
             child: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: exitCallback,
-              color: textColor,
+              color: textWhite,
             ),
           ),
         ]),
@@ -809,7 +809,7 @@ class _GradebookDisplayState extends State<GradebookDisplay> {
                 child: NonExpandableListItem(
                   height: 50,
                   child: Container(
-                    color: primaryColor,
+                    color: background1,
                     child: Padding(
                       padding: const EdgeInsets.only(
                         left: 20.0,

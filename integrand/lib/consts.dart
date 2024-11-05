@@ -3,23 +3,16 @@ import 'package:integrand/backend/data_classes.dart';
 
 const String appName = "Integrand";
 
-const Color backgroundColor = Color.fromRGBO(5, 5, 5, 1); //HSVO(0, 0, 2, 1)
-const Color primaryColor = Color.fromRGBO(10, 10, 10, 1);
-const Color highlightColor = Color.fromRGBO(22, 22, 22, 1);
-const Color backgroundColorSecondary = Color.fromRGBO(5, 5, 5, 1);
-const Color textColor = Color.fromRGBO(224, 224, 224, 1);
-const Color textColorSecondary = Color.fromRGBO(112, 112, 112, 1);
-const Color darkGrey = Color.fromRGBO(14, 14, 14, 1);
-const Color lightGrey = Color.fromRGBO(26, 27, 33, 1);
-const Color lightGreyTransparent = Color.fromRGBO(217, 217, 217, 0.02);
-const Color lighterGrey = Color.fromRGBO(45, 47, 57, 1);
-const Color lightestGrey = Color.fromRGBO(85, 87, 97, 1);
+const Color background0 = Color.fromRGBO(11, 11, 16, 1); //HSVO(0, 0, 2, 1)
+const Color background1 = Color.fromRGBO(16, 16, 22, 1);
+const Color background2 = Color.fromRGBO(22, 22, 32, 1);
+const Color background3 = Color.fromRGBO(54, 54, 74, 1);
+const Color background4 = Color.fromRGBO(65, 65, 88, 1);
+const Color textWhite = Color.fromRGBO(224, 224, 224, 1);
+const Color textGrey = Color.fromRGBO(63, 63, 63, 1);
 const Color blueGradient = Color.fromRGBO(5, 62, 148, 1);
 const Color purpleGradient = Color.fromRGBO(122, 61, 143, 1);
-const Color iconColor = purpleGradient;
 const Color errorColor = Color.fromRGBO(255, 0, 0, 1);
-const Color barColor = textColorSecondary;
-const Color barColorSelected = textColor;
 
 class BorderLine extends StatelessWidget {
   const BorderLine({super.key});
@@ -28,7 +21,7 @@ class BorderLine extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 1,
-      color: lightGrey,
+      color: background3,
     );
   }
 }
@@ -68,7 +61,7 @@ class GradientBackground extends StatelessWidget {
       // BACKGROUND --------------------------------
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [backgroundColor, backgroundColorSecondary],
+          colors: [background0, background0],
           begin: Alignment(0.5, -1),
           end: Alignment(0.5, 1),
         ),
@@ -89,7 +82,7 @@ const Gradient verticalGradientAccent = LinearGradient(
 );
 
 const TextStyle titleStyle = TextStyle(
-  color: textColor,
+  color: textWhite,
   fontSize: 48,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
@@ -106,7 +99,7 @@ TextStyle titleStyleWithGradient = TextStyle(
 );
 
 const TextStyle subtitleStyle = TextStyle(
-  color: textColor,
+  color: textWhite,
   fontSize: 48,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
@@ -114,7 +107,7 @@ const TextStyle subtitleStyle = TextStyle(
 );
 
 const TextStyle mediumTitleStyle = TextStyle(
-  color: textColor,
+  color: textWhite,
   fontSize: 24,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
@@ -122,7 +115,7 @@ const TextStyle mediumTitleStyle = TextStyle(
 );
 
 const TextStyle mediumSubtitleStyle = TextStyle(
-  color: textColor,
+  color: textWhite,
   fontSize: 24,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
@@ -130,7 +123,7 @@ const TextStyle mediumSubtitleStyle = TextStyle(
 );
 
 const TextStyle bodyStyle = TextStyle(
-  color: textColor,
+  color: textWhite,
   fontSize: 14,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
@@ -138,7 +131,7 @@ const TextStyle bodyStyle = TextStyle(
 );
 
 const TextStyle bodyStyleSubdued = TextStyle(
-  color: textColorSecondary,
+  color: textGrey,
   fontSize: 14,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
@@ -146,7 +139,7 @@ const TextStyle bodyStyleSubdued = TextStyle(
 );
 
 const TextStyle boldBodyStyle = TextStyle(
-  color: textColor,
+  color: textWhite,
   fontSize: 14,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
@@ -154,7 +147,7 @@ const TextStyle boldBodyStyle = TextStyle(
 );
 
 const TextStyle boldBodyStyleSubdued = TextStyle(
-  color: textColorSecondary,
+  color: textGrey,
   fontSize: 14,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
@@ -162,7 +155,7 @@ const TextStyle boldBodyStyleSubdued = TextStyle(
 );
 
 const TextStyle smallBodyStyle = TextStyle(
-  color: textColor,
+  color: textWhite,
   fontSize: 12,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
@@ -170,7 +163,7 @@ const TextStyle smallBodyStyle = TextStyle(
 );
 
 const TextStyle smallBodyStyleSubdued = TextStyle(
-  color: textColorSecondary,
+  color: textGrey,
   fontSize: 12,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
@@ -178,7 +171,7 @@ const TextStyle smallBodyStyleSubdued = TextStyle(
 );
 
 const TextStyle boldSmallBodyStyle = TextStyle(
-  color: textColor,
+  color: textWhite,
   fontSize: 12,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
@@ -194,7 +187,7 @@ const TextStyle errorStyle = TextStyle(
 );
 
 const TextStyle barStyle = TextStyle(
-  color: textColorSecondary,
+  color: textGrey,
   fontSize: 12,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
@@ -202,7 +195,7 @@ const TextStyle barStyle = TextStyle(
 );
 
 const TextStyle barStyleSelected = TextStyle(
-  color: textColor,
+  color: textWhite,
   fontSize: 12,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
@@ -210,7 +203,7 @@ const TextStyle barStyleSelected = TextStyle(
 );
 
 const TextStyle newsDateStyle = TextStyle(
-  color: textColor,
+  color: textWhite,
   fontSize: 10,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
@@ -220,11 +213,11 @@ const TextStyle newsDateStyle = TextStyle(
 ButtonStyle buttonStyle = ButtonStyle(
   side: const WidgetStatePropertyAll(
     BorderSide(
-      color: lighterGrey,
+      color: background3,
       width: 1,
     ),
   ),
-  backgroundColor: const WidgetStatePropertyAll(darkGrey),
+  backgroundColor: const WidgetStatePropertyAll(background2),
   fixedSize: const WidgetStatePropertyAll(Size(5000, 50)),
   shape: WidgetStatePropertyAll(
     RoundedRectangleBorder(

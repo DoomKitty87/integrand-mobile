@@ -51,14 +51,14 @@ class _TransitState extends State<Transit> {
                             decoration: const InputDecoration(
                               labelText: "Stop Name or ID",
                               enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: textColor),
+                                borderSide: BorderSide(color: textWhite),
                               ),
                               focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: textColor),
+                                borderSide: BorderSide(color: textWhite),
                               ),
                               labelStyle: bodyStyle,
                             ),
-                            cursorColor: textColor.withOpacity(0.8),
+                            cursorColor: textWhite.withOpacity(0.8),
                             onChanged: (String value) {
                               setState(() {
                                 currentSearch = value;
@@ -100,7 +100,7 @@ class _TransitState extends State<Transit> {
                           margin: const EdgeInsets.only(top: 5, bottom: 5),
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: lightGrey,
+                            color: background2,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Row(
@@ -112,7 +112,7 @@ class _TransitState extends State<Transit> {
                                 width: 25,
                                 height: 25,
                                 decoration: BoxDecoration(
-                                  color: darkGrey,
+                                  color: background1,
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: Center(
@@ -133,7 +133,7 @@ class _TransitState extends State<Transit> {
                 const Text("Saved Stops", style: mediumTitleStyle),
                 IconButton(
                   icon: const Icon(Icons.add),
-                  color: textColor,
+                  color: textWhite,
                   onPressed: () {
                     setState(
                       () => enteringNewStop = true,
@@ -261,7 +261,7 @@ class _SavedStopCardState extends State<SavedStopCard> {
               ),
         Container(
           height: 1,
-          color: highlightColor,
+          color: background2,
         ),
         Padding(
           padding: const EdgeInsets.only(
@@ -295,12 +295,12 @@ class _SavedStopCardState extends State<SavedStopCard> {
                         margin: const EdgeInsets.only(right: 10),
                         padding: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
-                            color: primaryColor,
+                            color: background1,
                             borderRadius: BorderRadius.circular(5),
                             border: Border.all(
                                 color: ignoredRoutes.contains(route)
                                     ? Colors.transparent
-                                    : highlightColor)),
+                                    : background2)),
                         child: Center(
                           child: Text(
                             route.toString(),
@@ -312,8 +312,8 @@ class _SavedStopCardState extends State<SavedStopCard> {
                 ]),
               ),
               IconButton(
-                icon: const Icon(Icons.delete, color: textColor),
-                color: textColor,
+                icon: const Icon(Icons.delete, color: textWhite),
+                color: textWhite,
                 onPressed: () {
                   // Remove stop from saved stops
                   Provider.of<TransitAPI>(context, listen: false)
@@ -342,9 +342,9 @@ class _SavedStopCardState extends State<SavedStopCard> {
                         width: 25,
                         height: 25,
                         decoration: BoxDecoration(
-                          color: primaryColor,
+                          color: background1,
                           borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: highlightColor),
+                          border: Border.all(color: background2),
                         ),
                         child: Center(
                             child: Text(widget.stop.direction[0],
@@ -402,7 +402,7 @@ class _SavedStopCardState extends State<SavedStopCard> {
               ),
             const Expanded(
               flex: 1,
-              child: Icon(Icons.arrow_drop_down_sharp, color: textColor),
+              child: Icon(Icons.arrow_drop_down_sharp, color: textWhite),
             ),
           ],
         ),
@@ -481,7 +481,7 @@ class BusRouteIndicator extends StatelessWidget {
               flex: (100 * (1 - fractionComplete)).toInt(),
               child: Container(
                 decoration: const BoxDecoration(
-                  color: darkGrey,
+                  color: background1,
                   borderRadius: BorderRadius.only(
                     topRight: Radius.circular(5),
                     bottomRight: Radius.circular(5),
@@ -626,9 +626,9 @@ class NearbyStopCard extends StatelessWidget {
                         width: 25,
                         height: 25,
                         decoration: BoxDecoration(
-                          color: primaryColor,
+                          color: background1,
                           borderRadius: BorderRadius.circular(5),
-                          border: Border.all(color: highlightColor),
+                          border: Border.all(color: background2),
                         ),
                         child: Center(
                             child:
@@ -687,8 +687,8 @@ class NearbyStopCard extends StatelessWidget {
             Expanded(
               flex: 1,
               child: IconButton(
-                icon: const Icon(Icons.add, color: textColor),
-                color: textColor,
+                icon: const Icon(Icons.add, color: textWhite),
+                color: textWhite,
                 onPressed: () {
                   // Add stop to saved stops
                   Provider.of<TransitAPI>(context, listen: false)

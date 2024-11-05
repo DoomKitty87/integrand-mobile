@@ -55,14 +55,14 @@ class _ExpandableListItemState extends State<ExpandableListItem> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(widget.borderRadius),
             gradient: widget.highlighted ? textGradient : null,
-            color: highlightColor,
+            color: background3,
           ),
           padding: EdgeInsets.all(widget.borderWidth),
           child: Container(
             padding: EdgeInsets.zero,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(widget.borderRadius),
-              color: primaryColor,
+              color: background2,
             ),
             child: ClipRRect(
               child: Stack(
@@ -79,11 +79,11 @@ class _ExpandableListItemState extends State<ExpandableListItem> {
                           : BorderRadius.circular(widget.borderRadius),
                       border: Border(
                         bottom: BorderSide(
-                          color: highlightColor,
+                          color: background3,
                           width: widget.borderWidth,
                         ),
                       ),
-                      color: primaryColor,
+                      color: background1,
                     ),
                     child: widget.child,
                   ),
@@ -139,14 +139,14 @@ class NonExpandableListItem extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(borderRadius),
         gradient: highlighted ? textGradient : null,
-        color: highlightColor,
+        color: background2,
       ),
       padding: EdgeInsets.all(borderWidth),
       child: Container(
         padding: EdgeInsets.zero,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(borderRadius),
-          color: primaryColor,
+          color: background1,
         ),
         child: ClipRRect(
           child: Container(
@@ -154,11 +154,11 @@ class NonExpandableListItem extends StatelessWidget {
               borderRadius: BorderRadius.circular(borderRadius),
               border: Border(
                 bottom: BorderSide(
-                  color: highlightColor,
+                  color: background2,
                   width: borderWidth,
                 ),
               ),
-              color: primaryColor,
+              color: background1,
             ),
             child: child,
           ),
@@ -169,12 +169,13 @@ class NonExpandableListItem extends StatelessWidget {
 }
 
 class IconButtonTemplate extends StatelessWidget {
-  const IconButtonTemplate(
-      {super.key,
-      required this.icon,
-      required this.size,
-      required this.padding,
-      this.onPressed});
+  const IconButtonTemplate({
+    super.key,
+    required this.icon,
+    required this.size,
+    required this.padding,
+    this.onPressed,
+  });
 
   final IconData icon;
   final double size;
@@ -190,10 +191,10 @@ class IconButtonTemplate extends StatelessWidget {
         width: size + padding * 2,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
-          border: Border.all(color: highlightColor, width: 1),
+          border: Border.all(color: background2, width: 1),
         ),
         child: Center(
-          child: Icon(icon, size: size, color: textColor),
+          child: Icon(icon, size: size, color: textWhite),
         ),
       ),
     );

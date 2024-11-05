@@ -28,7 +28,7 @@ class _ProfileState extends State<Profile> {
                 icon: Icon(
                   Icons.arrow_forward_ios_rounded,
                   size: 25,
-                  color: textColor,
+                  color: textWhite,
                 ),
                 onPressed: () {
                   widget.pageController.animateToPage(1,
@@ -114,8 +114,8 @@ class _ProfileState extends State<Profile> {
                     drawText: false,
                     width: 250,
                     height: 50,
-                    backgroundColor: textColor,
-                    color: backgroundColor,
+                    backgroundColor: textWhite,
+                    color: background0,
                     data: studentVueAPI.studentData.studentId.toString(),
                   ),
                 )

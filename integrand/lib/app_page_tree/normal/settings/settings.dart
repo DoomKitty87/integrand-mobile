@@ -119,7 +119,7 @@ class SettingTopBar extends StatelessWidget {
                 icon: const Icon(
                   Icons.arrow_back_ios_new_rounded,
                   size: 25,
-                  color: textColor,
+                  color: textWhite,
                 ),
                 onPressed: () {
                   if (isSubpage) {
@@ -165,7 +165,7 @@ class SettingsMain extends StatelessWidget {
           parentSetState: parentSetState,
           title: 'Legal', 
           subpagePageIndex: 0,
-          textAndIconColor: textColor,
+          textAndIconColor: textWhite,
         ),
         SettingListItemButton(
           title: 'Logout', 
@@ -207,7 +207,7 @@ class SettingsMain extends StatelessWidget {
                 barrierDismissible: false,
                 builder: (context) {
                   return AlertDialog(
-                    backgroundColor: highlightColor,
+                    backgroundColor: background2,
                     title: const Text('Logout'),
                     content: const Text('Are you sure you want to logout?'),
                     actions: [
@@ -237,7 +237,7 @@ class SettingsMain extends StatelessWidget {
 }
 
 class SettingListItem extends StatelessWidget {
-  const SettingListItem({super.key, required this.parentSetState, required this.title, required this.subpagePageIndex, this.textAndIconColor = textColor, this.includeBottomBorder = false, this.useIcons = false, this.icon = const Icon(Icons.dangerous)});
+  const SettingListItem({super.key, required this.parentSetState, required this.title, required this.subpagePageIndex, this.textAndIconColor = textWhite, this.includeBottomBorder = false, this.useIcons = false, this.icon = const Icon(Icons.dangerous)});
 
   final Function(int, String) parentSetState;
 
@@ -255,18 +255,18 @@ class SettingListItem extends StatelessWidget {
     if (includeBottomBorder) {
       return const Border(
         top: BorderSide(
-          color: lightGrey,
+          color: background3,
           width: 1
         ),
         bottom: BorderSide(
-          color: lightGrey,
+          color: background3,
           width: 1
         )
       );
     } else {
       return const Border(
         top: BorderSide(
-          color: lightGrey,
+          color: background3,
           width: 1
         )
       );
@@ -329,7 +329,7 @@ class SettingListItem extends StatelessWidget {
 }
 
 class SettingListItemButton extends StatelessWidget {
-  const SettingListItemButton({super.key, required this.onPressed, required this.title, this.textAndIconColor = textColor, this.includeBottomBorder = false, this.useIcons = false, this.icon = const Icon(Icons.dangerous)});
+  const SettingListItemButton({super.key, required this.onPressed, required this.title, this.textAndIconColor = textWhite, this.includeBottomBorder = false, this.useIcons = false, this.icon = const Icon(Icons.dangerous)});
 
   final Function() onPressed;
 
@@ -346,18 +346,18 @@ class SettingListItemButton extends StatelessWidget {
     if (includeBottomBorder) {
       return const Border(
         top: BorderSide(
-          color: lightGrey,
+          color: background3,
           width: 1
         ),
         bottom: BorderSide(
-          color: lightGrey,
+          color: background3,
           width: 1
         )
       );
     } else {
       return const Border(
         top: BorderSide(
-          color: lightGrey,
+          color: background3,
           width: 1
         )
       );

@@ -59,7 +59,7 @@ class StudentVueAPI with ChangeNotifier {
     ready = true;
 
     // TODO: Change this before production
-    bool USE_TEST_DATA = false;
+    bool USE_TEST_DATA = true;
     if (USE_TEST_DATA) {
       scheduleData = ScheduleData.testData();
       gradebookData = GradebookData.testData();
