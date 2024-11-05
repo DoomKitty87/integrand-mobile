@@ -44,20 +44,6 @@ class StudentVueAPI with ChangeNotifier {
     this.password = password;
     initialized = true;
 
-    // Should call data updates here
-    updateStudent();
-    updateGrades();
-    updateSchedule();
-
-    // Updates for data not accessible via SOAP API
-    await initializeClientData();
-
-    while (allApiCallsNotFinished()) {
-      await Future.delayed(const Duration(milliseconds: 100));
-    }
-
-    ready = true;
-
     // TODO: Change this before production
     bool USE_TEST_DATA = true;
     if (USE_TEST_DATA) {
@@ -67,6 +53,21 @@ class StudentVueAPI with ChangeNotifier {
       gpaData = GPAData.testData();
       bellSchedule = BellSchedule.testDataA();
     }
+    else {
+      // Should call data updates here
+      updateStudent();
+      updateGrades();
+      updateSchedule();
+
+      // Updates for data not accessible via SOAP API
+      await initializeClientData();
+
+      while (allApiCallsNotFinished()) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+    }
+
+    ready = true;
 
     notifyListeners();
   }
