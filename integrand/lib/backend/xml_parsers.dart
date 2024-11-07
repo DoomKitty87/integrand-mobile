@@ -125,6 +125,8 @@ int getCurrentReportingPeriod(http.Response response) {
   return currentPeriod;
 }
 
+// TODO: Add try-catch reporting and error handling for unexpected studentvue responses
+
 GradebookData parseGradebook(http.Response response) {
   String body = response.body;
 
@@ -217,15 +219,21 @@ GradebookData parseGradebook(http.Response response) {
         continue;
       }
 
-      // TODO: Transition string parsing of score to new data packed max & cal score
+      // DONE: Transition string parsing of score to new data packed max & cal score
+      // Non data packed score parsing is unreliable; it's possible for value to not match type
 
       a.title = assignment.attributes
           .firstWhere((attribute) => attribute.name.local == 'Measure')
           .value;
 
       String score = assignment.attributes
-          .firstWhere((attribute) => attribute.name.local == 'DisplayScore')
+          .firstWhere((attribute) => attribute.name.local == 'ScoreCalValue')
           .value;
+
+      String scoreTotal = assignment.attributes
+          .firstWhere((attribute) => attribute.name.local == 'ScoreMaxValue')
+          .value;
+
 
       String scoreType = assignment.attributes
           .firstWhere((attribute) => attribute.name.local == 'ScoreType')
@@ -243,30 +251,34 @@ GradebookData parseGradebook(http.Response response) {
         continue;
       }
 
-      a.points = points == "" ? 0 : double.parse(points);
-      a.totalPoints = totalPoints == "" ? 0 : double.parse(totalPoints);
-
-      switch (scoreType) {
-        case 'Percentage':
-          a.score = double.parse(score.substring(0, score.length - 1));
-          a.total = 100.0;
-          break;
-        case 'Raw Score' || '4pt Rubric ':
-          a.score = double.parse(score.split(' out of ')[0]);
-          a.total = double.parse(score.split(' out of ')[1]);
-          break;
-        case '4pt Rubric':
-          a.score = double.parse(score);
-          a.total = 4.0;
-          break;
-        default:
-          // TODO: Report to server so we can add any unknown score types
-          break;
-      }
-
+      a.score = score == "" ? 0 : double.parse(score);
+      a.scoreTotal = scoreTotal == "" ? 0 : double.parse(scoreTotal);
+      
       if (points == 'Dropped') {
         continue;
       }
+      
+      a.points = points == "" ? 0 : double.parse(points);
+      a.totalPoints = totalPoints == "" ? 0 : double.parse(totalPoints);
+
+
+      // switch (scoreType) {
+      //   case 'Percentage':
+      //     a.score = double.parse(score.substring(0, score.length - 1));
+      //     a.scoreTotal = 100.0;
+      //     break;
+      //   case 'Raw Score' || '4pt Rubric ':
+      //     a.score = double.parse(score.split(' out of ')[0]);
+      //     a.scoreTotal = double.parse(score.split(' out of ')[1]);
+      //     break;
+      //   case '4pt Rubric':
+      //     a.score = double.parse(score);
+      //     a.scoreTotal = 4.0;
+      //     break;
+      //   default:
+      //     // TODO: Report to server so we can add any unknown score types
+      //     break;
+      // }
 
       // Score is the teacher's grade given for the assignment
       // Points is the contribution the assignment makes to the grading category (Assignment Type)

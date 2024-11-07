@@ -166,7 +166,7 @@ class FilterBar extends StatelessWidget {
                   const SizedBox(width: 5),
                   Text(
                     eventTypeNames[index],
-                    style: smallBodyStyle,
+                    style: labelStyle,
                   ),
                 ],
               ),
@@ -190,7 +190,7 @@ class MonthDisplay extends StatelessWidget {
 
     return Text(
       month + ' ' + year,
-      style: boldBodyStyle,
+      style: bodyStyleBold,
     );
   }
 }
@@ -242,7 +242,7 @@ class CalendarGrid extends StatelessWidget {
             child: Center(
               child: Text(
                 daysOfWeek[index],
-                style: smallBodyStyleSubdued,
+                style: labelStyleSubdued,
               ),
             ),
           ),
@@ -279,7 +279,7 @@ class CalendarGrid extends StatelessWidget {
               child: Center(
                 child: Text(
                   trueDay.toString(),
-                  style: smallBodyStyleSubdued,
+                  style: labelStyleSubdued,
                 ),
               ),
             ),
@@ -308,7 +308,7 @@ class CalendarGrid extends StatelessWidget {
                       children: [
                         Text(
                           dayNumber.toString(),
-                          style: smallBodyStyle,
+                          style: labelStyle,
                         ),
                         DayEvents(
                           events: eventsThisMonth
@@ -426,7 +426,7 @@ class EventCard extends StatelessWidget {
                 children: [
                   const Icon(Icons.place, size: 16, color: textWhite),
                   const SizedBox(width: 5),
-                  Text(event.location, style: smallBodyStyle),
+                  Text(event.location, style: labelStyle),
                 ],
               )
             ]),
@@ -439,7 +439,7 @@ class EventCard extends StatelessWidget {
             TimeOfDay.fromDateTime(event.startTime).format(context) +
                 ' - ' +
                 TimeOfDay.fromDateTime(event.endTime).format(context),
-            style: smallBodyStyle,
+            style: labelStyle,
           ),
         ),
         const SizedBox(width: 10)
@@ -489,7 +489,7 @@ class DayEventsList extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 TimeOfDay.fromDateTime(event.startTime).format(context),
-                style: boldBodyStyle,
+                style: bodyStyleBold,
                 textAlign: TextAlign.left,
               ),
             ]),

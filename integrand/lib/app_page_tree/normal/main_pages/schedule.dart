@@ -193,11 +193,11 @@ class ScheduleTimeIndicators extends StatelessWidget {
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text(
             removeAMPM(startTime.format(context)),
-            style: smallBodyStyle,
+            style: labelStyle,
           ),
           Text(
             removeAMPM(endTime.format(context)),
-            style: smallBodyStyle,
+            style: labelStyle,
           ),
         ])
       ],
@@ -415,7 +415,7 @@ class ScheduleDisplayListLegend extends StatelessWidget {
           flex: 9,
           child: Text(
             "Class",
-            style: boldBodyStyle,
+            style: bodyStyleBold,
             textAlign: TextAlign.left,
           ),
         ),
@@ -424,7 +424,7 @@ class ScheduleDisplayListLegend extends StatelessWidget {
           child: Text(
             "Start",
             textAlign: TextAlign.center,
-            style: boldBodyStyle,
+            style: bodyStyleBold,
           ),
         ),
         Expanded(flex: 1, child: SizedBox()),
@@ -433,7 +433,7 @@ class ScheduleDisplayListLegend extends StatelessWidget {
           child: Text(
             "End",
             textAlign: TextAlign.center,
-            style: boldBodyStyle,
+            style: bodyStyleBold,
           ),
         ),
       ],
@@ -546,7 +546,7 @@ class _ScheduleExpandableListItemState
               flex: 9,
               child: Text(
                 name,
-                style: subdueName ? boldBodyStyleSubdued : boldBodyStyle,
+                style: subdueName ? bodyStyleBoldSubdued : bodyStyleBold,
                 textAlign: TextAlign.left,
               ),
             ),

@@ -50,8 +50,8 @@ const List<IconData> eventTypeIcons = [
   Icons.sports_soccer,
 ];
 
-class GradientBackground extends StatelessWidget {
-  const GradientBackground({super.key, required this.child});
+class AppBackground extends StatelessWidget {
+  const AppBackground({super.key, required this.child});
 
   final Widget child;
 
@@ -84,14 +84,14 @@ const Gradient verticalGradientAccent = LinearGradient(
 const TextStyle titleStyle = TextStyle(
   color: textWhite,
   fontSize: 48,
-  fontWeight: FontWeight.bold,
+  fontWeight: FontWeight.w600,
   fontFamily: "Inter",
   decoration: TextDecoration.none,
 );
 
-TextStyle titleStyleWithGradient = TextStyle(
+TextStyle titleStyleGradient = TextStyle(
   fontSize: 48,
-  fontWeight: FontWeight.bold,
+  fontWeight: FontWeight.w600,
   fontFamily: "Inter",
   decoration: TextDecoration.none,
   foreground: Paint()
@@ -100,31 +100,15 @@ TextStyle titleStyleWithGradient = TextStyle(
 
 const TextStyle subtitleStyle = TextStyle(
   color: textWhite,
-  fontSize: 48,
-  fontWeight: FontWeight.normal,
-  fontFamily: "Inter",
-  decoration: TextDecoration.none,
-);
-
-const TextStyle mediumTitleStyle = TextStyle(
-  color: textWhite,
-  fontSize: 24,
-  fontWeight: FontWeight.bold,
-  fontFamily: "Inter",
-  decoration: TextDecoration.none,
-);
-
-const TextStyle mediumSubtitleStyle = TextStyle(
-  color: textWhite,
-  fontSize: 24,
-  fontWeight: FontWeight.normal,
+  fontSize: 20,
+  fontWeight: FontWeight.w600,
   fontFamily: "Inter",
   decoration: TextDecoration.none,
 );
 
 const TextStyle bodyStyle = TextStyle(
   color: textWhite,
-  fontSize: 14,
+  fontSize: 16,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
   decoration: TextDecoration.none,
@@ -132,29 +116,29 @@ const TextStyle bodyStyle = TextStyle(
 
 const TextStyle bodyStyleSubdued = TextStyle(
   color: textGrey,
-  fontSize: 14,
+  fontSize: 16,
   fontWeight: FontWeight.normal,
   fontFamily: "Inter",
   decoration: TextDecoration.none,
 );
 
-const TextStyle boldBodyStyle = TextStyle(
+const TextStyle bodyStyleBold = TextStyle(
   color: textWhite,
-  fontSize: 14,
+  fontSize: 16,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
   decoration: TextDecoration.none,
 );
 
-const TextStyle boldBodyStyleSubdued = TextStyle(
+const TextStyle bodyStyleBoldSubdued = TextStyle(
   color: textGrey,
-  fontSize: 14,
+  fontSize: 16,
   fontWeight: FontWeight.bold,
   fontFamily: "Inter",
   decoration: TextDecoration.none,
 );
 
-const TextStyle smallBodyStyle = TextStyle(
+const TextStyle labelStyle = TextStyle(
   color: textWhite,
   fontSize: 12,
   fontWeight: FontWeight.normal,
@@ -162,7 +146,7 @@ const TextStyle smallBodyStyle = TextStyle(
   decoration: TextDecoration.none,
 );
 
-const TextStyle smallBodyStyleSubdued = TextStyle(
+const TextStyle labelStyleSubdued = TextStyle(
   color: textGrey,
   fontSize: 12,
   fontWeight: FontWeight.normal,
@@ -170,7 +154,7 @@ const TextStyle smallBodyStyleSubdued = TextStyle(
   decoration: TextDecoration.none,
 );
 
-const TextStyle boldSmallBodyStyle = TextStyle(
+const TextStyle labelStyleBold = TextStyle(
   color: textWhite,
   fontSize: 12,
   fontWeight: FontWeight.bold,

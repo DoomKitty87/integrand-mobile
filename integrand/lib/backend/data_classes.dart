@@ -94,7 +94,7 @@ class ScheduleData {
 class Assignment {
   String title = '';
   double score = 0.0;
-  double total = 0.0;
+  double scoreTotal = 0.0;
 
   double points = 0.0;
   double totalPoints = 0.0;
@@ -111,7 +111,7 @@ class Assignment {
   Assignment.withValues({
     required this.title,
     required this.score,
-    required this.total,
+    required this.scoreTotal,
     required this.type,
     required this.points,
     required this.totalPoints,
@@ -120,7 +120,7 @@ class Assignment {
   Assignment.testData({
     this.title = 'Test Assignment',
     this.score = 90.0,
-    this.total = 100.0,
+    this.scoreTotal = 100.0,
   });
 }
 
@@ -161,7 +161,7 @@ class CourseGrading {
       newCourse.assignments.add(Assignment.withValues(
         title: assignment.title,
         score: assignment.score,
-        total: assignment.total,
+        scoreTotal: assignment.scoreTotal,
         points: assignment.points,
         totalPoints: assignment.totalPoints,
         type: newCourse.assignmentTypes
@@ -210,7 +210,7 @@ class CourseGrading {
       Assignment.withValues(
         title: 'Test 1',
         score: 90.0,
-        total: 100.0,
+        scoreTotal: 100.0,
         points: 90.0,
         totalPoints: 100.0,
         type: assignmentTypes[0],
@@ -218,7 +218,7 @@ class CourseGrading {
       Assignment.withValues(
         title: 'Quiz 1',
         score: 95.0,
-        total: 100.0,
+        scoreTotal: 100.0,
         points: 95.0,
         totalPoints: 100.0,
         type: assignmentTypes[1],
@@ -226,7 +226,7 @@ class CourseGrading {
       Assignment.withValues(
         title: 'Test 2',
         score: 100.0,
-        total: 100.0,
+        scoreTotal: 100.0,
         points: 100.0,
         totalPoints: 100.0,
         type: assignmentTypes[0],
@@ -234,7 +234,7 @@ class CourseGrading {
       Assignment.withValues(
         title: 'Quiz 2',
         score: 85.0,
-        total: 100.0,
+        scoreTotal: 100.0,
         points: 85.0,
         totalPoints: 100.0,
         type: assignmentTypes[1],

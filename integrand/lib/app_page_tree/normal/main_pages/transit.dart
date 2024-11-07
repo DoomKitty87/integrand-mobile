@@ -117,7 +117,7 @@ class _TransitState extends State<Transit> {
                                 ),
                                 child: Center(
                                   child: Text(stop.direction[0],
-                                      style: boldBodyStyle),
+                                      style: bodyStyleBold),
                                 ),
                               ),
                               const SizedBox(width: 10),
@@ -130,7 +130,7 @@ class _TransitState extends State<Transit> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("Saved Stops", style: mediumTitleStyle),
+                const Text("Saved Stops", style: subtitleStyle),
                 IconButton(
                   icon: const Icon(Icons.add),
                   color: textWhite,
@@ -147,7 +147,7 @@ class _TransitState extends State<Transit> {
                 stop: stop,
               ),
             const SizedBox(height: 20),
-            const Text("Nearby Stops", style: mediumTitleStyle),
+            const Text("Nearby Stops", style: subtitleStyle),
             const SizedBox(height: 10),
             for (StopLive stop in transitAPI.nearbyStops)
               NearbyStopCard(
@@ -241,7 +241,7 @@ class _SavedStopCardState extends State<SavedStopCard> {
                                     children: <TextSpan>[
                                       const TextSpan(
                                         text: "More in:",
-                                        style: boldBodyStyle,
+                                        style: bodyStyleBold,
                                       ),
                                       TextSpan(
                                         text: getFutureArrivals(arrivals),
@@ -251,13 +251,13 @@ class _SavedStopCardState extends State<SavedStopCard> {
                                   )),
                             )
                           : const Text("No more arrivals soon",
-                              style: boldBodyStyle),
+                              style: bodyStyleBold),
                     ]),
               )
             : const Padding(
                 padding:
                     EdgeInsets.only(left: 20, right: 20, bottom: 10, top: 10),
-                child: Text("No arrivals found", style: boldBodyStyle),
+                child: Text("No arrivals found", style: bodyStyleBold),
               ),
         Container(
           height: 1,
@@ -304,7 +304,7 @@ class _SavedStopCardState extends State<SavedStopCard> {
                         child: Center(
                           child: Text(
                             route.toString(),
-                            style: boldBodyStyle,
+                            style: bodyStyleBold,
                           ),
                         ),
                       ),
@@ -336,7 +336,7 @@ class _SavedStopCardState extends State<SavedStopCard> {
                   Row(
                     children: [
                       Text(truncate(widget.stop.name, 16),
-                          style: boldBodyStyle),
+                          style: bodyStyleBold),
                       Container(
                         margin: const EdgeInsets.only(left: 5),
                         width: 25,
@@ -348,7 +348,7 @@ class _SavedStopCardState extends State<SavedStopCard> {
                         ),
                         child: Center(
                             child: Text(widget.stop.direction[0],
-                                style: boldBodyStyle)),
+                                style: bodyStyleBold)),
                       ),
                     ],
                   ),
@@ -366,7 +366,7 @@ class _SavedStopCardState extends State<SavedStopCard> {
                               child: Center(
                                 child: Text(
                                   arrivals[0]["route"].toString(),
-                                  style: boldBodyStyle,
+                                  style: bodyStyleBold,
                                 ),
                               )),
                         ),
@@ -397,7 +397,7 @@ class _SavedStopCardState extends State<SavedStopCard> {
                                 .toString()),
                             0))
                         .toString(),
-                    style: mediumTitleStyle,
+                    style: subtitleStyle,
                     textAlign: TextAlign.right),
               ),
             const Expanded(
@@ -502,7 +502,7 @@ class BusRouteIndicator extends StatelessWidget {
                   width: 80,
                   child: Text(
                     prevStopName,
-                    style: smallBodyStyle,
+                    style: labelStyle,
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                   )),
@@ -510,7 +510,7 @@ class BusRouteIndicator extends StatelessWidget {
                   width: 80,
                   child: Text(
                     nextStopName,
-                    style: smallBodyStyle,
+                    style: labelStyle,
                     textAlign: TextAlign.right,
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
@@ -620,7 +620,7 @@ class NearbyStopCard extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(truncate(stop.name, 16), style: boldBodyStyle),
+                      Text(truncate(stop.name, 16), style: bodyStyleBold),
                       Container(
                         margin: const EdgeInsets.only(left: 5),
                         width: 25,
@@ -632,7 +632,7 @@ class NearbyStopCard extends StatelessWidget {
                         ),
                         child: Center(
                             child:
-                                Text(stop.direction[0], style: boldBodyStyle)),
+                                Text(stop.direction[0], style: bodyStyleBold)),
                       ),
                     ],
                   ),
@@ -650,7 +650,7 @@ class NearbyStopCard extends StatelessWidget {
                               child: Center(
                                 child: Text(
                                   stop.arrivals[0]["route"].toString(),
-                                  style: boldBodyStyle,
+                                  style: bodyStyleBold,
                                 ),
                               )),
                         ),
@@ -681,7 +681,7 @@ class NearbyStopCard extends StatelessWidget {
                                 .toString()),
                             0))
                         .toString(),
-                    style: mediumTitleStyle,
+                    style: subtitleStyle,
                     textAlign: TextAlign.right),
               ),
             Expanded(

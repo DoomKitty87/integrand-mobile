@@ -45,7 +45,7 @@ class StudentVueAPI with ChangeNotifier {
     initialized = true;
 
     // TODO: Change this before production
-    bool USE_TEST_DATA = true;
+    bool USE_TEST_DATA = false;
     if (USE_TEST_DATA) {
       scheduleData = ScheduleData.testData();
       gradebookData = GradebookData.testData();
@@ -53,6 +53,7 @@ class StudentVueAPI with ChangeNotifier {
       gpaData = GPAData.testData();
       bellSchedule = BellSchedule.testDataA();
     }
+    // ignore: dead_code
     else {
       // Should call data updates here
       updateStudent();
@@ -65,11 +66,12 @@ class StudentVueAPI with ChangeNotifier {
       while (allApiCallsNotFinished()) {
         await Future.delayed(const Duration(milliseconds: 100));
       }
+      notifyListeners();
+
     }
 
     ready = true;
 
-    notifyListeners();
   }
 
   static bool credsAreNull(String user, String pass) {

@@ -154,7 +154,7 @@ class RecommendationsDisplay extends StatelessWidget {
                   assignment.type.weight;
           double courseGradeIfMax = course.grade + classGradeMaxImprovement;
 
-          double percent = assignment.score / assignment.total;
+          double percent = assignment.score / assignment.scoreTotal;
 
           recommendations.add(Recommendation(
               percent: percent,
@@ -203,12 +203,12 @@ class RecommendationsDisplay extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(recommendation.courseGradeIfZero.toStringAsFixed(2),
-                        style: boldSmallBodyStyle),
+                        style: labelStyleBold),
                     Text(
                         "${recommendation.title} - ${recommendation.courseTitle}",
-                        style: smallBodyStyle),
+                        style: labelStyle),
                     Text(recommendation.courseGradeIfMax.toStringAsFixed(2),
-                        style: boldSmallBodyStyle),
+                        style: labelStyleBold),
                   ],
                 ),
               )
@@ -227,7 +227,7 @@ class RecommendationsDisplay extends StatelessWidget {
             children: [
               const Padding(
                 padding: EdgeInsets.only(left: 16.0, top: 8.0),
-                child: Text("Suggested Retakes", style: boldBodyStyle),
+                child: Text("Suggested Retakes", style: bodyStyleBold),
               ),
               Expanded(child: ListView(children: recommendationsWidgets)),
             ],
@@ -254,8 +254,8 @@ class _ClassGradeCalculatorState extends State<ClassGradeCalculator> {
   Widget build(BuildContext context) {
     if (orderByGrade) {
       widget.virtualized.assignments.sort((a, b) {
-        double aGrade = a.score / a.total * 4;
-        double bGrade = b.score / b.total * 4;
+        double aGrade = a.score / a.scoreTotal * 4;
+        double bGrade = b.score / b.scoreTotal * 4;
 
         return aGrade.compareTo(bGrade);
       });
@@ -390,7 +390,7 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text("0.0", style: smallBodyStyle),
+              const Text("0.0", style: labelStyle),
               Expanded(
                 child: Material(
                   color: Colors.transparent,
@@ -405,23 +405,23 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
                       activeColor: purpleGradient,
                       thumbColor: textWhite,
                       value:
-                          min(virtualAssignment.score, virtualAssignment.total),
+                          min(virtualAssignment.score, virtualAssignment.scoreTotal),
                       onChanged: (value) {
                         setState(() {
                           virtualAssignment.points = value /
-                              virtualAssignment.total *
+                              virtualAssignment.scoreTotal *
                               virtualAssignment.totalPoints;
                           score = value;
                           widget.updateCallback(widget.virtualized);
                         });
                       },
                       min: 0,
-                      max: virtualAssignment.total,
+                      max: virtualAssignment.scoreTotal,
                     ),
                   ),
                 ),
               ),
-              const Text("4.0", style: smallBodyStyle)
+              const Text("4.0", style: labelStyle)
             ],
           ),
         ),
@@ -430,14 +430,14 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Text("Type: \n${virtualAssignment.type.title}",
-                style: smallBodyStyle, textAlign: TextAlign.center),
+                style: labelStyle, textAlign: TextAlign.center),
             Text(
-                "Virtual Grade: \n${(virtualAssignment.score / virtualAssignment.total * 4).toStringAsFixed(2)}",
-                style: smallBodyStyle,
+                "Virtual Grade: \n${(virtualAssignment.score / virtualAssignment.scoreTotal * 4).toStringAsFixed(2)}",
+                style: labelStyle,
                 textAlign: TextAlign.center),
             Text(
                 "Weight: \n${(virtualAssignment.type.weight * 100).toStringAsFixed(0)}%",
-                style: smallBodyStyle,
+                style: labelStyle,
                 textAlign: TextAlign.center),
           ],
         ),
@@ -457,14 +457,14 @@ class _AssignmentDisplayState extends State<AssignmentDisplay> {
             Expanded(
               flex: 1,
               child: Text(
-                scoreToMark(virtualAssignment.score, virtualAssignment.total),
+                scoreToMark(virtualAssignment.score, virtualAssignment.scoreTotal),
                 style: bodyStyle,
               ),
             ),
             Expanded(
               flex: 1,
               child: Text(
-                (virtualAssignment.score / virtualAssignment.total * 4)
+                (virtualAssignment.score / virtualAssignment.scoreTotal * 4)
                     .toStringAsFixed(2),
                 style: bodyStyle,
               ),
@@ -682,7 +682,7 @@ class ClassHeaderBar extends StatelessWidget {
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Text(
             classTitle,
-            style: boldSmallBodyStyle,
+            style: labelStyleBold,
           ),
         ]),
       ],

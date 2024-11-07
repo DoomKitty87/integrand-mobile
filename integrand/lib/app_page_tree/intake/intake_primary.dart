@@ -17,7 +17,7 @@ class IntakePrimary extends StatefulWidget {
 class _IntakePrimary extends State<IntakePrimary> {
   @override
   Widget build(BuildContext context) {
-    return GradientBackground(
+    return AppBackground(
       child: Column(
         children: [
           const SizedBox(
@@ -75,7 +75,7 @@ class WelcomeText extends StatelessWidget {
         ),
         TextSpan(
           text: appName,
-          style: titleStyleWithGradient,
+          style: titleStyleGradient,
         ),
       ],
     ));

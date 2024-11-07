@@ -40,7 +40,7 @@ class _ProfileState extends State<Profile> {
             const Center(
               child: Text(
                 'Student Info',
-                style: boldBodyStyle,
+                style: bodyStyleBold,
               ),
             )
           ]),
@@ -69,7 +69,7 @@ class _ProfileState extends State<Profile> {
                       Text(
                         textAlign: TextAlign.left,
                         studentVueAPI.studentData.name,
-                        style: mediumTitleStyle,
+                        style: subtitleStyle,
                       ),
                       const SizedBox(height: 30),
                       Text(

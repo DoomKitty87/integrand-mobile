@@ -247,7 +247,7 @@ class ArticleSearchBar extends StatelessWidget {
                   child: TextField(
                     controller: searchFieldController,
                     maxLines: 1,
-                    style: smallBodyStyle,
+                    style: labelStyle,
                     onChanged: (value) {
                       onSearchCallback(value);
                     },
@@ -255,7 +255,7 @@ class ArticleSearchBar extends StatelessWidget {
                       contentPadding: EdgeInsets.symmetric(
                           vertical: 10.5), // just a magic number to center it
                       hintText: "Search for articles",
-                      hintStyle: smallBodyStyle,
+                      hintStyle: labelStyle,
                       prefixIcon: Icon(
                         Icons.search,
                         size: 16,
@@ -338,11 +338,11 @@ class ArticleSearchResult extends StatelessWidget {
                   children: [
                     Text(
                       newsArticle.title,
-                      style: smallBodyStyle,
+                      style: labelStyle,
                     ),
                     Text(
                       newsArticle.getShortDateString(),
-                      style: smallBodyStyleSubdued,
+                      style: labelStyleSubdued,
                     ),
                   ],
                 ),
@@ -477,7 +477,7 @@ class ArticleListItemDate extends StatelessWidget {
     return Text(
       newsArticle.getDateString(),
       textAlign: TextAlign.center,
-      style: boldSmallBodyStyle,
+      style: labelStyleBold,
     );
   }
 }
@@ -574,12 +574,12 @@ class ArticleListItem extends StatelessWidget {
                           children: [
                             Text(
                               newsArticle.title,
-                              style: boldBodyStyle,
+                              style: bodyStyleBold,
                             ),
                             SizedBox(height: 15),
                             Text(
                               newsArticle.content,
-                              style: smallBodyStyle,
+                              style: labelStyle,
                               textAlign: TextAlign.left,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 3,
@@ -670,7 +670,7 @@ class ArticleFullscreenPageHeader extends StatelessWidget {
           Text(
             newsArticle.getDateString(),
             textAlign: TextAlign.center,
-            style: boldSmallBodyStyle,
+            style: labelStyleBold,
           ),
         ],
       ),
@@ -751,7 +751,7 @@ class ArticleFullscreenText extends StatelessWidget {
       children: [
         Text(
           newsArticle.title,
-          style: mediumTitleStyle,
+          style: subtitleStyle,
         ),
         SizedBox(height: 30),
         MarkdownBody(

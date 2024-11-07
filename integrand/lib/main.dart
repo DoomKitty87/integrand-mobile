@@ -218,7 +218,7 @@ class _MainState extends State<Main> {
       Settings(inheritedController: pageController),
     ];
 
-    return GradientBackground(
+    return AppBackground(
       child: PageView.builder(
         physics: const ClampingScrollPhysics(),
         itemCount: pages.length,
@@ -292,8 +292,9 @@ class _CenterPageState extends State<CenterPage> {
 }
 
 class TopLevelPageSelectBar extends StatelessWidget {
-  const TopLevelPageSelectBar(
-      {super.key, required this.topLevelPageController});
+  const TopLevelPageSelectBar({
+    super.key, required this.topLevelPageController
+  });
 
   final PageController topLevelPageController;
 

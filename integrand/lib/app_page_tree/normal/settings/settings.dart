@@ -143,7 +143,7 @@ class SettingTopBar extends StatelessWidget {
           Center(
             child: Text(
               getTitle(),
-              style: boldBodyStyle,
+              style: bodyStyleBold,
             ),
           )
         ]

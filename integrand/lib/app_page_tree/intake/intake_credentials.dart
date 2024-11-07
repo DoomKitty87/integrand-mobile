@@ -32,7 +32,7 @@ class _IntakeCredentials extends State<IntakeCredentials> {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      child: GradientBackground(
+      child: AppBackground(
         child: Column(
           children: [
             const SizedBox(
@@ -142,7 +142,7 @@ class AddInformationTitle extends StatelessWidget {
         ),
         TextSpan(
           text: "School",
-          style: titleStyleWithGradient,
+          style: titleStyleGradient,
         ),
         const TextSpan(
           text: " Information",
@@ -247,7 +247,7 @@ class CredentialsSafetyMessage extends StatelessWidget {
           ),
           TextSpan(
             text: "never",
-            style: boldBodyStyle,
+            style: bodyStyleBold,
           ),
           TextSpan(
             text: " be sold or shared with third parties.",

@@ -12,7 +12,7 @@ class LoadingSchedule extends StatefulWidget {
 class _LoadingScheduleState extends State<LoadingSchedule> {
   @override
   Widget build(BuildContext context) {
-    return GradientBackground(
+    return AppBackground(
       child: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
