@@ -1,8 +1,9 @@
-import 'dart:async';
-import 'package:http/http.dart' as http;
+/// This class is a wrapper for all the data classes that are used to store the data from the StudentVue API. 
+library student_vue_data;
+
 import 'package:flutter/material.dart';
-import 'xml_parsers.dart';
 import 'data_classes/data_classes.dart';
+export 'data_classes/data_classes.dart';
 
 class StudentVueData with ChangeNotifier {
   ScheduleData? scheduleData;

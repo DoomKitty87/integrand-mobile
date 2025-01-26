@@ -2,12 +2,9 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:integrand/app_page_tree/default/main_pages/gradebook.dart';
-import 'package:integrand/app_page_tree/default/main_pages/schedule.dart';
 import 'package:integrand/backend/studentvue_api/studentvue_data.dart';
-
 import 'xml_parsers.dart';
-import 'data_classes/data_classes.dart';
+export 'studentvue_data.dart';
 
 class StudentVueAPI with ChangeNotifier {
   late String baseUrl;
@@ -19,7 +16,7 @@ class StudentVueAPI with ChangeNotifier {
 
   StudentVueAPI();
 
-  StudentVueData getData(String baseUrl, String username, String password, {bool useTestData = false}) async {
+  Future<StudentVueData> getData(String baseUrl, String username, String password, {bool useTestData = false}) async {
     this.baseUrl = baseUrl;
     this.username = username;
     this.password = password;
@@ -28,17 +25,19 @@ class StudentVueAPI with ChangeNotifier {
     GradebookData gradebookData;
     StudentData studentData;
     GPAData gpaData;
+    BellSchedule bellSchedule;
 
     if (useTestData) {
       scheduleData = ScheduleData.testData();
       gradebookData = GradebookData.testData();
-      // studentData = StudentData(); profile still seems to work
+      studentData = StudentData();
       gpaData = GPAData.testData();
       bellSchedule = BellSchedule.testDataA();
+      return StudentVueData(studentData, scheduleData, gradebookData, gpaData, bellSchedule, CourseHistory());
     }
     else {
       // Should call data updates here
-      updateStudent();
+      studentData = updateStudent();
       updateGrades();
       updateSchedule();
 
@@ -49,11 +48,7 @@ class StudentVueAPI with ChangeNotifier {
         await Future.delayed(const Duration(milliseconds: 100));
       }
       notifyListeners();
-
     }
-
-    ready = true;
-
   }
 
   static bool credsAreNull(String user, String pass) {
@@ -179,10 +174,6 @@ class StudentVueAPI with ChangeNotifier {
   }
 
   Future<http.Response> gradebookPeriod(int reportingPeriod) async {
-    if (!initialized) {
-      throw Exception('StudentVueAPI not initialized');
-    }
-
     String url = '$baseUrl/Service/PXPCommunication.asmx';
 
     Uri uri = Uri.parse(url);

@@ -2,12 +2,11 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:integrand/consts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:integrand/backend/studentvue_api/data_classes/data_classes.dart';
 import 'package:integrand/backend/integrand_servers/integrand_api.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:integrand/backend/integrand_servers/data_classes/data_classes.dart';
 
 class News extends StatefulWidget {
   const News({super.key});

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../helpers/time_of_day_helpers.dart';
 
 export 'schedule.dart';
 export 'gradebook.dart';
-
-
 
 class CourseEntry {
   String courseTitle = '';

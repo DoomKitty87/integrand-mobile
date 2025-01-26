@@ -1,6 +1,9 @@
 import 'package:http/http.dart' as http;
 import 'package:integrand/backend/studentvue_api/data_classes/data_classes.dart';
+import 'package:integrand/backend/integrand_servers/data_classes/data_classes.dart';
 import 'dart:convert';
+
+export 'package:integrand/backend/studentvue_api/data_classes/data_classes.dart';
 
 // Necessary functions to interact with the database
 // Fetch list of schools in a district

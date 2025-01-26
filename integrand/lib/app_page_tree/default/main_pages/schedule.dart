@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:integrand/backend/studentvue_api/studentvue_api.dart';
 import 'package:integrand/widget_templates.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:integrand/helpers/time_of_day_helpers.dart';
 import 'package:integrand/consts.dart';
-import 'package:integrand/backend/studentvue_api/data_classes/data_classes.dart';
 import 'package:integrand/main.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:integrand/backend/studentvue_api/studentvue_api.dart';
 
 // Main Widget
 // ============================================================================================
