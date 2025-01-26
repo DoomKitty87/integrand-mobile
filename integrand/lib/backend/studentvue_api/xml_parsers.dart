@@ -1,8 +1,8 @@
 import 'package:xml/xml.dart';
 import 'package:http/http.dart' as http;
 
-import 'data_classes.dart';
-import '../helpers/datetime_preparse_helpers.dart';
+import 'data_classes/data_classes.dart';
+import '../../helpers/datetime_preparse_helpers.dart';
 
 String parseWebServiceResponse(String body) {
   XmlDocument document = XmlDocument.parse(body);
@@ -72,13 +72,13 @@ ScheduleData parseSchedule(http.Response response) {
   ScheduleData data = ScheduleData();
 
   for (XmlElement element in elements) {
-    Course course = Course();
+    ClassPeriod course = ClassPeriod();
 
     course.courseTitle = element.attributes
         .firstWhere((attribute) => attribute.name.local == 'CourseTitle')
         .value;
 
-    course.teacher = element.attributes
+    course.teacherName = element.attributes
         .firstWhere((attribute) => attribute.name.local == 'Teacher')
         .value;
 
@@ -86,11 +86,11 @@ ScheduleData parseSchedule(http.Response response) {
         .firstWhere((attribute) => attribute.name.local == 'TeacherEmail')
         .value;
 
-    course.room = element.attributes
+    course.roomName = element.attributes
         .firstWhere((attribute) => attribute.name.local == 'RoomName')
         .value;
 
-    course.period = element.attributes
+    course.periodNum = element.attributes
         .firstWhere((attribute) => attribute.name.local == 'Period')
         .value;
 

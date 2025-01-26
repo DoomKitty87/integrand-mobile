@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:integrand/consts.dart';
 import 'package:provider/provider.dart';
-import 'package:integrand/backend/studentvue_api.dart';
+import 'package:integrand/backend/studentvue_api/studentvue_api.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 
 class Profile extends StatefulWidget {

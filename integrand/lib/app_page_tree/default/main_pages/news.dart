@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:integrand/consts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:integrand/backend/data_classes.dart';
+import 'package:integrand/backend/studentvue_api/data_classes.dart';
 import 'package:integrand/backend/database_interactions.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:integrand/app_page_tree/normal/main_pages/gradebook.dart';
+import 'package:integrand/app_page_tree/default/main_pages/gradebook.dart';
 
 import 'xml_parsers.dart';
 import 'data_classes.dart';
@@ -37,6 +37,9 @@ class StudentVueAPI with ChangeNotifier {
 
   StudentVueAPI();
 
+  ///
+  /// Use this method to 
+  ///
   void initialize(String baseUrl, String username, String password) async {
     if (initialized) return;
     this.baseUrl = baseUrl;
@@ -45,7 +48,7 @@ class StudentVueAPI with ChangeNotifier {
     initialized = true;
 
     // TODO: Change this before production
-    bool USE_TEST_DATA = false;
+    bool USE_TEST_DATA = true;
     if (USE_TEST_DATA) {
       scheduleData = ScheduleData.testData();
       gradebookData = GradebookData.testData();

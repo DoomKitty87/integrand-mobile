@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:integrand/backend/studentvue_api.dart';
+import 'package:integrand/backend/studentvue_api/studentvue_api.dart';
 import 'package:integrand/widget_templates.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:integrand/helpers/time_of_day_helpers.dart';
 import 'package:integrand/consts.dart';
-import 'package:integrand/backend/data_classes.dart';
+import 'package:integrand/backend/studentvue_api/data_classes/data_classes.dart';
 import 'package:integrand/main.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -113,11 +113,12 @@ class _ScheduleState extends State<Schedule> {
 }
 
 class ScheduleTimeIndicators extends StatelessWidget {
-  const ScheduleTimeIndicators(
-      {super.key,
-      required this.bellSchedule,
-      required this.periodNameToIndicatorMap,
-      required this.currentTime});
+  const ScheduleTimeIndicators({
+    super.key,
+    required this.bellSchedule,
+    required this.periodNameToIndicatorMap,
+    required this.currentTime,
+  });
 
   final BellSchedule bellSchedule;
   final Map periodNameToIndicatorMap;
@@ -516,7 +517,7 @@ class _ScheduleExpandableListItemState
   @override
   Widget build(BuildContext context) {
     TimeOfDay now = TimeOfDay.fromDateTime(widget.currentTime);
-    Course? course =
+    ClassPeriod? course =
         widget.scheduleData.getCourseByPeriod(widget.period.periodName);
     String name = course == null
         ? widget.period.periodName
@@ -590,11 +591,11 @@ class _ScheduleExpandableListItemState
                   Text(
                     widget.scheduleData
                             .getCourseByPeriod(widget.period.periodName)
-                            ?.teacher ??
+                            ?.teacherName ??
                         "Teacher N/A",
                   ),
                   Text(
-                    "Room ${widget.scheduleData.getCourseByPeriod(widget.period.periodName)?.room ?? "N/A"}",
+                    "Room ${widget.scheduleData.getCourseByPeriod(widget.period.periodName)?.roomName ?? "N/A"}",
                   ),
                 ],
               ),

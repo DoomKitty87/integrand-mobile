@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:integrand/backend/data_classes.dart';
+import 'package:integrand/backend/studentvue_api/data_classes.dart';
 
 const String appName = "Integrand";
 

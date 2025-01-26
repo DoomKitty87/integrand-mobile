@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:integrand/consts.dart';
-import 'package:integrand/backend/data_classes.dart';
+import 'package:integrand/backend/studentvue_api/data_classes.dart';
 import 'package:integrand/backend/database_interactions.dart';
 import 'package:integrand/widget_templates.dart';
 
