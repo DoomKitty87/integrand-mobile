@@ -3,60 +3,39 @@ import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:integrand/app_page_tree/default/main_pages/gradebook.dart';
+import 'package:integrand/app_page_tree/default/main_pages/schedule.dart';
+import 'package:integrand/backend/studentvue_api/studentvue_data.dart';
 
 import 'xml_parsers.dart';
-import 'data_classes.dart';
+import 'data_classes/data_classes.dart';
 
 class StudentVueAPI with ChangeNotifier {
   late String baseUrl;
   late String username;
   late String password;
 
-  bool initialized = false;
-  bool ready = false;
-
-  bool initializedStudent = false;
-  bool initializedGrades = false;
-  bool initializedSchedule = false;
-
-  bool initializedCourseHistory = false;
-  bool initializedBellSchedule = false;
-
-  // Updated upon initalize
-  ScheduleData scheduleData = ScheduleData();
-  GradebookData gradebookData = GradebookData();
-  StudentData studentData = StudentData();
-
-  GPAData gpaData = GPAData();
-  BellSchedule bellSchedule = BellSchedule();
-  CourseHistory courseHistory = CourseHistory();
-  // ========================
   String currentCookies = '';
-
   StudentVueWebData currentWebData = StudentVueWebData();
 
   StudentVueAPI();
 
-  ///
-  /// Use this method to 
-  ///
-  void initialize(String baseUrl, String username, String password) async {
-    if (initialized) return;
+  StudentVueData getData(String baseUrl, String username, String password, {bool useTestData = false}) async {
     this.baseUrl = baseUrl;
     this.username = username;
     this.password = password;
-    initialized = true;
 
-    // TODO: Change this before production
-    bool USE_TEST_DATA = true;
-    if (USE_TEST_DATA) {
+    ScheduleData scheduleData;
+    GradebookData gradebookData;
+    StudentData studentData;
+    GPAData gpaData;
+
+    if (useTestData) {
       scheduleData = ScheduleData.testData();
       gradebookData = GradebookData.testData();
       // studentData = StudentData(); profile still seems to work
       gpaData = GPAData.testData();
       bellSchedule = BellSchedule.testDataA();
     }
-    // ignore: dead_code
     else {
       // Should call data updates here
       updateStudent();

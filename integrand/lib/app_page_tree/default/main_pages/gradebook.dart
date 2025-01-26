@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:integrand/backend/studentvue_api/studentvue_api.dart';
 import 'package:integrand/widget_templates.dart';
 import 'package:provider/provider.dart';
-import 'package:integrand/backend/studentvue_api/data_classes.dart';
+import 'package:integrand/backend/studentvue_api/data_classes/data_classes.dart';
 import 'package:integrand/main.dart';
 
 import '../../../consts.dart';
