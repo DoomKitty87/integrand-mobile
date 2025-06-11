@@ -1,5 +1,5 @@
 import "package:flutter/material.dart";
-import 'package:integrand/consts.dart';
+import 'consts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 class ExpandableListItem extends StatefulWidget {

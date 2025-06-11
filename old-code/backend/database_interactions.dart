@@ -1,5 +1,5 @@
 import 'package:http/http.dart' as http;
-import 'package:integrand/backend/data_classes.dart';
+import 'data_classes.dart';
 import 'dart:convert';
 
 // Necessary functions to interact with the database

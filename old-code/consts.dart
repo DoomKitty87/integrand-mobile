@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:integrand/backend/data_classes.dart';
 
-const String appName = "Integrand";
+const String APP_NAME = "Integrand";
 
 const Color background0 = Color.fromRGBO(11, 11, 16, 1); //HSVO(0, 0, 2, 1)
 const Color background1 = Color.fromRGBO(16, 16, 22, 1);

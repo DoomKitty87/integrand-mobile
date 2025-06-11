@@ -1,8 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:integrand/app_page_tree/normal/main_pages/news.dart';
-
 import '../helpers/time_of_day_helpers.dart';
 
 class Course {

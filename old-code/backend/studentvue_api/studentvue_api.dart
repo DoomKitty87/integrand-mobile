@@ -4,8 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:integrand/app_page_tree/normal/main_pages/gradebook.dart';
 
-import 'xml_parsers.dart';
-import 'data_classes.dart';
+import '../xml_parsers.dart';
+import '../data_classes.dart';
 
 class StudentVueAPI with ChangeNotifier {
   late String baseUrl;
