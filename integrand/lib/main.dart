@@ -7,20 +7,20 @@ void main() {
       listenable: Models(), 
       builder: (context, child) {
         // ignore: prefer_const_constructors
-        return App();
+        return IntegrandApp();
       },
     )
   );
 }
 
-class App extends StatefulWidget {
-  const App({super.key});
+class IntegrandApp extends StatefulWidget {
+  const IntegrandApp({super.key});
 
   @override
-  State<App> createState() => _AppState();
+  State<IntegrandApp> createState() => _IntegrandAppState();
 }
 
-class _AppState extends State<App> {
+class _IntegrandAppState extends State<IntegrandApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
