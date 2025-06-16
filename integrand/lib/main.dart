@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:integrand/models/models.dart';
 
 void main() {
   runApp(
@@ -28,7 +27,7 @@ class _IntegrandAppState extends State<IntegrandApp> {
       theme: ThemeData(
         fontFamily: 'Inter',
         brightness: Brightness.dark,
-        primaryColor: Colors.blueGrey[900],
+        primaryColor: Colors.blueGrey[900], // TODO: Set a proper primary color
         scaffoldBackgroundColor: Colors.black,
       ),
       debugShowCheckedModeBanner: false,

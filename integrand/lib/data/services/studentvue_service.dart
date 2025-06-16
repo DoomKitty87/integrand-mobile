@@ -1,9 +1,8 @@
 import 'package:http/http.dart' as http;
 import 'package:html/parser.dart' as html_parser;
-import 'package:integrand/models/models.dart';
 
-class StudentVueModel extends ModelBase {
-  StudentVueModel(super.onUpdate);
+class StudentVueService {
+  StudentVueService();
 
   bool loggedIn = false;
 
