@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../../domain/models/user/user.dart';
-import '../../../utils/result.dart';
-import '../../services/local/local_data_service.dart';
+import '../../../../domain/models/user/user.dart';
+import '../../../../utils/result.dart';
+import '../../../services/local/local_data_service.dart';
 import 'user_repository.dart';
 
 class UserRepositoryLocal implements UserRepository {

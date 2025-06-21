@@ -1,35 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'config/dependencies.dart';
+import 'config/app_settings.dart';
+import 'ui/core/themes/integrand/theme.dart';
 
 void main() {
   runApp(
-    ListenableBuilder(
-      listenable: Models(), 
-      builder: (context, child) {
-        // ignore: prefer_const_constructors
-        return IntegrandApp();
-      },
+    MultiProvider(
+      providers: providerDependencies,
+      child: MainApp(),
     )
   );
 }
 
-class IntegrandApp extends StatefulWidget {
-  const IntegrandApp({super.key});
+class MainApp extends StatefulWidget {
+  const MainApp({super.key});
 
   @override
-  State<IntegrandApp> createState() => _IntegrandAppState();
+  State<MainApp> createState() => _MainAppState();
 }
 
-class _IntegrandAppState extends State<IntegrandApp> {
+class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Integrand',
-      theme: ThemeData(
-        fontFamily: 'Inter',
-        brightness: Brightness.dark,
-        primaryColor: Colors.blueGrey[900], // TODO: Set a proper primary color
-        scaffoldBackgroundColor: Colors.black,
-      ),
+      title: APP_NAME,
+      theme: AppTheme.darkTheme,
       debugShowCheckedModeBanner: false,
       home: DefaultTextStyle(
         style: const TextStyle(

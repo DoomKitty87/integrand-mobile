@@ -2,20 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:freezed_annotation/freezed_annotation.dart';
+class User {
+  User({required String name, required String picture}) 
 
-part 'user.freezed.dart';
-part 'user.g.dart';
-
-@freezed
-abstract class User with _$User {
-  const factory User({
-    /// The user's name.
-    required String name,
-
-    /// The user's picture URL.
-    required String picture,
-  }) = _User;
-
-  factory User.fromJson(Map<String, Object?> json) => _$UserFromJson(json);
+  factory User.fromJson(Map<String, Object?> json) {
+    return User(
+      name: "default", 
+      picture: "null",
+    );
+  }
 }

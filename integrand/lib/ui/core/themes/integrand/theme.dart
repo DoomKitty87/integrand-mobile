@@ -35,13 +35,6 @@ abstract final class AppTheme {
     ),
   );
 
-  // static ThemeData lightTheme = ThemeData(
-  //   brightness: Brightness.light,
-  //   colorScheme: AppColors.lightColorScheme,
-  //   textTheme: _textTheme,
-  //   inputDecorationTheme: _inputDecorationTheme,
-  // );
-
   static ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     colorScheme: AppColors.darkColorScheme,

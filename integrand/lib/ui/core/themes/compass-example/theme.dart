@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-
-import 'ui/tag_chip.dart';
 import 'colors.dart';
 
 abstract final class AppTheme {
@@ -45,12 +43,6 @@ abstract final class AppTheme {
     colorScheme: AppColors.lightColorScheme,
     textTheme: _textTheme,
     inputDecorationTheme: _inputDecorationTheme,
-    extensions: [
-      TagChipTheme(
-        chipColor: AppColors.whiteTransparent,
-        onChipColor: Colors.white,
-      ),
-    ],
   );
 
   static ThemeData darkTheme = ThemeData(
@@ -58,11 +50,5 @@ abstract final class AppTheme {
     colorScheme: AppColors.darkColorScheme,
     textTheme: _textTheme,
     inputDecorationTheme: _inputDecorationTheme,
-    extensions: [
-      TagChipTheme(
-        chipColor: AppColors.blackTransparent,
-        onChipColor: Colors.white,
-      ),
-    ],
   );
 }
